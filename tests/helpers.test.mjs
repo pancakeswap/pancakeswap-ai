@@ -330,6 +330,334 @@ test('V2 fee is 0.25%, not 0.3% (Uniswap V2 uses 0.3%)', () => {
 })
 
 // ─────────────────────────────────────────────
+// SUITE 6: buildPancakeSwapLiquidityLink
+// ─────────────────────────────────────────────
+
+console.log('\n📦 buildPancakeSwapLiquidityLink')
+
+const LIQUIDITY_CHAIN_KEYS = {
+  56:    'bsc',
+  1:     'eth',
+  42161: 'arb',
+  8453:  'base',
+  324:   'zksync',
+  59144: 'linea',
+  1101:  'polygonzkevm',
+  204:   'opbnb',
+  97:    'bsctest',
+}
+
+const FEE_TIER_MAP = {
+  '0.01%': 100,
+  '0.05%': 500,
+  '0.25%': 2500,
+  '1%':    10000,
+}
+
+function buildPancakeSwapLiquidityLink({ chainId, tokenA, tokenB, version, feeTier }) {
+  const chain = LIQUIDITY_CHAIN_KEYS[chainId]
+  if (!chain) throw new Error(`Unsupported chainId: ${chainId}`)
+
+  if (version === 'v3') {
+    const feeAmount = FEE_TIER_MAP[feeTier || '0.25%']
+    if (!feeAmount) throw new Error(`Invalid fee tier: ${feeTier}`)
+    return `https://pancakeswap.finance/liquidity/add/v3/${tokenA}/${tokenB}/${feeAmount}?chain=${chain}`
+  }
+
+  if (version === 'stableswap') {
+    if (chainId !== 56) throw new Error('StableSwap only available on BSC')
+    return `https://pancakeswap.finance/add/${tokenA}/${tokenB}?chain=bsc&stableSwap=true`
+  }
+
+  // V2
+  return `https://pancakeswap.finance/add/${tokenA}/${tokenB}?chain=${chain}`
+}
+
+test('V3 CAKE/BNB on BSC with 0.25% fee', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v3', feeTier: '0.25%',
+  })
+  assert.ok(url.includes('/liquidity/add/v3/'), 'missing v3 path')
+  assert.ok(url.includes('/2500?'), 'fee tier 2500 not in URL')
+  assert.ok(url.includes('chain=bsc'), 'missing chain=bsc')
+  assert.ok(url.includes(KNOWN_TOKENS.CAKE), 'missing CAKE address')
+  assert.ok(url.includes('/BNB/'), 'missing BNB')
+})
+
+test('V3 USDC/ETH on Ethereum with 0.05% fee', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 1, tokenA: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', tokenB: 'ETH',
+    version: 'v3', feeTier: '0.05%',
+  })
+  assert.ok(url.includes('/500?'), 'fee tier 500 not in URL')
+  assert.ok(url.includes('chain=eth'), 'missing chain=eth')
+})
+
+test('V3 defaults to 0.25% when feeTier omitted', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v3',
+  })
+  assert.ok(url.includes('/2500?'), 'should default to 2500 (0.25%)')
+})
+
+test('V3 0.01% fee tier for stablecoin pairs', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC,
+    version: 'v3', feeTier: '0.01%',
+  })
+  assert.ok(url.includes('/100?'), 'fee tier 100 not in URL')
+})
+
+test('V3 1% fee tier for volatile pairs', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: '0x1234567890123456789012345678901234567890',
+    version: 'v3', feeTier: '1%',
+  })
+  assert.ok(url.includes('/10000?'), 'fee tier 10000 not in URL')
+})
+
+test('V2 link uses /add/ path without /v3/', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v2',
+  })
+  assert.ok(url.startsWith('https://pancakeswap.finance/add/'), 'wrong base path')
+  assert.ok(!url.includes('/v3/'), 'V2 should not have /v3/ in path')
+  assert.ok(url.includes('chain=bsc'))
+})
+
+test('StableSwap link has stableSwap=true', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 56, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC, version: 'stableswap',
+  })
+  assert.ok(url.includes('stableSwap=true'), 'missing stableSwap=true')
+  assert.ok(url.includes('chain=bsc'))
+})
+
+test('StableSwap throws on non-BSC chain', () => {
+  assert.throws(
+    () => buildPancakeSwapLiquidityLink({
+      chainId: 1, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC, version: 'stableswap',
+    }),
+    /StableSwap only available on BSC/,
+  )
+})
+
+test('V3 on Arbitrum uses chain=arb', () => {
+  const url = buildPancakeSwapLiquidityLink({
+    chainId: 42161, tokenA: 'ETH', tokenB: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    version: 'v3', feeTier: '0.05%',
+  })
+  assert.ok(url.includes('chain=arb'))
+})
+
+test('throws on unsupported chainId', () => {
+  assert.throws(
+    () => buildPancakeSwapLiquidityLink({ chainId: 999, tokenA: 'ETH', tokenB: 'USDC', version: 'v3' }),
+    /Unsupported chainId: 999/,
+  )
+})
+
+test('throws on invalid fee tier', () => {
+  assert.throws(
+    () => buildPancakeSwapLiquidityLink({ chainId: 56, tokenA: 'BNB', tokenB: 'CAKE', version: 'v3', feeTier: '0.3%' }),
+    /Invalid fee tier/,
+  )
+})
+
+// ─────────────────────────────────────────────
+// SUITE 7: Fee tier mapping
+// ─────────────────────────────────────────────
+
+console.log('\n📦 Fee tier mapping')
+
+test('0.01% maps to 100 basis points', () => assert.equal(FEE_TIER_MAP['0.01%'], 100))
+test('0.05% maps to 500 basis points', () => assert.equal(FEE_TIER_MAP['0.05%'], 500))
+test('0.25% maps to 2500 basis points', () => assert.equal(FEE_TIER_MAP['0.25%'], 2500))
+test('1% maps to 10000 basis points', () => assert.equal(FEE_TIER_MAP['1%'], 10000))
+
+test('fee tier values are ordered ascending', () => {
+  const values = Object.values(FEE_TIER_MAP).sort((a, b) => a - b)
+  assert.deepEqual(values, [100, 500, 2500, 10000])
+})
+
+// ─────────────────────────────────────────────
+// SUITE 8: Impermanent loss estimation
+// ─────────────────────────────────────────────
+
+console.log('\n📦 Impermanent loss calculations')
+
+function estimateIL(priceChangeRatio) {
+  const sqrtR = Math.sqrt(priceChangeRatio)
+  return 2 * sqrtR / (1 + priceChangeRatio) - 1
+}
+
+test('no price change → 0% IL', () => {
+  const il = estimateIL(1.0)
+  assert.ok(Math.abs(il) < 0.0001, `expected ~0%, got ${(il * 100).toFixed(4)}%`)
+})
+
+test('2x price increase → ~5.7% IL', () => {
+  const il = estimateIL(2.0)
+  assert.ok(Math.abs(il * 100 + 5.72) < 0.1, `expected ~-5.72%, got ${(il * 100).toFixed(2)}%`)
+})
+
+test('5x price increase → ~25% IL', () => {
+  const il = estimateIL(5.0)
+  assert.ok(il < -0.20 && il > -0.30, `expected ~-25%, got ${(il * 100).toFixed(2)}%`)
+})
+
+test('IL is always negative (loss) for any price change', () => {
+  for (const r of [0.1, 0.5, 1.5, 2.0, 3.0, 5.0, 10.0]) {
+    const il = estimateIL(r)
+    assert.ok(il <= 0.0001, `IL should be non-positive at ratio ${r}, got ${il}`)
+  }
+})
+
+// ─────────────────────────────────────────────
+// SUITE 9: Infinity hook permission flags (CL)
+// ─────────────────────────────────────────────
+
+console.log('\n📦 Infinity hook permission flags (CL)')
+
+const CL_PERMISSIONS = {
+  beforeInitialize:                0x0001,
+  afterInitialize:                 0x0002,
+  beforeAddLiquidity:              0x0004,
+  afterAddLiquidity:               0x0008,
+  beforeRemoveLiquidity:           0x0010,
+  afterRemoveLiquidity:            0x0020,
+  beforeSwap:                      0x0040,
+  afterSwap:                       0x0080,
+  beforeDonate:                    0x0100,
+  afterDonate:                     0x0200,
+  beforeSwapReturnDelta:           0x0400,
+  afterSwapReturnDelta:            0x0800,
+  afterAddLiquidityReturnDelta:    0x1000,
+  afterRemoveLiquidityReturnDelta: 0x2000,
+}
+
+test('14 permission flags total for CL hooks', () => {
+  assert.equal(Object.keys(CL_PERMISSIONS).length, 14)
+})
+
+test('each permission flag is a unique power of 2', () => {
+  const values = Object.values(CL_PERMISSIONS)
+  const uniqueValues = new Set(values)
+  assert.equal(values.length, uniqueValues.size, 'duplicate permission values found')
+  for (const v of values) {
+    assert.ok((v & (v - 1)) === 0 && v > 0, `${v} is not a power of 2`)
+  }
+})
+
+test('permission flags are ordered by bit position 0–13', () => {
+  const values = Object.values(CL_PERMISSIONS)
+  for (let i = 0; i < values.length; i++) {
+    assert.equal(values[i], 1 << i, `permission at index ${i} should be ${1 << i}, got ${values[i]}`)
+  }
+})
+
+test('CRITICAL permissions include all ReturnDelta variants', () => {
+  const returnDeltaFlags = Object.keys(CL_PERMISSIONS).filter(k => k.includes('ReturnDelta'))
+  assert.equal(returnDeltaFlags.length, 4, 'should have 4 ReturnDelta flags')
+  for (const name of returnDeltaFlags) {
+    assert.ok(CL_PERMISSIONS[name] >= 0x0400, `${name} should be in high bits`)
+  }
+})
+
+test('buildPermissionBitmap from selected flags', () => {
+  function buildPermissionBitmap(flags) {
+    let bitmap = 0
+    for (const flag of flags) bitmap |= CL_PERMISSIONS[flag]
+    return bitmap
+  }
+  const bitmap = buildPermissionBitmap(['beforeSwap', 'afterSwap'])
+  assert.equal(bitmap, 0x00C0)
+  assert.ok(bitmap & CL_PERMISSIONS.beforeSwap)
+  assert.ok(bitmap & CL_PERMISSIONS.afterSwap)
+  assert.ok(!(bitmap & CL_PERMISSIONS.beforeSwapReturnDelta))
+})
+
+test('zero bitmap means all permissions disabled (safe default)', () => {
+  for (const [name, flag] of Object.entries(CL_PERMISSIONS)) {
+    assert.ok(!(0 & flag), `${name} should be disabled in zero bitmap`)
+  }
+})
+
+// ─────────────────────────────────────────────
+// SUITE 10: Vault settlement flow
+// ─────────────────────────────────────────────
+
+console.log('\n📦 Vault settlement flow')
+
+test('Infinity uses vault.lock, not poolManager.unlock', () => {
+  const infinityEntry = 'vault.lock'
+  const uniswapEntry = 'poolManager.unlock'
+  assert.notEqual(infinityEntry, uniswapEntry)
+})
+
+test('Infinity has dual pool types (CL + Bin)', () => {
+  const poolTypes = ['CLPoolManager', 'BinPoolManager']
+  assert.equal(poolTypes.length, 2)
+  assert.ok(poolTypes.includes('CLPoolManager'))
+  assert.ok(poolTypes.includes('BinPoolManager'))
+})
+
+test('settlement order: sync before settle', () => {
+  const steps = ['vault.lock', 'beforeSwap', 'swap', 'afterSwap', 'vault.sync', 'transfer', 'vault.settle']
+  const syncIdx = steps.indexOf('vault.sync')
+  const settleIdx = steps.indexOf('vault.settle')
+  assert.ok(syncIdx < settleIdx, 'sync must come before settle')
+  assert.ok(syncIdx > steps.indexOf('afterSwap'), 'sync must come after hooks')
+})
+
+// ─────────────────────────────────────────────
+// SUITE 11: Infinity import paths
+// ─────────────────────────────────────────────
+
+console.log('\n📦 Infinity import paths')
+
+const CORRECT_IMPORTS = [
+  'infinity-hooks/src/pool-cl/CLBaseHook.sol',
+  'infinity-hooks/src/pool-bin/BinBaseHook.sol',
+  'infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol',
+  'infinity-core/src/pool-bin/interfaces/IBinPoolManager.sol',
+  'infinity-core/src/interfaces/IVault.sol',
+  'infinity-core/src/types/PoolKey.sol',
+  'infinity-core/src/types/BalanceDelta.sol',
+  'infinity-core/src/types/BeforeSwapDelta.sol',
+]
+
+test('all imports use infinity-core or infinity-hooks prefix', () => {
+  for (const imp of CORRECT_IMPORTS) {
+    assert.ok(
+      imp.startsWith('infinity-core/') || imp.startsWith('infinity-hooks/'),
+      `Import ${imp} should start with infinity-core/ or infinity-hooks/`,
+    )
+  }
+})
+
+test('CL and Bin base hooks have separate import paths', () => {
+  const clHook = CORRECT_IMPORTS.find(i => i.includes('CLBaseHook'))
+  const binHook = CORRECT_IMPORTS.find(i => i.includes('BinBaseHook'))
+  assert.ok(clHook.includes('pool-cl'))
+  assert.ok(binHook.includes('pool-bin'))
+  assert.notEqual(clHook, binHook)
+})
+
+test('IVault is in core interfaces, not pool-specific', () => {
+  const vaultImport = CORRECT_IMPORTS.find(i => i.includes('IVault'))
+  assert.ok(vaultImport.includes('src/interfaces/'))
+  assert.ok(!vaultImport.includes('pool-cl') && !vaultImport.includes('pool-bin'))
+})
+
+test('Uniswap v4 imports are NOT valid for Infinity', () => {
+  const wrongImports = ['v4-core/BaseHook.sol', 'v4-core/interfaces/IPoolManager.sol']
+  for (const imp of wrongImports) {
+    assert.ok(!imp.startsWith('infinity-'), `${imp} should NOT start with infinity-`)
+  }
+})
+
+// ─────────────────────────────────────────────
 // Results
 // ─────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 # Plugins
 
-PancakeSwap AI ships three plugins, each packaging one or more skills for a specific domain.
+PancakeSwap AI ships four plugins, each packaging one or more skills for a specific domain.
 
 ## Plugin Architecture
 
@@ -22,11 +22,17 @@ packages/plugins/
 │       │   └── SKILL.md
 │       └── liquidity-planner/
 │           └── SKILL.md
-└── pancakeswap-infinity/       # Infinity (v4) hook security
+├── pancakeswap-infinity/       # Infinity (v4) hook security
+│   ├── .claude-plugin/
+│   │   └── plugin.json
+│   └── skills/
+│       └── infinity-security-foundations/
+│           └── SKILL.md
+└── pancakeswap-farming/        # Yield farming & CAKE staking
     ├── .claude-plugin/
     │   └── plugin.json
     └── skills/
-        └── infinity-security-foundations/
+        └── farming-planner/
             └── SKILL.md
 ```
 
@@ -37,6 +43,7 @@ packages/plugins/
 | [`pancakeswap-trading`](/plugins/pancakeswap-trading) | `swap-integration` | Integrate swaps via Routing API, Smart Router SDK, or direct V2/V3 contracts |
 | [`pancakeswap-driver`](/plugins/pancakeswap-driver) | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
 | [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations` | Security guide for Infinity hook development |
+| [`pancakeswap-farming`](/plugins/pancakeswap-farming) | `farming-planner` | Plan yield farming, CAKE staking, veCAKE, and reward harvesting |
 
 ## Plugin Structure
 

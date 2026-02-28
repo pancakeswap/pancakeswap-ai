@@ -41,9 +41,11 @@ Route to the correct section based on what the user wants:
 
 ---
 
-## Token Addresses (BSC — Chain ID 56)
+## Token Addresses
 
-Use these to construct deep links. Always use the WBNB address for BNB in URLs (not the symbol `BNB`).
+Use these to construct deep links. Always use the wrapped native token address in URLs (e.g., WBNB on BSC, WETH on Base/Ethereum/Arbitrum).
+
+### BSC (Chain ID 56)
 
 | Token  | Address                                      | Decimals |
 | ------ | -------------------------------------------- | -------- |
@@ -63,6 +65,39 @@ Use these to construct deep links. Always use the WBNB address for BNB in URLs (
 | LINK   | `0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD` | 18       |
 | UNI    | `0xBf5140A22578168FD562DCcF235E5D43A02ce9B1` | 18       |
 | TWT    | `0x4B0F1812e5Df2A09796481Ff14017e6005508003` | 18       |
+
+### Base (Chain ID 8453)
+
+| Token   | Address                                      | Decimals |
+| ------- | -------------------------------------------- | -------- |
+| WETH    | `0x4200000000000000000000000000000000000006` | 18       |
+| ETH     | Use WETH address above in URLs               | 18       |
+| USDC    | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | 6        |
+| USDbC   | `0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA` | 6        |
+| DAI     | `0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb` | 18       |
+| cbBTC   | `0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf` | 8        |
+| cbXRP   | `0xcb585250f852c6c6bf90434ab21a00f02833a4af` | 6        |
+| AERO    | `0x940181a94A35A4569E4529A3CDfB74e38FD98631` | 18       |
+| VIRTUAL | `0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b` | 18       |
+
+### Ethereum (Chain ID 1)
+
+| Token  | Address                                      | Decimals |
+| ------ | -------------------------------------------- | -------- |
+| WETH   | `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` | 18       |
+| USDC   | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` | 6        |
+| USDT   | `0xdAC17F958D2ee523a2206206994597C13D831ec7` | 6        |
+| WBTC   | `0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599` | 8        |
+
+### Arbitrum (Chain ID 42161)
+
+| Token  | Address                                      | Decimals |
+| ------ | -------------------------------------------- | -------- |
+| WETH   | `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1` | 18       |
+| USDC   | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` | 6        |
+| USDT   | `0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9` | 6        |
+| WBTC   | `0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f` | 8        |
+| ARB    | `0x912CE59144191C1204E64559FE8253a0e49E6548` | 18       |
 
 ---
 
@@ -152,62 +187,107 @@ Or use the farms page with search: `https://pancakeswap.finance/farms?chain=bsc&
 
 ## Farm Discovery
 
-### Method A: DefiLlama API (recommended — always works)
+### Method A: PancakeSwap Explorer API (primary — most accurate)
 
-Fetch live yield data for all PancakeSwap farms. Use `python3` to filter, sort, and build deep links in one step:
+::: danger MANDATORY — Do NOT write your own Python script
+Using `python3 -c "..."` causes SyntaxError (bash mangles `!` and `$`).
+Using `curl | python3 << 'EOF'` causes JSONDecodeError (heredoc steals stdin).
+You MUST follow the exact two-step process below. Do NOT improvise.
+:::
+
+**Step 1 — Create the script file (run this FIRST, exactly as-is):**
 
 ```bash
-curl -s "https://yields.llama.fi/pools" | python3 -c "
-import json, sys
-
-TOKENS = {
-    'CAKE': '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
-    'WBNB': '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    'BNB':  '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    'USDT': '0x55d398326f99059fF775485246999027B3197955',
-    'USDC': '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    'BUSD': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-    'ETH':  '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
-    'BTCB': '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
-    'MBOX': '0x3203c9E46cA618C8C1cE5dC67e7e9D75f5da2377',
-    'XRP':  '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE',
-    'ADA':  '0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47',
-    'DOGE': '0xbA2aE424d960c26247Dd6c32edC70B295c744C43',
-    'DOT':  '0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402',
-    'LINK': '0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD',
-    'UNI':  '0xBf5140A22578168FD562DCcF235E5D43A02ce9B1',
-    'TWT':  '0x4B0F1812e5Df2A09796481Ff14017e6005508003',
+cat > /tmp/pcs_farms.py << 'PYEOF'
+import json, sys, os
+CHAIN_FILTER = os.environ.get('CHAIN_FILTER', '')
+PROTOCOL_FILTER = os.environ.get('PROTOCOL_FILTER', '')
+MIN_TVL = float(os.environ.get('MIN_TVL', '10000'))
+CHAIN_ID_TO_KEY = {56: 'bsc', 1: 'eth', 42161: 'arb', 8453: 'base', 324: 'zksync', 204: 'opbnb', 59144: 'linea'}
+NATIVE_TO_WRAPPED = {
+    56:    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    1:     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    42161: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    8453:  '0x4200000000000000000000000000000000000006',
+    324:   '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91',
 }
-
-def build_link(symbol, project):
-    parts = symbol.replace(' ', '').split('-')
-    if len(parts) != 2:
-        return 'https://pancakeswap.finance/farms?chain=bsc'
-    t0, t1 = TOKENS.get(parts[0], ''), TOKENS.get(parts[1], '')
-    if not t0 or not t1:
-        return f'https://pancakeswap.finance/farms?chain=bsc&search={parts[0]}'
-    if 'v3' in project:
-        return f'https://pancakeswap.finance/add/{t0}/{t1}/2500?chain=bsc&persistChain=1'
+ZERO_ADDR = '0x0000000000000000000000000000000000000000'
+def token_addr(token, chain_id):
+    addr = token['id']
+    if addr == ZERO_ADDR:
+        return NATIVE_TO_WRAPPED.get(chain_id, addr)
+    return addr
+def build_link(pool):
+    chain_id = pool['chainId']
+    chain_key = CHAIN_ID_TO_KEY.get(chain_id, 'bsc')
+    proto = pool['protocol']
+    t0 = token_addr(pool['token0'], chain_id)
+    t1 = token_addr(pool['token1'], chain_id)
+    fee = pool.get('feeTier', 2500)
+    if proto == 'v2':
+        return f'https://pancakeswap.finance/v2/add/{t0}/{t1}?chain={chain_key}&persistChain=1'
+    elif proto == 'v3':
+        return f'https://pancakeswap.finance/add/{t0}/{t1}/{fee}?chain={chain_key}&persistChain=1'
+    elif proto == 'stable':
+        return f'https://pancakeswap.finance/stable/add/{t0}/{t1}?chain={chain_key}&persistChain=1'
+    elif proto in ('infinityCl', 'infinityBin'):
+        pool_id = pool['id']
+        return f'https://pancakeswap.finance/liquidity/add/{chain_key}/infinity/{pool_id}?chain={chain_key}&persistChain=1'
     else:
-        return f'https://pancakeswap.finance/v2/add/{t0}/{t1}?chain=bsc&persistChain=1'
-
-data = json.load(sys.stdin)['data']
-pools = [p for p in data if p.get('chain') == 'BSC' and 'pancakeswap' in p.get('project', '')]
-pools.sort(key=lambda p: p.get('apy', 0) or 0, reverse=True)
-
-print(f'| Pair | APY | TVL | Type | Deep Link |')
-print(f'|------|-----|-----|------|-----------|')
-for p in pools[:15]:
-    sym = p['symbol']
-    apy = f\"{p.get('apy', 0):.1f}%\"
-    tvl = f\"\${int(p.get('tvlUsd', 0)):,}\"
-    typ = 'V3' if 'v3' in p['project'] else 'V2'
-    link = build_link(sym, p['project'])
-    print(f'| {sym} | {apy} | {tvl} | {typ} | {link} |')
-"
+        return f'https://pancakeswap.finance/farms?chain={chain_key}'
+data = json.load(sys.stdin)
+pools = data if isinstance(data, list) else data.get('data', [])
+if CHAIN_FILTER:
+    chain_ids = {v: k for k, v in CHAIN_ID_TO_KEY.items()}
+    target_id = chain_ids.get(CHAIN_FILTER.lower())
+    if target_id:
+        pools = [p for p in pools if p['chainId'] == target_id]
+if PROTOCOL_FILTER:
+    protos = [x.strip().lower() for x in PROTOCOL_FILTER.split(',')]
+    pools = [p for p in pools if p['protocol'].lower() in protos]
+pools = [p for p in pools if float(p.get('tvlUSD', 0) or 0) >= MIN_TVL]
+pools.sort(key=lambda p: float(p.get('apr24h', 0) or 0), reverse=True)
+print('| Pair | APR (24h) | TVL | Protocol | Chain | Deep Link |')
+print('|------|-----------|-----|----------|-------|-----------|')
+for p in pools[:20]:
+    t0sym = p['token0']['symbol']
+    t1sym = p['token1']['symbol']
+    pair = f'{t0sym}/{t1sym}'
+    apr_raw = float(p.get('apr24h', 0) or 0)
+    apr = f'{apr_raw * 100:.1f}%'
+    tvl = f"${int(float(p.get('tvlUSD', 0))):,}"
+    proto = p['protocol']
+    chain_key = CHAIN_ID_TO_KEY.get(p['chainId'], '?')
+    link = build_link(p)
+    print(f'| {pair} | {apr} | {tvl} | {proto} | {chain_key} | {link} |')
+PYEOF
 ```
 
-This outputs a ready-to-use markdown table with deep links per row. Copy the output directly into your response.
+**Step 2 — Run the query (pick ONE line based on the target chain):**
+
+The API URL supports these query params: `protocols` (v2, v3, stable, infinityBin, infinityCl) and `chains` (bsc, ethereum, base, arbitrum, zksync, opbnb, linea, monad).
+
+```bash
+# All chains, all protocols (default):
+curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v2&protocols=v3&protocols=stable&protocols=infinityBin&protocols=infinityCl&chains=bsc&chains=ethereum&chains=base&chains=arbitrum&chains=zksync" | python3 /tmp/pcs_farms.py
+
+# BSC only:
+export CHAIN_FILTER=bsc && curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v2&protocols=v3&protocols=stable&protocols=infinityBin&protocols=infinityCl&chains=bsc" | python3 /tmp/pcs_farms.py
+
+# Base only:
+export CHAIN_FILTER=base && curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v2&protocols=v3&protocols=stable&protocols=infinityBin&protocols=infinityCl&chains=base" | python3 /tmp/pcs_farms.py
+
+# Base V3 only:
+export CHAIN_FILTER=base PROTOCOL_FILTER=v3 && curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v3&chains=base" | python3 /tmp/pcs_farms.py
+
+# Arbitrum only:
+export CHAIN_FILTER=arb && curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v2&protocols=v3&protocols=stable&protocols=infinityBin&protocols=infinityCl&chains=arbitrum" | python3 /tmp/pcs_farms.py
+
+# Lower minimum TVL to $1000 (default is $10000):
+export MIN_TVL=1000 && curl -s "https://explorer.pancakeswap.com/api/cached/pools/farming?protocols=v2&protocols=v3&protocols=stable&protocols=infinityBin&protocols=infinityCl&chains=bsc" | python3 /tmp/pcs_farms.py
+```
+
+The output is a ready-to-use markdown table with deep links per row. Copy it directly into your response.
 
 ### Method B: On-chain via CampaignManager (Infinity farms)
 
@@ -539,9 +619,9 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 ## Anti-Patterns
 
 ::: danger Never do these
-1. **Never hardcode APR values** — always fetch live data from DefiLlama
+1. **Never hardcode APR values** — always fetch live data from the PancakeSwap Explorer API
 2. **Never skip IL warnings** — always warn about impermanent loss for volatile pairs
-3. **Never assume farm availability** — farms can be stopped; verify via DefiLlama or CampaignManager
+3. **Never assume farm availability** — farms can be stopped; verify via PancakeSwap Explorer API or CampaignManager
 4. **Never expose private keys** — always use deep links for mainnet
 5. **Never ignore chain context** — V2 farms are BSC-only; other chains have V3/Infinity only
 6. **Never output a farm without a deep link** — every farm row needs a clickable URL

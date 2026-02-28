@@ -33,6 +33,10 @@ features:
     title: Infinity Security
     details: Security guide for Infinity (v4) hook development — threat models, permission matrices, audit checklists, and templates.
     link: /skills/infinity-security-foundations
+  - icon: 🌾
+    title: Farming Planner
+    details: Discover farms, compare APR/APY, plan CAKE staking and veCAKE strategies, and generate deep links to the farming UI.
+    link: /skills/farming-planner
   - icon: 🧪
     title: LLM Evaluations
     details: Promptfoo-based eval suites with llm-rubric grading. Enforce ≥ 85% pass rate on every PR.

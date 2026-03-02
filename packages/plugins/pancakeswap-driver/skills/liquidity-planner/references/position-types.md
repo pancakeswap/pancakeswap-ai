@@ -292,13 +292,14 @@ PancakeSwap v4 introduces singleton architecture, hooks, and dynamic fee mechani
 | Chain | V2 | V3 | StableSwap | Infinity |
 |-------|----|----|-----------|---|
 | BSC | ✅ | ✅ | ✅ | 🔜 |
-| Ethereum | ❌ | ✅ | ❌ | 🔜 |
-| Arbitrum | ❌ | ✅ | ❌ | 🔜 |
-| Base | ❌ | ✅ | ❌ | 🔜 |
-| zkSync | ❌ | ✅ | ❌ | 🔜 |
-| Linea | ❌ | ✅ | ❌ | 🔜 |
-| Polygon zkEVM | ❌ | ✅ | ❌ | 🔜 |
-| opBNB | ❌ | ✅ | ❌ | 🔜 |
+| Ethereum | ✅ | ✅ | ❌ | 🔜 |
+| Arbitrum | ✅ | ✅ | ❌ | 🔜 |
+| Base | ✅ | ✅ | ❌ | 🔜 |
+| zkSync | ✅ | ✅ | ❌ | 🔜 |
+| Linea | ✅ | ✅ | ❌ | 🔜 |
+| Polygon zkEVM | ✅ | ✅ | ❌ | 🔜 |
+| opBNB | ✅ | ✅ | ❌ | 🔜 |
+| Monad | ✅ | ✅ | ❌ | 🔜 |
 
 **Legend**: ✅ Available | ❌ Not Available | 🔜 Coming Soon
 

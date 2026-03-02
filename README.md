@@ -51,14 +51,15 @@ User: "Swap 0.1 BNB for USDT"
 | Chain | V2 | V3 | StableSwap | Routing API |
 |-------|----|----|------------|-------------|
 | BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ |
-| Ethereum (1) | ❌ | ✅ | ❌ | ✅ |
-| Arbitrum One (42161) | ❌ | ✅ | ❌ | ✅ |
-| Base (8453) | ❌ | ✅ | ❌ | ✅ |
-| zkSync Era (324) | ❌ | ✅ | ❌ | ✅ |
-| Linea (59144) | ❌ | ✅ | ❌ | ✅ |
-| Polygon zkEVM (1101) | ❌ | ✅ | ❌ | ✅ |
-| opBNB (204) | ❌ | ✅ | ❌ | ✅ |
-| BSC Testnet (97) | ✅ | ❌ | ❌ | ❌ |
+| Ethereum (1) | ✅ | ✅ | ❌ | ✅ |
+| Arbitrum One (42161) | ✅ | ✅ | ❌ | ✅ |
+| Base (8453) | ✅ | ✅ | ❌ | ✅ |
+| zkSync Era (324) | ✅ | ✅ | ❌ | ✅ |
+| Linea (59144) | ✅ | ✅ | ❌ | ✅ |
+| Polygon zkEVM (1101) | ✅ | ✅ | ❌ | ✅ |
+| opBNB (204) | ✅ | ✅ | ❌ | ✅ |
+| Monad (143) | ✅ | ✅ | ❌ | ✅ |
+| BSC Testnet (97) | ✅ | ✅ | ❌ | ✅ |
 
 ## Documentation
 
@@ -68,7 +69,7 @@ User: "Swap 0.1 BNB for USDT"
 | [swap-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/swap-planner/SKILL.md) | Token discovery, price fetching, deep link generation |
 | [liquidity-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/liquidity-planner/SKILL.md) | LP position planning (V2, V3, StableSwap) with pool assessment and deep links |
 | [infinity-security-foundations SKILL.md](packages/plugins/pancakeswap-infinity/skills/infinity-security-foundations/SKILL.md) | Infinity hook security — threat models, permissions matrix, delta accounting, audit checklist |
-| [farming-planner SKILL.md](packages/plugins/pancakeswap-farming/skills/farming-planner/SKILL.md) | Yield farming, CAKE staking, veCAKE strategy planning |
+| [farming-planner SKILL.md](packages/plugins/pancakeswap-farming/skills/farming-planner/SKILL.md) | Yield farming, CAKE staking, farm discovery with live APR |
 
 ## Testing
 

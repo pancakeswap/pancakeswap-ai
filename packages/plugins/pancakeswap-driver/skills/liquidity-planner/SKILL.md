@@ -489,14 +489,17 @@ https://pancakeswap.finance/add/0x55d398326f99059fF775485246999027B3197955/0x8AC
 
 ## PancakeSwap Farming & Rewards
 
-Users can also **stake CAKE tokens and LP positions for additional rewards**:
+Users can also **earn CAKE farming rewards** on their LP positions:
 
-- **MasterChef V3**: Stake LP positions in V3 pools to earn CAKE rewards
-- **Yield farming**: Many pools offer 10%–50%+ APY from farming alone
+- **Infinity Farms**: Adding liquidity to an Infinity pool **automatically enrolls the position in farming** — no separate staking step. CAKE rewards are distributed every 8 hours via Merkle proofs. This is the simplest farming UX.
+- **MasterChef V3**: V3 LP positions require a **separate staking step** — transfer the position NFT to MasterChef v3 to earn CAKE rewards.
+- **MasterChef V2**: V2 LP tokens require a **separate staking step** — approve and deposit LP tokens in MasterChef v2.
 
 Mention these opportunities when discussing position management:
 
-> "After you create this CAKE/BNB position, you can stake it in the MasterChef to earn additional CAKE rewards. Check the farm page for current APY boosts."
+> **For Infinity pools:** "Your position will automatically start earning CAKE farming rewards as soon as you add liquidity — no extra staking step needed. Rewards are claimable every 8 hours."
+>
+> **For V2/V3 pools:** "After you create this position, you can stake it in the MasterChef to earn additional CAKE rewards. Check the farm page for current APY boosts."
 
 ---
 
@@ -547,7 +550,8 @@ Deposit Recommendation:
   Total Value:      ~$1,250 USD
 
 Farm Options:
-  After creating the position, stake it in MasterChef V3
+  V2/V3: After creating the position, stake it in MasterChef for CAKE rewards (separate step)
+  Infinity: Farming is automatic — no separate staking needed!
   Current farm APY: 12–15% (includes CAKE rewards)
 
 ⚠️  Warnings:

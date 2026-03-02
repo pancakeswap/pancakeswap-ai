@@ -8,13 +8,14 @@ PancakeSwap offers multiple liquidity mechanisms, each optimized for different u
 
 | Feature | V2 | V3 | StableSwap | Infinity (v4) |
 |---------|----|----|-----------|---|
-| **Range Type** | Full range | Concentrated | Full range (optimized) | Concentrated + Hooks |
+| **Range Type** | Full range | Concentrated | Full range (optimized) | Concentrated (CL) or Bin |
 | **Fee Structure** | Fixed 0.25% | Tiered (4 options) | Fixed, varies by pair | Dynamic (hooks) |
-| **LP Token** | ERC-20 token | NFT (ERC-721) | ERC-20 token | TBD |
-| **Networks** | BSC only | Multi-chain | BSC only | Multi-chain (coming) |
+| **LP Token** | ERC-20 token | NFT (ERC-721) | ERC-20 token | Managed by PoolManager |
+| **Networks** | BSC only | Multi-chain | BSC only | BSC (expanding) |
 | **Liquidity Efficiency** | Low | High | Very High (for stables) | Highest |
-| **Best For** | Long-term passive | Active management | Stablecoin pairs | Advanced strategies |
-| **Status** | Mature | Production | Production | In Development |
+| **Farming Flow** | 2 steps (add LP → stake) | 2 steps (add LP → stake NFT) | 2 steps (add LP → stake) | **1 step (add LP = auto-farmed)** |
+| **Best For** | Long-term passive | Active management | Stablecoin pairs | Simplest farming UX + advanced strategies |
+| **Status** | Mature | Production | Production | Production |
 
 ---
 
@@ -269,21 +270,22 @@ https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac
 
 ---
 
-## Infinity (v4) — Coming Soon
+## Infinity (v4)
 
-PancakeSwap v4 introduces singleton architecture, hooks, and dynamic fee mechanisms.
+PancakeSwap Infinity introduces singleton architecture, hooks, and dynamic fee mechanisms.
 
-### Expected Features
+### Key Features
 
 - **Singleton contract**: Single contract for all liquidity (gas efficiency)
 - **Hooks framework**: Extensible position logic (take fees, trigger rebalancing, etc.)
 - **Dynamic fees**: Fees can adjust based on conditions (volatility, time, custom logic)
-- **Concentrated liquidity**: Similar to V3 with additional flexibility
-- **Multi-chain**: Expected to launch on major chains
+- **Concentrated liquidity (CL) and Bin pools**: Two pool types for different strategies
+- **Automatic farming**: Adding liquidity to an Infinity pool automatically enrolls the position in farming — **no separate staking step required**. CAKE rewards are distributed every 8 hours via Merkle proofs.
+- **Multi-chain**: Available on BSC and expanding to other chains
 
-### Status
+### Farming UX Advantage
 
-🔜 **In Development** — Expected release in 2026
+Unlike V2/V3 farms which require two steps (add liquidity → stake in MasterChef), Infinity farms combine both into a single step. When a user adds liquidity via the Infinity deep link, their position is automatically eligible for CAKE farming rewards without any additional transaction.
 
 ---
 
@@ -291,7 +293,7 @@ PancakeSwap v4 introduces singleton architecture, hooks, and dynamic fee mechani
 
 | Chain | V2 | V3 | StableSwap | Infinity |
 |-------|----|----|-----------|---|
-| BSC | ✅ | ✅ | ✅ | 🔜 |
+| BSC | ✅ | ✅ | ✅ | ✅ |
 | Ethereum | ✅ | ✅ | ❌ | 🔜 |
 | Arbitrum | ✅ | ✅ | ❌ | 🔜 |
 | Base | ✅ | ✅ | ❌ | 🔜 |
@@ -420,8 +422,15 @@ https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac
 Start: "I want to provide liquidity on PancakeSwap"
 │
 ├─> What blockchain?
-│   ├─ BSC only: Can use V2, V3, or StableSwap
-│   └─ Other chain: V3 only
+│   ├─ BSC: Can use V2, V3, StableSwap, or Infinity
+│   └─ Other chain: V3 only (Infinity coming soon)
+│
+├─> Do you also want to farm CAKE rewards?
+│   ├─ Yes, simplest UX (1 step): Use Infinity farm if available
+│   │   (adding liquidity = auto-staked, no extra step)
+│   ├─ Yes, willing to do 2 steps: Use V2/V3 farm
+│   │   (add liquidity → then stake in MasterChef)
+│   └─ No, just LP fees: Any pool type
 │
 ├─> What token pair?
 │   ├─ Stablecoin pair (USDT/USDC, etc.)?

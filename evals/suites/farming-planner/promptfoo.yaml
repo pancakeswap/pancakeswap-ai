@@ -54,7 +54,7 @@ tests:
         provider: anthropic:claude-sonnet-4-5-20250929
       - type: contains-any
         value:
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
           - 'pancakeswap.finance/liquidity'
       - type: contains-any
         value:
@@ -74,7 +74,7 @@ tests:
         value:
           - 'explorer.pancakeswap.com'
           - 'pcs_farms.py'
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
       - type: contains-any
         value:
           - 'APR'
@@ -93,14 +93,14 @@ tests:
         provider: anthropic:claude-sonnet-4-5-20250929
       - type: contains-any
         value:
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
           - 'withdraw'
           - 'unstake'
       - type: contains-any
         value:
           - '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652'
           - 'MasterChef'
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
 
   # Test 5: Harvest rewards (V2, V3, Infinity)
   - vars:
@@ -114,7 +114,7 @@ tests:
         value:
           - 'pendingCake'
           - 'harvest'
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
       - type: contains-any
         value:
           - '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652'
@@ -162,7 +162,7 @@ tests:
       - type: contains-any
         value:
           - 'pancakeswap.finance/stable/add'
-          - 'pancakeswap.finance/farms'
+          - 'pancakeswap.finance/liquidity/pools'
           - 'pancakeswap.finance/add'
       - type: contains-any
         value:

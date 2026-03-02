@@ -140,9 +140,7 @@ For Infinity, you need the `poolId` (bytes32 hash) from the CampaignManager cont
 
 | Page                  | URL                                                          |
 | --------------------- | ------------------------------------------------------------ |
-| All BSC Farms         | `https://pancakeswap.finance/farms?chain=bsc`                |
-| V3 Farms              | `https://pancakeswap.finance/farms?chain=bsc&type=v3`        |
-| Infinity Farms        | `https://pancakeswap.finance/liquidity/pools?type=1`         |
+| All Farms             | `https://pancakeswap.finance/liquidity/pools?chain=bsc`      |
 | Syrup Pools           | `https://pancakeswap.finance/pools`                          |
 | CAKE Staking          | `https://pancakeswap.finance/cake-staking`                   |
 
@@ -162,7 +160,7 @@ If you cannot find a token address in the table above, look it up on-chain:
 cast call $TOKEN_ADDRESS "symbol()(string)" --rpc-url https://bsc-dataseed1.binance.org
 ```
 
-Or use the farms page with search: `https://pancakeswap.finance/farms?chain=bsc&search={SYMBOL}`
+Or use the farms page with search: `https://pancakeswap.finance/liquidity/pools?chain=bsc&search={SYMBOL}`
 
 ---
 
@@ -348,7 +346,7 @@ def build_link(pool):
         pool_id = pool['id']
         return f'https://pancakeswap.finance/liquidity/add/{chain_key}/infinity/{pool_id}?chain={chain_key}&persistChain=1'
     else:
-        return f'https://pancakeswap.finance/farms?chain={chain_key}'
+        return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
 data = json.load(sys.stdin)
 pools = data if isinstance(data, list) else data.get('data', [])
 if CHAIN_FILTER:
@@ -521,11 +519,7 @@ https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/0x55d
 ### Step 2: Stake in the farm
 
 ```
-# V2 farms page
-https://pancakeswap.finance/farms?chain=bsc
-
-# V3 farms page
-https://pancakeswap.finance/farms?chain=bsc&type=v3
+https://pancakeswap.finance/liquidity/pools?chain=bsc
 ```
 
 ### CLI: V2 Farm staking (MasterChef v2)
@@ -574,11 +568,7 @@ Never use mainnet private keys in scripts. Use the PancakeSwap UI deep links for
 Direct the user to the same farm page where they can manage/withdraw:
 
 ```
-# V2 farms
-https://pancakeswap.finance/farms?chain=bsc
-
-# V3 farms
-https://pancakeswap.finance/farms?chain=bsc&type=v3
+https://pancakeswap.finance/liquidity/pools?chain=bsc
 ```
 
 ### CLI: V2 unstake
@@ -708,7 +698,7 @@ cast send 0xEA8620aAb2F07a0ae710442590D649ADE8440877 \
 Direct the user to the relevant farm page — the UI has "Harvest" buttons:
 
 ```
-https://pancakeswap.finance/farms?chain=bsc
+https://pancakeswap.finance/liquidity/pools?chain=bsc
 ```
 
 ---
@@ -744,7 +734,7 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 
 ### Steps
 1. Add liquidity: https://pancakeswap.finance/add/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/2500?chain=bsc&persistChain=1
-2. Stake in farm: https://pancakeswap.finance/farms?chain=bsc&type=v3
+2. Stake in farm: https://pancakeswap.finance/liquidity/pools?chain=bsc
 
 ### Risks
 - Impermanent loss if BNB/CAKE price ratio changes significantly

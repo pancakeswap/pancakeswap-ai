@@ -60,7 +60,7 @@ Link: https://pancakeswap.finance/pools
 
 **Option 2 — BNB-CAKE V3 Farm (Higher Yield)**
 1. Add liquidity → https://pancakeswap.finance/liquidity/add/v3/BNB/0x0E09...?chain=bsc
-2. Stake in farm → https://pancakeswap.finance/farms?chain=bsc
+2. Stake in farm → https://pancakeswap.finance/liquidity/pools?chain=bsc
 
 **Risks:** Impermanent loss if BNB/CAKE ratio shifts
 ```

@@ -77,7 +77,7 @@ function claim(ClaimParams[] calldata claimParams) external;
 ## Deep Links
 
 ```
-https://pancakeswap.finance/farms              # All farms
+https://pancakeswap.finance/liquidity/pools     # All farms
 https://pancakeswap.finance/pools              # Syrup Pools
 https://pancakeswap.finance/cake-staking       # CAKE staking
 https://pancakeswap.finance/liquidity/pools?type=1  # Infinity farms

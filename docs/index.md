@@ -25,10 +25,6 @@ features:
     title: Liquidity Planner
     details: Plan LP positions across V2, V3, and StableSwap — with pool assessment, APY analysis, and deep link generation.
     link: /skills/liquidity-planner
-  - icon: 🛡️
-    title: Infinity Security
-    details: Security guide for Infinity (v4) hook development — threat models, permission matrices, audit checklists, and templates.
-    link: /skills/infinity-security-foundations
   - icon: 🌾
     title: Farming Planner
     details: Discover farms, compare APR/APY, plan CAKE staking strategies, and generate deep links to the farming UI.
@@ -52,9 +48,6 @@ User: "Swap 0.1 BNB for USDT on PancakeSwap"
         │
         ▼
 [PLAN]  liquidity-planner skill → LP plan with fee tier + range suggestions
-        │
-        ▼
-[SEC]   infinity-security-foundations → threat model + mitigation checklist
 ```
 
 ## Supported Chains

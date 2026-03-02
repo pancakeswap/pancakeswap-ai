@@ -32,16 +32,6 @@ The agent loads the **liquidity-planner** skill and returns:
 - Suggested price range based on volatility
 - A liquidity deep link to open the position in the UI
 
-## 3. Security Checklist for Infinity Hooks
-
-If you are building hooks, ask:
-
-```
-Give me an Infinity hook security checklist for this design
-```
-
-The agent uses **infinity-security-foundations** to produce threat models, permission checks, and audit guardrails.
-
 ## Run Unit Tests
 
 ```bash
@@ -54,7 +44,6 @@ npm test
 export ANTHROPIC_API_KEY=your-key
 npm run test:evals:swap-planner
 npm run test:evals:liquidity-planner
-npm run test:evals:infinity-security
 npm run test:evals:farming-planner
 npx promptfoo view  # browse results in the browser
 ```
@@ -63,5 +52,4 @@ npx promptfoo view  # browse results in the browser
 
 - [Swap Planner](/skills/swap-planner) — token discovery + deep links
 - [Liquidity Planner](/skills/liquidity-planner) — LP fee tier/range planning
-- [Infinity Security](/skills/infinity-security-foundations) — secure hook development
 - [Farming Planner](/skills/farming-planner) — CAKE staking and farm strategy

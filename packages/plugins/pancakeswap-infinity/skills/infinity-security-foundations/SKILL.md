@@ -81,7 +81,7 @@ import {BeforeSwapDelta} from "infinity-core/src/types/BeforeSwapDelta.sol";
 **Attack Vector**:
 ```solidity
 // VULNERABLE: Hook doesn't verify true caller
-function beforeSwap(address sender, PoolKey calldata key, IPoolManager.SwapParams calldata params, bytes calldata)
+function beforeSwap(address sender, PoolKey calldata key, ICLPoolManager.SwapParams calldata params, bytes calldata)
     external
     override
     returns (bytes4, BeforeSwapDelta, uint24)
@@ -190,7 +190,7 @@ contract MaliciousHook is CLBaseHook {
     function beforeSwap(
         address sender,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
+        ICLPoolManager.SwapParams calldata params,
         bytes calldata data
     )
         external
@@ -205,8 +205,8 @@ contract MaliciousHook is CLBaseHook {
     function afterSwapReturnDelta(
         address sender,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
-        IPoolManager.SwapDelta calldata swapDelta,
+        ICLPoolManager.SwapParams calldata params,
+        BalanceDelta calldata swapDelta,
         bytes calldata data
     )
         external
@@ -243,8 +243,8 @@ contract SecureHook is CLBaseHook {
     function afterSwapReturnDelta(
         address sender,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
-        IPoolManager.SwapDelta calldata swapDelta,
+        ICLPoolManager.SwapParams calldata params,
+        BalanceDelta calldata swapDelta,
         bytes calldata data
     )
         external
@@ -258,6 +258,9 @@ contract SecureHook is CLBaseHook {
         // Optionally: Log, emit events, or update state
         // BUT: Do not steal from vault
 
+        // Returning swapDelta.amount0() passes through the full delta
+        // unmodified — the hook takes nothing. Returning 0 is only valid
+        // when the hook has already settled any claimed amounts via the vault.
         return swapDelta.amount0(); // Return unmodified
     }
 }
@@ -376,7 +379,7 @@ contract MyHook is CLBaseHook {
     function beforeSwap(
         address sender,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
+        ICLPoolManager.SwapParams calldata params,
         bytes calldata data
     )
         external
@@ -465,7 +468,7 @@ contract RouterAwareHook is CLBaseHook {
     function beforeSwap(
         address sender,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
+        ICLPoolManager.SwapParams calldata params,
         bytes calldata data
     )
         external
@@ -487,7 +490,7 @@ contract RouterAwareHook is CLBaseHook {
 ```solidity
 contract AllowlistHook is CLBaseHook {
     mapping(address => bool) public allowlist;
-    address public constant PANCAKESWAP_ROUTER = 0x...;
+    address public constant PANCAKESWAP_ROUTER = address(0) /* INSERT ROUTER ADDRESS */;
 
     constructor(ICLPoolManager _poolManager, IVault _vault)
         CLBaseHook(_poolManager, _vault)
@@ -498,7 +501,7 @@ contract AllowlistHook is CLBaseHook {
     function beforeAddLiquidity(
         address sender,
         PoolKey calldata key,
-        IPoolManager.ModifyLiquidityParams calldata params,
+        ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata data
     )
         external
@@ -819,7 +822,9 @@ contract SecureHookTemplate is CLBaseHook {
         onlyPoolManager
         returns (int128)
     {
-        // CRITICAL: Return exact delta - do NOT steal
+        // Returning swapDelta.amount0() passes through the full delta
+        // unmodified (hook takes nothing). Returning 0 is only valid when
+        // the hook has already settled any claimed amounts via the vault.
         return swapDelta.amount0();
     }
 

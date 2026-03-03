@@ -26,7 +26,7 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 
 | Type | Description | Fee | Best For | Chains |
 |------|-------------|-----|----------|--------|
-| V2 | Classic 50/50 AMM | 0.25% | Simple pairs, low maintenance | BSC only |
+| V2 | Classic 50/50 AMM | 0.25% | Simple pairs, low maintenance | Multi-chain |
 | V3 | Concentrated liquidity | 0.01%–1% | Active management, higher yields | All chains |
 | StableSwap | Optimized stable curve | ~0.04% | USDT/USDC/BUSD pairs | BSC only |
 
@@ -45,7 +45,7 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 # V3 Position
 https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 
-# V2 Position (BSC only)
+# V2 Position
 https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain={chainKey}
 
 # StableSwap (BSC only)
@@ -57,7 +57,7 @@ https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 - **Impermanent loss warnings** — alerts for volatile pairs
 - **APY breakdown** — trading fees vs CAKE farming rewards
 - **StableSwap detection** — auto-recommends StableSwap for stable pairs on BSC
-- **Multi-chain support** — 9 networks including BSC, Ethereum, Arbitrum, Base
+- **Multi-chain support** — 9 networks: BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, Polygon zkEVM, opBNB, BSC Testnet
 
 ## Full Reference
 

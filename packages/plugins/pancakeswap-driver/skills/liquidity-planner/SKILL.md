@@ -23,7 +23,7 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 - **Fee tier guidance**: 0.01%, 0.05%, 0.25%, 1% for V3; lower fees for StableSwap
 - **IL & APY analysis**: Impermanent loss warnings, yield data from DefiLlama
 - **StableSwap optimization**: Lower slippage for USDT/USDC/BUSD pairs on BSC
-- **Multi-chain support**: 9 networks including BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, Polygon zkEVM, opBNB
+- **Multi-chain support**: 8 networks including BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, opBNB
 
 ---
 
@@ -48,7 +48,6 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 | Base                 | 8453     | `base`           | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)  |
 | zkSync Era           | 324      | `zksync`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)  |
 | Linea                | 59144    | `linea`          | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)  |
-| Polygon zkEVM        | 1101     | `polygonzkevm`   | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)  |
 | opBNB                | 204      | `opbnb`          | BNB          | V3 (0.01%, 0.05%, 0.25%, 1%)  |
 | BSC Testnet          | 97       | `bsctest`        | BNB          | V2, V3 (dev/testing only)      |
 
@@ -78,7 +77,7 @@ If the user hasn't specified all parameters, use `AskUserQuestion` to ask (batch
 # Search by keyword — returns pairs across all DEXes
 # Use single quotes for KEYWORD to prevent shell injection
 KEYWORD='pancake'
-CHAIN="bsc"   # DexScreener chainId: bsc, ethereum, arbitrum, base, zksync, linea, polygonzkevm, opbnb
+CHAIN="bsc"   # DexScreener chainId: bsc, ethereum, arbitrum, base, zksync, linea, opbnb
 
 curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$KEYWORD" | \
   jq --arg chain "$CHAIN" '[
@@ -355,7 +354,7 @@ https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 - `tokenA`: Token address or native symbol (BNB, ETH)
 - `tokenB`: Token address or native symbol
 - `feeAmount`: Fee tier in basis points (100, 500, 2500, 10000 for 0.01%, 0.05%, 0.25%, 1.0%)
-- `chain`: Chain key (bsc, eth, arb, base, zksync, linea, polygonzkevm, opbnb)
+- `chain`: Chain key (bsc, eth, arb, base, zksync, linea, opbnb)
 
 ### V2 Deep Link Format
 
@@ -401,7 +400,6 @@ const CHAIN_KEYS: Record<number, string> = {
   8453:  'base',
   324:   'zksync',
   59144: 'linea',
-  1101:  'polygonzkevm',
   204:   'opbnb',
   97:    'bsctest',
 }

@@ -57,7 +57,7 @@ https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 - **Impermanent loss warnings** — alerts for volatile pairs
 - **APY breakdown** — trading fees vs CAKE farming rewards
 - **StableSwap detection** — auto-recommends StableSwap for stable pairs on BSC
-- **Multi-chain support** — 9 networks including BSC, Ethereum, Arbitrum, Base
+- **Multi-chain support** — 9 networks: BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, opBNB, Monad, BSC Testnet
 
 ## Full Reference
 

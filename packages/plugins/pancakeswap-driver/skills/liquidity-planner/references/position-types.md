@@ -11,7 +11,7 @@ PancakeSwap offers multiple liquidity mechanisms, each optimized for different u
 | **Range Type** | Full range | Concentrated | Full range (optimized) | Concentrated (CL) or Bin |
 | **Fee Structure** | Fixed 0.25% | Tiered (4 options) | Fixed, varies by pair | Dynamic (hooks) |
 | **LP Token** | ERC-20 token | NFT (ERC-721) | ERC-20 token | Managed by PoolManager |
-| **Networks** | BSC only | Multi-chain | BSC only | BSC (expanding) |
+| **Networks** | Multi-chain | Multi-chain | BSC, Ethereum, Arbitrum | BSC, Base |
 | **Liquidity Efficiency** | Low | High | Very High (for stables) | Highest |
 | **Farming Flow** | 2 steps (add LP → stake) | 2 steps (add LP → stake NFT) | 2 steps (add LP → stake) | **1 step (add LP = auto-farmed)** |
 | **Best For** | Long-term passive | Active management | Stablecoin pairs | Simplest farming UX + advanced strategies |
@@ -28,7 +28,7 @@ V2 uses the constant product formula (x * y = k) with liquidity across the entir
 - **Full range**: Liquidity available at all possible prices
 - **Fixed fee**: 0.25% of all swaps (unique to PancakeSwap V2)
 - **LP token**: Fungible ERC-20 token representing your share
-- **Network**: BSC only
+- **Network**: Multi-chain (BSC, Ethereum, Arbitrum, Base, zkSync, Linea, opBNB, Monad)
 - **Emissions**: May qualify for CAKE rewards (subject to farm selection)
 
 ### When to Use V2
@@ -91,7 +91,7 @@ V3 introduces concentrated liquidity, allowing capital efficiency gains through 
 - **Concentrated ranges**: Deploy liquidity in custom price bands
 - **Multiple fee tiers**: Choose based on expected volatility
 - **NFT positions**: Each position is a unique NFT (ERC-721)
-- **Multi-chain**: Available on BSC, Ethereum, Arbitrum, Base, zkSync, Linea, Polygon zkEVM, opBNB
+- **Multi-chain**: Available on BSC, Ethereum, Arbitrum, Base, zkSync, Linea, opBNB, Monad
 - **Capital efficiency**: 4000x more capital-efficient at full range than V2
 
 ### Fee Tiers
@@ -212,7 +212,7 @@ StableSwap is PancakeSwap's specialized pool type for stablecoin pairs, optimize
 - **Lower slippage**: Superior pricing compared to V3's 0.01% tier for stable pairs
 - **Fixed fees**: Protocol-determined, typically 0.04% or lower
 - **ERC-20 LP tokens**: Fungible tokens (unlike V3 NFTs)
-- **BSC only**: Currently available only on Binance Smart Chain
+- **BSC, Ethereum, Arbitrum**: Available on these three chains
 - **No impermanent loss**: IL is negligible for actual stablecoin pairs
 
 ### Amplification Coefficient (A parameter)
@@ -246,13 +246,13 @@ The A parameter controls how "tight" the curve is around 1:1:
 
 **Deep link format**:
 ```
-https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
+https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain={chainKey}
 ```
 
 **Parameter explanations**:
 - `{tokenA}`: Contract address of first token
 - `{tokenB}`: Contract address of second token
-- `chain=bsc`: Chain identifier (StableSwap is BSC-only)
+- `{chainKey}`: Chain identifier (`bsc`, `eth`, or `arb`)
 
 **Example: USDT/USDC StableSwap on BSC**
 ```
@@ -280,7 +280,7 @@ PancakeSwap Infinity introduces singleton architecture, hooks, and dynamic fee m
 - **Dynamic fees**: Fees can adjust based on conditions (volatility, time, custom logic)
 - **Concentrated liquidity (CL) and Bin pools**: Two pool types for different strategies
 - **Automatic farming**: Adding liquidity to an Infinity pool automatically enrolls the position in farming — **no separate staking step required**. CAKE rewards are distributed every 8 hours via Merkle proofs.
-- **Multi-chain**: Available on BSC and expanding to other chains
+- **Multi-chain**: Available on BSC and Base
 
 ### Farming UX Advantage
 
@@ -290,19 +290,16 @@ Unlike V2/V3 farms which require two steps (add liquidity → stake in MasterChe
 
 ## Chain Availability Matrix
 
-| Chain | V2 | V3 | StableSwap | Infinity |
-|-------|----|----|-----------|---|
-| BSC | ✅ | ✅ | ✅ | ✅ |
-| Ethereum | ✅ | ✅ | ❌ | 🔜 |
-| Arbitrum | ✅ | ✅ | ❌ | 🔜 |
-| Base | ✅ | ✅ | ❌ | 🔜 |
-| zkSync | ✅ | ✅ | ❌ | 🔜 |
-| Linea | ✅ | ✅ | ❌ | 🔜 |
-| Polygon zkEVM | ✅ | ✅ | ❌ | 🔜 |
-| opBNB | ✅ | ✅ | ❌ | 🔜 |
-| Monad | ✅ | ✅ | ❌ | 🔜 |
-
-**Legend**: ✅ Available | ❌ Not Available | 🔜 Coming Soon
+| Chain | V2 | V3 | Infinity | Infinity Stable | StableSwap |
+|-------|----|----|----------|-----------------|------------|
+| BSC | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Ethereum | ✅ | ✅ | — | — | ✅ |
+| Arbitrum | ✅ | ✅ | — | — | ✅ |
+| Base | ✅ | ✅ | ✅ | — | — |
+| zkSync | ✅ | ✅ | — | — | — |
+| Linea | ✅ | ✅ | — | — | — |
+| opBNB | ✅ | ✅ | — | — | — |
+| Monad | ✅ | ✅ | — | — | — |
 
 ---
 
@@ -364,8 +361,8 @@ https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain={chainKey}
 | Base | `base` |
 | zkSync | `zksync` |
 | Linea | `linea` |
-| Polygon zkEVM | `polygonzkevm` |
 | opBNB | `opbnb` |
+| Monad | `monad` |
 
 **Example**:
 ```
@@ -397,7 +394,7 @@ https://pancakeswap.finance/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4
 https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 ```
 
-**Note**: StableSwap is BSC-only; the chain parameter must be `bsc`.
+**Note**: StableSwap is available on BSC, Ethereum, and Arbitrum.
 
 **Example**:
 ```
@@ -422,7 +419,9 @@ Start: "I want to provide liquidity on PancakeSwap"
 │
 ├─> What blockchain?
 │   ├─ BSC: Can use V2, V3, StableSwap, or Infinity
-│   └─ Other chain: V3 only (Infinity coming soon)
+│   ├─ Base: Can use V2, V3, or Infinity
+│   ├─ Ethereum/Arbitrum: Can use V2, V3, or StableSwap
+│   └─ Other chain: V2 or V3
 │
 ├─> Do you also want to farm CAKE rewards?
 │   ├─ Yes, simplest UX (1 step): Use Infinity farm if available
@@ -433,7 +432,7 @@ Start: "I want to provide liquidity on PancakeSwap"
 │
 ├─> What token pair?
 │   ├─ Stablecoin pair (USDT/USDC, etc.)?
-│   │   ├─ Yes, BSC: Consider StableSwap first (lowest slippage)
+│   │   ├─ Yes, BSC/Ethereum/Arbitrum: Consider StableSwap first (lowest slippage)
 │   │   ├─ Yes, other chain: Use V3 0.01% tier
 │   │   └─ No: Continue...
 │   │
@@ -480,4 +479,4 @@ Start: "I want to provide liquidity on PancakeSwap"
 | **0.05%** | Low-vol pairs | Low | Low | Medium |
 | **0.25%** | Most pairs | Medium | Low-Medium | High |
 | **1%** | Volatile pairs | High | Low-Medium | Very High |
-| **StableSwap** | Stablecoins (BSC) | Minimal | Minimal | Very High |
+| **StableSwap** | Stablecoins (BSC, ETH, ARB) | Minimal | Minimal | Very High |

@@ -26,7 +26,6 @@ PancakeSwap operates across multiple networks via DexScreener:
 | Base | `base` | Coinbase ecosystem |
 | zkSync | `zksync` | Low-cost transactions |
 | Linea | `linea` | Ethereum compatibility |
-| Polygon zkEVM | `polygon_zkevm` | Polygon ecosystem |
 | opBNB | `opbnb` | BSC Layer 2 |
 
 ### Pool Discovery by Token Address
@@ -117,7 +116,7 @@ PancakeSwap projects are identified by version:
 
 | Version | Project ID | Supported Chains |
 |---------|---|---|
-| V3 | `pancakeswap-amm-v3` | BSC, Ethereum, Arbitrum, Base, zkSync, Linea, Polygon zkEVM |
+| V3 | `pancakeswap-amm-v3` | BSC, Ethereum, Arbitrum, Base, zkSync, Linea, opBNB, Monad |
 | V2 | `pancakeswap-amm` | BSC, Ethereum, Arbitrum, Base, opBNB |
 | StableSwap | `pancakeswap-stableswap` | BSC only |
 
@@ -131,7 +130,6 @@ PancakeSwap projects are identified by version:
 | Base | `Base` |
 | zkSync | `zkSync` |
 | Linea | `Linea` |
-| Polygon zkEVM | `Polygon zkEVM` |
 | opBNB | `opBNB` |
 
 ### Fetching APY Data

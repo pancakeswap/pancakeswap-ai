@@ -21,15 +21,16 @@ This skill **does not execute swaps** — it plans them. The output is a deep li
 
 ## Supported Chains
 
-| Chain | Chain ID | Deep Link Key | Native Token |
-|-------|----------|---------------|-------------|
-| BNB Smart Chain | 56 | `bsc` | BNB |
-| Ethereum | 1 | `eth` | ETH |
-| Arbitrum One | 42161 | `arb` | ETH |
-| Base | 8453 | `base` | ETH |
-| Polygon | 137 | `polygon` | MATIC |
-| zkSync Era | 324 | `zksync` | ETH |
-| Linea | 59144 | `linea` | ETH |
+| Chain | Chain ID | Deep Link Key | Native Token | PCSX |
+|-------|----------|---------------|-------------|------|
+| BNB Smart Chain | 56 | `bsc` | BNB | RWAs only |
+| Ethereum | 1 | `eth` | ETH | Crypto |
+| Arbitrum One | 42161 | `arb` | ETH | Crypto |
+| Base | 8453 | `base` | ETH | — |
+| zkSync Era | 324 | `zksync` | ETH | — |
+| Linea | 59144 | `linea` | ETH | — |
+| opBNB | 204 | `opbnb` | BNB | — |
+| Monad | 143 | `monad` | MON | — |
 
 ## Deep Link Format
 

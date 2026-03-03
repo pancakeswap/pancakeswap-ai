@@ -12,6 +12,8 @@
     "packages/plugins/*"
   ],
   "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
     "format": "npx nx format:write",
     "format:check": "npx nx format:check",
     "lint": "npx nx run-many --target=lint --all",

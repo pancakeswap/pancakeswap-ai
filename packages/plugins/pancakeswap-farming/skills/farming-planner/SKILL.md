@@ -46,6 +46,7 @@ Route to the correct section based on what the user wants:
 | Passive CAKE yield, no IL      | Syrup Pool (run APR script first)                  |
 | Highest APR, willing to manage | V3 Farm with tight range                           |
 | Set-and-forget farming         | V2 Farm (full range, no rebalancing needed)        |
+| Simplest farming UX (1 step)   | Infinity Farm (add liquidity = auto-staked)         |
 | Earn partner tokens            | Syrup Pool (run APR script first)                  |
 | Stablecoin yield, minimal risk | USDT-USDC StableSwap LP farm                       |
 
@@ -205,7 +206,7 @@ You MUST follow the exact two-step process below. Do NOT improvise.
 The script fetches LP fee APR from the Explorer API and calculates **CAKE Yield APR** on-chain by querying MasterChef v3 (`latestPeriodCakePerSecond`, `v3PoolAddressPid`, `poolInfo`) via batched JSON-RPC calls. For Infinity farms, it fetches campaign data from `https://infinity.pancakeswap.com/farms/campaigns/{chainId}/false` and calculates yield as `Σ (totalRewardAmount / 1e18 / duration * SECONDS_PER_YEAR)`. It requires the `requests` library (auto-installs if missing).
 
 ```bash
-PCS_FARMS_SCRIPT=$(mktemp /tmp/pcs_farms_XXXXXX.py)
+PCS_FARMS_SCRIPT=$(mktemp /tmp/pcs_farms_XXXXXX)
 cat > "$PCS_FARMS_SCRIPT" << 'PYEOF'
 import json, sys, os, time, re
 try:
@@ -535,7 +536,26 @@ curl -s "https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 **Primary: Direct the user to the PancakeSwap UI via deep link.** Only provide `cast` examples when the user explicitly asks for CLI/programmatic staking.
 
-### Step 1: Add liquidity (get LP tokens)
+::: info INFINITY FARMS — SINGLE-STEP FLOW
+**Infinity farms do NOT require a separate staking step.** When a user adds liquidity to an Infinity pool, their position is automatically enrolled in the farm and starts earning CAKE rewards immediately. There is no "add liquidity then stake" flow — it happens in one transaction via the Infinity deep link.
+
+This is a key UX advantage over V2/V3 farms, which require two separate steps (add liquidity, then stake LP tokens/NFT in MasterChef).
+:::
+
+### Infinity Farms (single step — add liquidity = auto-staked)
+
+Use the Infinity deep link directly. The user adds liquidity and is automatically farming:
+
+```
+# Infinity example: CAKE/BNB on BSC (poolId from CampaignManager)
+https://pancakeswap.finance/liquidity/add/bsc/infinity/0xcbc43b950eb089f1b28694324e76336542f1c158ec955921704cebaa53a278bc?chain=bsc&persistChain=1
+```
+
+No second step needed — the position immediately earns CAKE rewards distributed every 8 hours via Merkle proofs.
+
+### V2/V3 Farms (two steps — add liquidity, then stake)
+
+#### Step 1: Add liquidity (get LP tokens)
 
 Build the add-liquidity deep link from the Token Addresses and Deep Link Reference above:
 
@@ -547,7 +567,7 @@ https://pancakeswap.finance/v2/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/0x
 https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/0x55d398326f99059fF775485246999027B3197955/2500?chain=bsc&persistChain=1
 ```
 
-### Step 2: Stake in the farm
+#### Step 2: Stake in the farm
 
 ```
 https://pancakeswap.finance/liquidity/pools?chain=bsc
@@ -660,7 +680,7 @@ When recommending Syrup Pools, ALWAYS run this script first to show the user cur
 The script fetches active Syrup Pools from the PancakeSwap config API, reads total staked amounts on-chain, fetches token prices from CoinGecko/DexScreener, and calculates APR.
 
 ```bash
-PCS_SYRUP_SCRIPT=$(mktemp /tmp/pcs_syrup_XXXXXX.py)
+PCS_SYRUP_SCRIPT=$(mktemp /tmp/pcs_syrup_XXXXXX)
 cat > "$PCS_SYRUP_SCRIPT" << 'PYEOF'
 import json, sys, os, time
 try:
@@ -907,7 +927,7 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 | USDT / WBNB | 10.7% | $321K | V2 | https://pancakeswap.finance/v2/add/0x55d398326f99059fF775485246999027B3197955/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c?chain=bsc&persistChain=1 |
 ```
 
-### Single farm recommendation
+### Single farm recommendation (V2/V3 — two steps)
 
 ```
 ## Farming Plan Summary
@@ -928,6 +948,29 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 - V3 positions require active range management
 ```
 
+### Single farm recommendation (Infinity — single step)
+
+```
+## Farming Plan Summary
+
+**Strategy:** Farm CAKE/BNB in Infinity Pool
+**Chain:** BNB Smart Chain
+**Pool:** CAKE / BNB (Infinity CL)
+**Farm APR:** ~XX% (fetched from API)
+**Reward:** CAKE (distributed every 8 hours)
+
+### Steps
+1. Add liquidity (automatically farms — no separate staking needed):
+   https://pancakeswap.finance/liquidity/add/bsc/infinity/0xcbc43b950eb089f1b28694324e76336542f1c158ec955921704cebaa53a278bc?chain=bsc&persistChain=1
+
+That's it! Your position starts earning CAKE rewards immediately after adding liquidity. Rewards are claimable every 8 hours via Merkle proofs.
+
+### Risks
+- Impermanent loss if BNB/CAKE price ratio changes significantly
+- CAKE reward value depends on CAKE token price
+- Rewards distributed in 8-hour epochs (not continuously like V2/V3)
+```
+
 ---
 
 ## Anti-Patterns
@@ -945,12 +988,12 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 
 ## Farming Types Reference
 
-| Type           | Pool Version | How It Works                                                  | Reward  |
-| -------------- | ------------ | ------------------------------------------------------------- | ------- |
-| V2 Farms       | V2           | Stake LP tokens in MasterChef v2, earn CAKE per block         | CAKE    |
-| V3 Farms       | V3           | Stake V3 NFT positions in MasterChef v3, earn CAKE per block  | CAKE    |
-| Infinity Farms | Infinity     | Provide liquidity, CAKE allocated per epoch (8h) via Merkle   | CAKE    |
-| Syrup Pools    | —            | Stake CAKE to earn partner tokens or more CAKE                | Various |
+| Type           | Pool Version | How It Works                                                  | Staking Flow | Reward  |
+| -------------- | ------------ | ------------------------------------------------------------- | ------------ | ------- |
+| V2 Farms       | V2           | Stake LP tokens in MasterChef v2, earn CAKE per block         | 2 steps: add liquidity → stake LP in MasterChef | CAKE    |
+| V3 Farms       | V3           | Stake V3 NFT positions in MasterChef v3, earn CAKE per block  | 2 steps: add liquidity → transfer NFT to MasterChef | CAKE    |
+| Infinity Farms | Infinity     | Add liquidity and **automatically farm** — no separate staking step. CAKE allocated per epoch (8h) via Merkle | **1 step**: add liquidity (auto-staked) | CAKE    |
+| Syrup Pools    | —            | Stake CAKE to earn partner tokens or more CAKE                | 1 step: stake CAKE | Various |
 
 ## Supported Chains
 

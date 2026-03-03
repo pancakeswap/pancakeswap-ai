@@ -24,4 +24,9 @@ Evaluate whether the response correctly plans a PancakeSwap farming or staking s
    - Are contract addresses correct (CAKE, MasterChef, CampaignManager)?
    - Is the chain context correct (V2 farms BSC-only, etc.)?
 
-Score 1.0 if all 5 areas fully addressed, 0.85 if mostly correct with minor gaps, 0.7 if partial.
+6. Infinity Farming Flow
+   - Does it correctly explain that Infinity farms are single-step (add liquidity = auto-staked)?
+   - Does it NOT tell the user to separately stake after adding Infinity liquidity?
+   - Does it contrast this with V2/V3 farms which require a separate staking step?
+
+Score 1.0 if all 6 areas fully addressed, 0.85 if mostly correct with minor gaps, 0.7 if partial.

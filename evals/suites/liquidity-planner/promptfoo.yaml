@@ -112,7 +112,7 @@ tests:
           The response should explain V2 liquidity provision on PancakeSwap BSC.
           It should mention full-range liquidity, the 0.25% fixed fee (NOT 0.3% like Uniswap),
           ERC-20 LP tokens, and that V2 is only available on BSC.
-          The deep link format should be pancakeswap.finance/add/{tokenA}/{tokenB}.
+          The deep link format should be pancakeswap.finance/v2/add/{tokenA}/{tokenB}.
         threshold: 0.8
         provider: anthropic:claude-sonnet-4-5-20250929
       - type: contains-any

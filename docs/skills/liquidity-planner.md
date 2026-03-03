@@ -43,10 +43,13 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 
 ```
 # V3 Position
-https://pancakeswap.finance/liquidity/add/v3/{tokenA}/{tokenB}?chain={chainKey}
+https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 
-# V2 Position
-https://pancakeswap.finance/liquidity/add/v2/{tokenA}/{tokenB}?chain={chainKey}
+# V2 Position (BSC only)
+https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain={chainKey}
+
+# StableSwap (BSC only)
+https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 ```
 
 ## Key Features

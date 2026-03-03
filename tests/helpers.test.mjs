@@ -361,23 +361,24 @@ function buildPancakeSwapLiquidityLink({ chainId, tokenA, tokenB, version, feeTi
   if (version === 'v3') {
     const feeAmount = FEE_TIER_MAP[feeTier || '0.25%']
     if (!feeAmount) throw new Error(`Invalid fee tier: ${feeTier}`)
-    return `https://pancakeswap.finance/liquidity/add/v3/${tokenA}/${tokenB}/${feeAmount}?chain=${chain}`
+    return `https://pancakeswap.finance/add/${tokenA}/${tokenB}/${feeAmount}?chain=${chain}`
   }
 
   if (version === 'stableswap') {
     if (chainId !== 56) throw new Error('StableSwap only available on BSC')
-    return `https://pancakeswap.finance/add/${tokenA}/${tokenB}?chain=bsc&stableSwap=true`
+    return `https://pancakeswap.finance/stable/add/${tokenA}/${tokenB}?chain=bsc`
   }
 
   // V2
-  return `https://pancakeswap.finance/add/${tokenA}/${tokenB}?chain=${chain}`
+  return `https://pancakeswap.finance/v2/add/${tokenA}/${tokenB}?chain=${chain}`
 }
 
 test('V3 CAKE/BNB on BSC with 0.25% fee', () => {
   const url = buildPancakeSwapLiquidityLink({
     chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v3', feeTier: '0.25%',
   })
-  assert.ok(url.includes('/liquidity/add/v3/'), 'missing v3 path')
+  assert.ok(url.startsWith('https://pancakeswap.finance/add/'), 'missing /add/ path')
+  assert.ok(!url.includes('/liquidity/add/v3/'), 'should NOT use /liquidity/add/v3/ path')
   assert.ok(url.includes('/2500?'), 'fee tier 2500 not in URL')
   assert.ok(url.includes('chain=bsc'), 'missing chain=bsc')
   assert.ok(url.includes(KNOWN_TOKENS.CAKE), 'missing CAKE address')
@@ -416,20 +417,20 @@ test('V3 1% fee tier for volatile pairs', () => {
   assert.ok(url.includes('/10000?'), 'fee tier 10000 not in URL')
 })
 
-test('V2 link uses /add/ path without /v3/', () => {
+test('V2 link uses /v2/add/ path', () => {
   const url = buildPancakeSwapLiquidityLink({
     chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v2',
   })
-  assert.ok(url.startsWith('https://pancakeswap.finance/add/'), 'wrong base path')
+  assert.ok(url.startsWith('https://pancakeswap.finance/v2/add/'), 'wrong base path — should use /v2/add/')
   assert.ok(!url.includes('/v3/'), 'V2 should not have /v3/ in path')
   assert.ok(url.includes('chain=bsc'))
 })
 
-test('StableSwap link has stableSwap=true', () => {
+test('StableSwap link uses /stable/add/ path', () => {
   const url = buildPancakeSwapLiquidityLink({
     chainId: 56, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC, version: 'stableswap',
   })
-  assert.ok(url.includes('stableSwap=true'), 'missing stableSwap=true')
+  assert.ok(url.startsWith('https://pancakeswap.finance/stable/add/'), 'should use /stable/add/ path')
   assert.ok(url.includes('chain=bsc'))
 })
 

@@ -8,13 +8,14 @@ PancakeSwap offers multiple liquidity mechanisms, each optimized for different u
 
 | Feature | V2 | V3 | StableSwap | Infinity (v4) |
 |---------|----|----|-----------|---|
-| **Range Type** | Full range | Concentrated | Full range (optimized) | Concentrated + Hooks |
+| **Range Type** | Full range | Concentrated | Full range (optimized) | Concentrated (CL) or Bin |
 | **Fee Structure** | Fixed 0.25% | Tiered (4 options) | Fixed, varies by pair | Dynamic (hooks) |
-| **LP Token** | ERC-20 token | NFT (ERC-721) | ERC-20 token | TBD |
-| **Networks** | BSC only | Multi-chain | BSC only | Multi-chain (coming) |
+| **LP Token** | ERC-20 token | NFT (ERC-721) | ERC-20 token | Managed by PoolManager |
+| **Networks** | BSC only | Multi-chain | BSC only | BSC (expanding) |
 | **Liquidity Efficiency** | Low | High | Very High (for stables) | Highest |
-| **Best For** | Long-term passive | Active management | Stablecoin pairs | Advanced strategies |
-| **Status** | Mature | Production | Production | In Development |
+| **Farming Flow** | 2 steps (add LP → stake) | 2 steps (add LP → stake NFT) | 2 steps (add LP → stake) | **1 step (add LP = auto-farmed)** |
+| **Best For** | Long-term passive | Active management | Stablecoin pairs | Simplest farming UX + advanced strategies |
+| **Status** | Mature | Production | Production | Production |
 
 ---
 
@@ -57,7 +58,7 @@ When you add liquidity at price P:
 
 **Deep link format**:
 ```
-https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain=bsc
+https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain=bsc
 ```
 
 **Parameter explanations**:
@@ -67,7 +68,7 @@ https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain=bsc
 
 **Example: CAKE/WBNB on BSC**
 ```
-https://pancakeswap.finance/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c?chain=bsc
+https://pancakeswap.finance/v2/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c?chain=bsc
 ```
 
 ### Fee Details
@@ -156,7 +157,7 @@ Choose your range based on expected volatility and capital efficiency goals:
 
 **Deep link format**:
 ```
-https://pancakeswap.finance/liquidity/add/v3/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
+https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 ```
 
 **Parameter explanations**:
@@ -167,12 +168,12 @@ https://pancakeswap.finance/liquidity/add/v3/{tokenA}/{tokenB}/{feeAmount}?chain
 
 **Example: CAKE/WBNB 0.25% on BSC**
 ```
-https://pancakeswap.finance/liquidity/add/v3/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/2500?chain=bsc
+https://pancakeswap.finance/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/2500?chain=bsc
 ```
 
 **Example: USDC/USDT 0.01% on Ethereum**
 ```
-https://pancakeswap.finance/liquidity/add/v3/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/0xdac17f958d2ee523a2206206994597c13d831ec7/100?chain=ethereum
+https://pancakeswap.finance/add/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/0xdac17f958d2ee523a2206206994597c13d831ec7/100?chain=eth
 ```
 
 ### Fee Tier Selection Decision Tree
@@ -245,18 +246,17 @@ The A parameter controls how "tight" the curve is around 1:1:
 
 **Deep link format**:
 ```
-https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain=bsc&stableSwap=true
+https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 ```
 
 **Parameter explanations**:
 - `{tokenA}`: Contract address of first token
 - `{tokenB}`: Contract address of second token
 - `chain=bsc`: Chain identifier (StableSwap is BSC-only)
-- `stableSwap=true`: Explicitly selects StableSwap pool
 
 **Example: USDT/USDC StableSwap on BSC**
 ```
-https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d?chain=bsc&stableSwap=true
+https://pancakeswap.finance/stable/add/0x55d398326f99059ff775485246999027b3197955/0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d?chain=bsc
 ```
 
 ### Fee Structure
@@ -269,21 +269,22 @@ https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac
 
 ---
 
-## Infinity (v4) — Coming Soon
+## Infinity (v4)
 
-PancakeSwap v4 introduces singleton architecture, hooks, and dynamic fee mechanisms.
+PancakeSwap Infinity introduces singleton architecture, hooks, and dynamic fee mechanisms.
 
-### Expected Features
+### Key Features
 
 - **Singleton contract**: Single contract for all liquidity (gas efficiency)
 - **Hooks framework**: Extensible position logic (take fees, trigger rebalancing, etc.)
 - **Dynamic fees**: Fees can adjust based on conditions (volatility, time, custom logic)
-- **Concentrated liquidity**: Similar to V3 with additional flexibility
-- **Multi-chain**: Expected to launch on major chains
+- **Concentrated liquidity (CL) and Bin pools**: Two pool types for different strategies
+- **Automatic farming**: Adding liquidity to an Infinity pool automatically enrolls the position in farming — **no separate staking step required**. CAKE rewards are distributed every 8 hours via Merkle proofs.
+- **Multi-chain**: Available on BSC and expanding to other chains
 
-### Status
+### Farming UX Advantage
 
-🔜 **In Development** — Expected release in 2026
+Unlike V2/V3 farms which require two steps (add liquidity → stake in MasterChef), Infinity farms combine both into a single step. When a user adds liquidity via the Infinity deep link, their position is automatically eligible for CAKE farming rewards without any additional transaction.
 
 ---
 
@@ -291,7 +292,7 @@ PancakeSwap v4 introduces singleton architecture, hooks, and dynamic fee mechani
 
 | Chain | V2 | V3 | StableSwap | Infinity |
 |-------|----|----|-----------|---|
-| BSC | ✅ | ✅ | ✅ | 🔜 |
+| BSC | ✅ | ✅ | ✅ | ✅ |
 | Ethereum | ✅ | ✅ | ❌ | 🔜 |
 | Arbitrum | ✅ | ✅ | ❌ | 🔜 |
 | Base | ✅ | ✅ | ❌ | 🔜 |
@@ -347,7 +348,7 @@ Where:
 
 **Format**:
 ```
-https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain={chainKey}
+https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain={chainKey}
 ```
 
 **Token Identifiers**:
@@ -359,23 +360,23 @@ https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain={chainKey}
 |---------|---|
 | BSC | `bsc` |
 | Ethereum | `eth` |
-| Arbitrum | `arbitrum` |
+| Arbitrum | `arb` |
 | Base | `base` |
 | zkSync | `zksync` |
 | Linea | `linea` |
-| Polygon zkEVM | `polygon_zkevm` |
+| Polygon zkEVM | `polygonzkevm` |
 | opBNB | `opbnb` |
 
 **Example**:
 ```
-https://pancakeswap.finance/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/BNB?chain=bsc
+https://pancakeswap.finance/v2/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/BNB?chain=bsc
 ```
 
 ### V3 Deep Link
 
 **Format**:
 ```
-https://pancakeswap.finance/liquidity/add/v3/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
+https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 ```
 
 **Fee Amount Values**:
@@ -386,21 +387,21 @@ https://pancakeswap.finance/liquidity/add/v3/{tokenA}/{tokenB}/{feeAmount}?chain
 
 **Example**:
 ```
-https://pancakeswap.finance/liquidity/add/v3/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/2500?chain=bsc
+https://pancakeswap.finance/add/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/2500?chain=bsc
 ```
 
 ### StableSwap Deep Link
 
 **Format**:
 ```
-https://pancakeswap.finance/add/{tokenA}/{tokenB}?chain=bsc&stableSwap=true
+https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
 ```
 
 **Note**: StableSwap is BSC-only; the chain parameter must be `bsc`.
 
 **Example**:
 ```
-https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d?chain=bsc&stableSwap=true
+https://pancakeswap.finance/stable/add/0x55d398326f99059ff775485246999027b3197955/0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d?chain=bsc
 ```
 
 ### Optional Parameters (All Versions)
@@ -420,8 +421,15 @@ https://pancakeswap.finance/add/0x55d398326f99059ff775485246999027b3197955/0x8ac
 Start: "I want to provide liquidity on PancakeSwap"
 │
 ├─> What blockchain?
-│   ├─ BSC only: Can use V2, V3, or StableSwap
-│   └─ Other chain: V3 only
+│   ├─ BSC: Can use V2, V3, StableSwap, or Infinity
+│   └─ Other chain: V3 only (Infinity coming soon)
+│
+├─> Do you also want to farm CAKE rewards?
+│   ├─ Yes, simplest UX (1 step): Use Infinity farm if available
+│   │   (adding liquidity = auto-staked, no extra step)
+│   ├─ Yes, willing to do 2 steps: Use V2/V3 farm
+│   │   (add liquidity → then stake in MasterChef)
+│   └─ No, just LP fees: Any pool type
 │
 ├─> What token pair?
 │   ├─ Stablecoin pair (USDT/USDC, etc.)?

@@ -25,6 +25,7 @@ Expected output:
 
 ```
 ✅ pancakeswap-driver — all checks passed
+✅ pancakeswap-infinity — all checks passed
 ✅ pancakeswap-farming — all checks passed
 ```
 
@@ -38,6 +39,7 @@ If you're using Claude Code, install directly from the plugin marketplace:
 
 # Or install individual plugins
 /plugin install pancakeswap-driver
+/plugin install pancakeswap-infinity
 /plugin install pancakeswap-farming
 ```
 

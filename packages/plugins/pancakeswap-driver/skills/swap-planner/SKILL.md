@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.1.0'
+  version: '1.2.0'
 ---
 
 # PancakeSwap Swap Planner
@@ -28,18 +28,70 @@ This skill **does not execute swaps** — it plans them. The output is a deep li
 
 ---
 
+## PancakeSwap X (PCSX)
+
+PancakeSwap X is an intent-based execution layer built into the PancakeSwap Swap interface. It aggregates third-party liquidity and uses off-chain order signing with a filler network, offering advantages over standard AMM routing.
+
+### How It Works
+
+1. User signs an order off-chain (no gas cost for the swap itself; token approval still requires gas)
+2. The order is sent to a network of fillers who compete to fill it
+3. Fillers execute the trade on-chain and bear the gas cost
+4. Orders may take up to **2 minutes** to fill (vs instant for AMM swaps)
+5. If a fill fails, funds remain safe in the user's wallet — simply retry
+
+### Benefits
+
+| Benefit          | Description                                                      |
+| ---------------- | ---------------------------------------------------------------- |
+| Gas-free swaps   | Users pay zero gas for the swap transaction itself               |
+| MEV protection   | Orders go off-chain to fillers, not through the public mempool   |
+| Better pricing   | Fillers compete to offer the best execution price                |
+| No fees          | PancakeSwap X currently charges no additional fees               |
+
+### Availability
+
+| Chain           | PCSX Support                     |
+| --------------- | -------------------------------- |
+| Ethereum        | Crypto tokens                    |
+| Arbitrum One    | Crypto tokens                    |
+| BNB Smart Chain | Real-world assets (RWAs) only    |
+| Other chains    | Not available                    |
+
+### Routing Behaviour
+
+PCSX is **enabled by default** in the PancakeSwap Swap interface. The interface automatically compares PCSX pricing against AMM liquidity (V2, V3, StableSwap) and routes through whichever offers the best price. No action is required from the user — the deep link opens the same `/swap` page, and PCSX activates automatically when it's the optimal path.
+
+If PCSX cannot fill the order (unsupported pair, trade size too large, or network not supported), the interface falls back to standard AMM routing silently.
+
+Users can manually toggle PCSX via **Settings → Customize Routing** in the swap interface.
+
+### When to Mention PCSX to the User
+
+Surface PCSX information in Step 6 output when **all** of the following are true:
+- The target chain is **Ethereum** or **Arbitrum** (or BSC for RWA tokens)
+- The token pair is likely supported (major tokens with good filler coverage)
+- The user would benefit from gasless or MEV-protected execution
+
+When PCSX is relevant, include in the output:
+- Note that the swap may execute via PancakeSwap X (gasless, MEV-protected)
+- Mention that fill time can be up to 2 minutes
+- Note that slippage settings don't apply to PCSX orders (fillers guarantee price)
+
+---
+
 ## Supported Chains
 
-| Chain              | Chain ID | Deep Link Key | Native Token | RPC for Verification                   |
-| ------------------ | -------- | ------------- | ------------ | -------------------------------------- |
-| BNB Smart Chain    | 56       | `bsc`         | BNB          | `https://bsc-dataseed1.binance.org`    |
-| Ethereum           | 1        | `eth`         | ETH          | `https://cloudflare-eth.com`           |
-| Arbitrum One       | 42161    | `arb`         | ETH          | `https://arb1.arbitrum.io/rpc`         |
-| Base               | 8453     | `base`        | ETH          | `https://mainnet.base.org`             |
-| Polygon            | 137      | `polygon`     | MATIC        | `https://polygon-rpc.com`              |
-| zkSync Era         | 324      | `zksync`      | ETH          | `https://mainnet.era.zksync.io`        |
-| Linea              | 59144    | `linea`       | ETH          | `https://rpc.linea.build`              |
-| opBNB              | 204      | `opbnb`       | BNB          | `https://opbnb-mainnet-rpc.bnbchain.org` |
+| Chain              | Chain ID | Deep Link Key | Native Token | PCSX         | RPC for Verification                   |
+| ------------------ | -------- | ------------- | ------------ | ------------ | -------------------------------------- |
+| BNB Smart Chain    | 56       | `bsc`         | BNB          | RWAs only    | `https://bsc-dataseed1.binance.org`    |
+| Ethereum           | 1        | `eth`         | ETH          | Crypto       | `https://cloudflare-eth.com`           |
+| Arbitrum One       | 42161    | `arb`         | ETH          | Crypto       | `https://arb1.arbitrum.io/rpc`         |
+| Base               | 8453     | `base`        | ETH          | —            | `https://mainnet.base.org`             |
+| Polygon            | 137      | `polygon`     | MATIC        | —            | `https://polygon-rpc.com`              |
+| zkSync Era         | 324      | `zksync`      | ETH          | —            | `https://mainnet.era.zksync.io`        |
+| Linea              | 59144    | `linea`       | ETH          | —            | `https://rpc.linea.build`              |
+| opBNB              | 204      | `opbnb`       | BNB          | —            | `https://opbnb-mainnet-rpc.bnbchain.org` |
 
 ## Step 0: Token Discovery (when the token is unknown)
 
@@ -353,6 +405,8 @@ function buildPancakeSwapLink(params: {
 
 ### Output Format
 
+**Standard AMM swap (PCSX not available):**
+
 ```
 ✅ Swap Plan
 
@@ -368,6 +422,27 @@ Buy:     CAKE (PancakeSwap Token)
 
 🔗 Open in PancakeSwap:
 https://pancakeswap.finance/swap?chain=bsc&inputCurrency=BNB&outputCurrency=0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82&exactAmount=0.5&exactField=input
+```
+
+**PCSX-eligible swap (Ethereum/Arbitrum crypto tokens):**
+
+```
+✅ Swap Plan
+
+Chain:   Ethereum
+Sell:    1000 USDC  (~$1,000 USD)
+Buy:     WETH
+         Price: ~$X,XXX USD per ETH
+         Est. output: ~X.XXX WETH
+         Liquidity: $XX,XXX,XXX  |  24h Volume: $X,XXX,XXX
+
+🛡️  PancakeSwap X: This swap is eligible for PCSX — gasless execution with
+    MEV protection. The interface will automatically route through PCSX if it
+    offers a better price. Orders may take up to 2 minutes to fill.
+💡  Verify token address on Etherscan before confirming in your wallet
+
+🔗 Open in PancakeSwap:
+https://pancakeswap.finance/swap?chain=eth&inputCurrency=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&outputCurrency=ETH&exactAmount=1000&exactField=input
 ```
 
 ### Attempt to Open Browser
@@ -393,6 +468,9 @@ If the open command fails or is unavailable, display the URL prominently so the 
 | Mid/small caps                        | 1–2%                       |
 | Fee-on-transfer / reflection tokens   | 5–12% (≥ the token's own fee) |
 | New meme tokens with thin liquidity   | 5–20%                      |
+| PCSX-routed swaps (Ethereum/Arbitrum) | N/A — fillers guarantee execution price |
+
+> **PCSX note**: When a swap routes through PancakeSwap X, slippage settings do not apply. Fillers commit to a specific execution price when they accept the order. The interface still shows slippage settings, but they only take effect if the swap falls back to AMM routing.
 
 ---
 
@@ -412,13 +490,15 @@ Before presenting a deep link to the user, confirm all of the following:
 
 ## BSC-Specific Notes
 
-### Sandwich Attack Risk
+### MEV and Sandwich Attack Risk
 
 BSC is a high-MEV chain. Sandwich attacks on public mempool are common, especially for tokens with high volume. Advise users to:
 
 - Set slippage no higher than necessary
 - Use PancakeSwap's "Fast Swap" mode (uses BSC private RPC / Binance's block builder directly)
 - Avoid executing very large trades in low-liquidity pools
+
+On **Ethereum and Arbitrum**, PancakeSwap X provides built-in MEV protection because orders are routed off-chain to fillers rather than through the public mempool. If the user is on a PCSX-supported chain and concerned about MEV, note that PCSX handles this automatically when it's the optimal route.
 
 ### BUSD Sunset
 

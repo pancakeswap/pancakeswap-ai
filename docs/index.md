@@ -36,6 +36,7 @@ features:
   - icon: 🤖
     title: Agent-Agnostic
     details: Works with Claude Code, Cursor, Windsurf, Copilot, and any LLM agent that reads Markdown skills.
+    link: /getting-started/#agent-agnostic-design
 ---
 
 ## How It Works
@@ -52,15 +53,15 @@ User: "Swap 0.1 BNB for USDT on PancakeSwap"
 
 ## Supported Chains
 
-| Chain | V2 | V3 | Infinity | StableSwap | Routing API |
-|-------|----|----|----------|------------|-------------|
-| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Ethereum (1) | ✅ | ✅ | — | ✅ | ✅ |
-| Arbitrum One (42161) | ✅ | ✅ | — | ✅ | ✅ |
-| Base (8453) | ✅ | ✅ | ✅ | — | ✅ |
-| zkSync Era (324) | ✅ | ✅ | — | — | ✅ |
-| Linea (59144) | ✅ | ✅ | — | — | ✅ |
-| Polygon zkEVM (1101) | ✅ | ✅ | — | — | — |
-| opBNB (204) | ✅ | ✅ | — | — | ✅ |
-| Monad (143) | ✅ | ✅ | — | — | ✅ |
-| BSC Testnet (97) | ✅ | ✅ | — | — | — |
+| Chain | V2 | V3 | Infinity | StableSwap |
+|-------|----|----|----------|------------|
+| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ |
+| Ethereum (1) | ✅ | ✅ | ✅ | ✅ |
+| Arbitrum One (42161) | ✅ | ✅ | ✅ | ✅ |
+| Base (8453) | ✅ | ✅ | ✅ | ✅ |
+| zkSync Era (324) | ✅ | ✅ | ✅ | ✅ |
+| Linea (59144) | ✅ | ✅ | ✅ | ✅ |
+| Polygon zkEVM (1101) | ✅ | ✅ | ✅ | ✅ |
+| opBNB (204) | ✅ | ✅ | ✅ | ✅ |
+| Monad (143) | ✅ | ✅ | ✅ | ✅ |
+| BSC Testnet (97) | ✅ | ✅ | ✅ | ✅ |

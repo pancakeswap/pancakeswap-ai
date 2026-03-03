@@ -53,7 +53,6 @@ User: "Swap 0.1 BNB for USDT"
 | Linea (59144) | ✅ | ✅ | — | — | — |
 | opBNB (204) | ✅ | ✅ | — | — | — |
 | Monad (143) | ✅ | ✅ | — | — | — |
-| BSC Testnet (97) | ✅ | ✅ | — | — | — |
 
 ## Documentation
 

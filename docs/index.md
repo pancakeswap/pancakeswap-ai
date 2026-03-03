@@ -53,14 +53,14 @@ User: "Swap 0.1 BNB for USDT on PancakeSwap"
 
 ## Supported Chains
 
-| Chain | V2 | V3 | Infinity | Infinity Stable | StableSwap | Routing API |
-|-------|----|----|----------|-----------------|------------|-------------|
-| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Ethereum (1) | ✅ | ✅ | — | — | ✅ | ✅ |
-| Arbitrum One (42161) | ✅ | ✅ | — | — | ✅ | ✅ |
-| Base (8453) | ✅ | ✅ | ✅ | — | — | ✅ |
-| zkSync Era (324) | ✅ | ✅ | — | — | — | ✅ |
-| Linea (59144) | ✅ | ✅ | — | — | — | ✅ |
-| opBNB (204) | ✅ | ✅ | — | — | — | ✅ |
-| Monad (143) | ✅ | ✅ | — | — | — | ✅ |
-| BSC Testnet (97) | ✅ | ✅ | — | — | — | — |
+| Chain | V2 | V3 | Infinity | Infinity Stable | StableSwap |
+|-------|----|----|----------|-----------------|------------|
+| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Ethereum (1) | ✅ | ✅ | — | — | ✅ |
+| Arbitrum One (42161) | ✅ | ✅ | — | — | ✅ |
+| Base (8453) | ✅ | ✅ | ✅ | — | — |
+| zkSync Era (324) | ✅ | ✅ | — | — | — |
+| Linea (59144) | ✅ | ✅ | — | — | — |
+| opBNB (204) | ✅ | ✅ | — | — | — |
+| Monad (143) | ✅ | ✅ | — | — | — |
+| BSC Testnet (97) | ✅ | ✅ | — | — | — |

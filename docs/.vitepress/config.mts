@@ -4,7 +4,7 @@ export default defineConfig({
   title: 'PancakeSwap AI',
   description: 'AI tools for building on PancakeSwap — skills, plugins, and agents for any coding agent.',
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
   ],
   markdown: {
     theme: {
@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
     nav: [
       { text: 'Guide', link: '/getting-started/' },
       { text: 'Plugins', link: '/plugins/' },

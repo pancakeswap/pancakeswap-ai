@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap');
+
 :root {
+  --vp-font-family-base: 'Kanit', sans-serif;
+  --vp-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
   --vp-c-brand-1: #1FC7D4;
   --vp-c-brand-2: #0098A1;
   --vp-c-brand-3: #53DEE9;
@@ -37,24 +42,24 @@
   --vp-button-brand-bg: #1FC7D4;
   --vp-button-brand-hover-border: transparent;
   --vp-button-brand-hover-text: #FFFFFF;
-  --vp-button-brand-hover-bg: #0098A1;
+  --vp-button-brand-hover-bg: #1FC7D4;
   --vp-button-brand-active-border: transparent;
   --vp-button-brand-active-text: #FFFFFF;
-  --vp-button-brand-active-bg: #0098A1;
+  --vp-button-brand-active-bg: #1FC7D4;
 
   --vp-button-alt-border: #E7E3EB;
   --vp-button-alt-text: #7645D9;
   --vp-button-alt-bg: #eeeaf4;
-  --vp-button-alt-hover-border: #d7caec;
+  --vp-button-alt-hover-border: #E7E3EB;
   --vp-button-alt-hover-text: #7645D9;
-  --vp-button-alt-hover-bg: #d7caec;
+  --vp-button-alt-hover-bg: #eeeaf4;
 
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(135deg, #1FC7D4 0%, #7645D9 100%);
   --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(31, 199, 212, 0.3) 0%, rgba(118, 69, 217, 0.3) 100%);
   --vp-home-hero-image-filter: blur(44px);
 
-  --vp-nav-logo-height: 32px;
+  --vp-nav-logo-height: 23px;
 
   --vp-sidebar-bg-color: #FAF9FA;
 
@@ -94,15 +99,18 @@
   --vp-c-border: #383241;
 
   --vp-button-brand-bg: #1FC7D4;
-  --vp-button-brand-hover-bg: #53DEE9;
-  --vp-button-brand-active-bg: #0098A1;
+  --vp-button-brand-text: #08060B;
+  --vp-button-brand-hover-bg: #1FC7D4;
+  --vp-button-brand-hover-text: #08060B;
+  --vp-button-brand-active-bg: #1FC7D4;
+  --vp-button-brand-active-text: #08060B;
 
   --vp-button-alt-border: #383241;
   --vp-button-alt-text: #9A6AFF;
   --vp-button-alt-bg: #27262c;
-  --vp-button-alt-hover-border: #524B63;
+  --vp-button-alt-hover-border: #383241;
   --vp-button-alt-hover-text: #9A6AFF;
-  --vp-button-alt-hover-bg: #372F47;
+  --vp-button-alt-hover-bg: #27262c;
 
   --vp-home-hero-name-background: linear-gradient(135deg, #53DEE9 0%, #9A6AFF 100%);
   --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(31, 199, 212, 0.25) 0%, rgba(154, 106, 255, 0.25) 100%);
@@ -132,7 +140,18 @@
 }
 
 .VPFeature .icon {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  padding: 15px 0;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1;
   font-size: 28px;
+  margin-bottom: 4px;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .VPNavBarTitle .title {
@@ -141,6 +160,10 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.VPButton:hover {
+  opacity: 0.65;
 }
 
 .dark .VPNavBarTitle .title {
@@ -154,7 +177,7 @@
   color: var(--vp-c-brand-1);
 }
 
-a:hover {
+a:not(.VPButton):hover {
   color: var(--vp-c-brand-1) !important;
 }
 
@@ -167,6 +190,11 @@ a:hover {
 
 .vp-doc a:hover {
   text-decoration-color: var(--vp-c-brand-1);
+}
+
+.VPNavBarTitle .logo {
+  width: 22px;
+  height: 23px;
 }
 
 .VPNavBar .content-body {

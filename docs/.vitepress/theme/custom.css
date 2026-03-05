@@ -129,6 +129,8 @@
   --vp-code-copy-code-border-color: #383241;
   --vp-code-copy-code-active-text: #53DEE9;
 
+  --vp-backdrop-bg-color: rgba(68, 62, 88, 0.60);
+
   --vp-custom-block-tip-border: rgba(154, 106, 255, 0.3);
   --vp-custom-block-tip-bg: rgba(154, 106, 255, 0.06);
   --vp-custom-block-tip-text: #B8ADD2;
@@ -136,7 +138,7 @@
 }
 
 .VPHero .name {
-  font-weight: 800 !important;
+  font-weight: 800;
 }
 
 .VPFeature .icon {
@@ -149,9 +151,9 @@
   aspect-ratio: 1 / 1;
   font-size: 28px;
   margin-bottom: 4px;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 .VPNavBarTitle .title {
@@ -178,7 +180,7 @@
 }
 
 a:not(.VPButton):hover {
-  color: var(--vp-c-brand-1) !important;
+  color: var(--vp-c-brand-1);
 }
 
 .vp-doc a {

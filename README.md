@@ -111,6 +111,7 @@ PRs should maintain **≥ 85% pass rate** on all eval suites.
 
 ## Resources
 
+- Documentation: https://pancakeswap.ai/
 - Developer docs: https://developer.pancakeswap.finance/
 - PancakeSwap app: https://pancakeswap.finance/
 - Smart Router SDK: `@pancakeswap/smart-router`

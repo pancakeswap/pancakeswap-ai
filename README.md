@@ -10,6 +10,7 @@ PancakeSwap-specific AI tools (skills, plugins, agents) for developers and AI ag
 
 # Install individual plugins
 /plugin install pancakeswap-driver    # Swap & liquidity planning + deep links
+/plugin install pancakeswap-infinity  # Infinity (v4) hook security foundations
 /plugin install pancakeswap-farming   # Farming planner
 ```
 
@@ -27,6 +28,7 @@ The agent will read the skill, pick the right integration method, generate worki
 |--------|-------|-------------|
 | `pancakeswap-driver` | `swap-planner` | Discover tokens, verify contracts, fetch prices, generate swap deep links |
 | `pancakeswap-driver` | `liquidity-planner` | Plan LP positions (V2, V3, StableSwap), assess pools, generate liquidity deep links |
+| `pancakeswap-infinity` | `infinity-security-foundations` | Security guide for Infinity (v4) hook development — threat models, audit checklists, templates |
 | `pancakeswap-farming` | `farming-planner` | Plan yield farming, CAKE staking, and reward harvesting with deep links |
 
 ### Agent execution model
@@ -39,6 +41,9 @@ User: "Swap 0.1 BNB for USDT"
         │
         ▼
 [PLAN]  liquidity-planner skill → plans LP ranges and deep links
+        │
+        ▼
+[SEC]   infinity-security-foundations → hook security guidance and audit checklist
 ```
 
 ## Supported Chains
@@ -61,6 +66,7 @@ User: "Swap 0.1 BNB for USDT"
 | [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) | Full project guidelines, plugin structure, development setup |
 | [swap-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/swap-planner/SKILL.md) | Token discovery, price fetching, deep link generation |
 | [liquidity-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/liquidity-planner/SKILL.md) | LP position planning (V2, V3, StableSwap) with pool assessment and deep links |
+| [infinity-security-foundations SKILL.md](packages/plugins/pancakeswap-infinity/skills/infinity-security-foundations/SKILL.md) | Infinity hook security — threat models, permissions matrix, delta accounting, audit checklist |
 | [farming-planner SKILL.md](packages/plugins/pancakeswap-farming/skills/farming-planner/SKILL.md) | Yield farming, CAKE staking, farm discovery with live APR |
 
 ## Testing
@@ -73,6 +79,7 @@ npm test
 export ANTHROPIC_API_KEY=your-key
 npm run test:evals:swap-planner
 npm run test:evals:liquidity-planner     # LP position planning evals
+npm run test:evals:infinity-security     # Infinity hook security evals
 npm run test:evals:farming-planner       # farming planning evals
 npx promptfoo view                    # browse results in browser
 ```
@@ -115,7 +122,10 @@ PRs should maintain **≥ 85% pass rate** on all eval suites.
 - PancakeSwap app: <https://pancakeswap.finance/>
 - Smart Router SDK: `@pancakeswap/smart-router`
 - Universal Router SDK: `@pancakeswap/universal-router-sdk`
-- BSCScan: <https://bscscan.com/>
+- BSCScan: https://bscscan.com/
+- Infinity Core: https://github.com/pancakeswap/infinity-core
+- Infinity Hooks: https://github.com/pancakeswap/infinity-hooks
+
 ## Contributing
 
 See [CLAUDE.md](CLAUDE.md) for development setup, skill authoring guidelines, and contribution steps.

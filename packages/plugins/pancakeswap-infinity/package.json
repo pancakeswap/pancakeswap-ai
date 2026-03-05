@@ -1,0 +1,15 @@
+{
+  "name": "@pancakeswap/pancakeswap-infinity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Security-first AI tools for PancakeSwap Infinity (v4) hook development",
+  "author": "PancakeSwap <chef.sanji@pancakeswap.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pancakeswap/pancakeswap-ai.git",
+    "directory": "packages/plugins/pancakeswap-infinity"
+  },
+  "keywords": ["claude-code", "plugin", "pancakeswap", "infinity", "hooks", "v4", "security", "solidity"],
+  "files": [".claude-plugin", "skills", "agents", "README.md"]
+}

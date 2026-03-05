@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.2.0'
+  version: '1.3.0'
 ---
 
 # PancakeSwap Swap Planner
@@ -82,16 +82,17 @@ When PCSX is relevant, include in the output:
 
 ## Supported Chains
 
-| Chain              | Chain ID | Deep Link Key | Native Token | PCSX         | RPC for Verification                   |
-| ------------------ | -------- | ------------- | ------------ | ------------ | -------------------------------------- |
-| BNB Smart Chain    | 56       | `bsc`         | BNB          | RWAs only    | `https://bsc-dataseed1.binance.org`    |
-| Ethereum           | 1        | `eth`         | ETH          | Crypto       | `https://cloudflare-eth.com`           |
-| Arbitrum One       | 42161    | `arb`         | ETH          | Crypto       | `https://arb1.arbitrum.io/rpc`         |
-| Base               | 8453     | `base`        | ETH          | —            | `https://mainnet.base.org`             |
-| zkSync Era         | 324      | `zksync`      | ETH          | —            | `https://mainnet.era.zksync.io`        |
-| Linea              | 59144    | `linea`       | ETH          | —            | `https://rpc.linea.build`              |
-| opBNB              | 204      | `opbnb`       | BNB          | —            | `https://opbnb-mainnet-rpc.bnbchain.org` |
-| Monad              | 143      | `monad`       | MON          | —            | `https://rpc.monad.xyz`                  |
+| Chain              | Chain ID | Deep Link Key | Native Token | PCSX         | RPC for Verification                    |
+| ------------------ | -------- | ------------- | ------------ | ------------ | --------------------------------------  |
+| BNB Smart Chain    | 56       | `bsc`         | BNB          | RWAs only    | `https://bsc-dataseed1.binance.org`     |
+| Ethereum           | 1        | `eth`         | ETH          | Crypto       | `https://cloudflare-eth.com`            |
+| Arbitrum One       | 42161    | `arb`         | ETH          | Crypto       | `https://arb1.arbitrum.io/rpc`          |
+| Base               | 8453     | `base`        | ETH          | —            | `https://mainnet.base.org`              |
+| zkSync Era         | 324      | `zksync`      | ETH          | —            | `https://mainnet.era.zksync.io`         |
+| Linea              | 59144    | `linea`       | ETH          | —            | `https://rpc.linea.build`               |
+| opBNB              | 204      | `opbnb`       | BNB          | —            | `https://opbnb-mainnet-rpc.bnbchain.org`|
+| Monad              | 143      | `monad`       | MON          | —            | `https://rpc.monad.xyz`                 |
+| Solana             | -        | `sol`         | SOL          | —            | `https://api.mainnet-beta.solana.com`   |
 
 ## Step 0: Token Discovery (when the token is unknown)
 
@@ -134,6 +135,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 | zkSync Era         | `zksync`              |
 | Linea              | `linea`               |
 | Monad              | `monad`               |
+| Solana             | `solana`              |
 
 ### C. PancakeSwap Token List (Official Tokens)
 
@@ -234,6 +236,7 @@ Optional but useful:
 | ETH     | ETH    | `ETH`     |
 | opBNB   | BNB    | `BNB`     |
 | Monad   | MON    | `MON`     |
+| Solana  | SOL    | `SOL`     |
 
 ### Common Token Addresses by Chain
 
@@ -272,6 +275,15 @@ Optional but useful:
 | ------ | -------------------------------------------- | -------- |
 | WMON   | `0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A` | 18       |
 
+
+**Solana (No chain ID)**
+
+| Symbol | Address                                         | Decimals |
+| ------ | --------------------------------------------    | -------- |
+| USDT   | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`  | 18       |
+| USDC   | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`  | 18       |
+
+
 > **Decimals matter for display only** — the URL always uses human-readable amounts (e.g., `0.5`, not `500000000000000000`).
 
 ---
@@ -279,8 +291,11 @@ Optional but useful:
 ## Step 3: Verify Token Contracts (CRITICAL — Always Do This)
 
 Never include an unverified address in a deep link. Even one wrong digit routes the user's funds somewhere else.
+For solana chain, use method C instead of method A and B 
 
 ### Method A: Using `cast` (Foundry — preferred)
+
+Only use this for EVM compatible chains, other chains such as Solana will default to use Method B 
 
 ```bash
 # Set the RPC for the target chain (see Supported Chains table above)
@@ -322,7 +337,7 @@ curl -sf -X POST "$RPC" \
 
 > If `eth_call` returns `0x` (empty), the address is either not a contract or not an ERC-20 token. Do not proceed.
 
-### Red Flags — Stop and Warn the User
+### Red Flags (Method A and Method B -- EVM chains ) — Stop and Warn the User
 
 - `eth_call` returns `0x` → not a token contract
 - Name/symbol on-chain doesn't match what the user expects
@@ -330,6 +345,49 @@ curl -sf -X POST "$RPC" \
 - Liquidity is entirely in a single wallet (rug risk)
 - Address came from a DM, social media comment, or unverified source
 
+
+### Method C: Solana RPC (SPL tokens)
+
+Use this for Solana token mints (base58 addresses). SPL mints do not have `name()`/`symbol()` on-chain; verify via RPC (mint account + decimals) and DexScreener (name/symbol + liquidity).
+
+```bash 
+RPC="https://api.mainnet-beta.solana.com"
+MINT="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+
+[[ "$MINT" =~ ^[1-9A-HJ-NP-Za-km-z]{32,44}$ ]] || { echo "Invalid Solana address"; exit 1; }
+RESULT=$(curl -sf -X POST "$RPC" \
+  -H "Content-Type: application/json" \
+  -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccountInfo\",\"params\":[\"$MINT\",{\"encoding\":\"jsonParsed\"}]}" \
+  | jq -r '.result.value')
+
+if [ "$RESULT" = "null" ] || [ -z "$RESULT" ]; then
+  echo "Account not found — not a valid mint"; exit 1
+fi
+
+OWNER=$(echo "$RESULT" | jq -r '.owner')
+TYPE=$(echo "$RESULT" | jq -r '.data.parsed.type')
+DECIMALS=$(echo "$RESULT" | jq -r '.data.parsed.info.decimals')
+
+# SPL Token program ID
+SPL_TOKEN_PROGRAM="TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+if [ "$OWNER" != "$SPL_TOKEN_PROGRAM" ] || [ "$TYPE" != "mint" ]; then
+  echo "Not an SPL token mint (owner=$OWNER type=$TYPE)"; exit 1
+fi
+echo "decimals: $DECIMALS"
+
+curl -s "https://api.dexscreener.com/latest/dex/tokens/${MINT}" | \
+  jq '[.pairs[] | select(.chainId == "solana")] | sort_by(-.liquidity.usd) | .[0:5] | .[] | {symbol: .baseToken.symbol, name: .baseToken.name, liquidity: .liquidity.usd}'
+```
+
+### Red Flags (Method C, Solana chain) — Stop and Warn the User
+
+- `eth_call` returns `0x` → not a token contract
+- Name/symbol on-chain doesn't match what the user expects
+- Token deployed within the last 24–48 hours with no audits
+- Liquidity is entirely in a single wallet (rug risk)
+- Address came from a DM, social media comment, or unverified source
+- account missing or not a mint 
+- No DexScreener pairs for chainId solana; 
 ---
 
 ## Step 4: Fetch Price Data
@@ -430,6 +488,17 @@ https://pancakeswap.finance/swap?chain=bsc&inputCurrency=0x0E09FaBB73Bd3Ade0a17E
 https://pancakeswap.finance/swap?chain=arb&inputCurrency=ETH&outputCurrency=0xaf88d065e77c8cC2239327C5EDb3A432268e5831&exactAmount=0.1&exactField=input
 ```
 
+**SOL → USDC on Solana (sell 1 SOL)** 
+```
+https://pancakeswap.finance/swap?chain=sol&inputCurrency=SOL&outputCurrency=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&exactAmount=1&exactField=input
+```
+
+**USDC → SOL on Solana (BUY 1 SOL)** 
+```
+https://pancakeswap.finance/swap?chain=sol&inputCurrency=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&outputCurrency=SOL&exactAmount=1&exactField=output
+```
+
+
 ### URL Builder (TypeScript)
 
 ```typescript
@@ -442,6 +511,7 @@ const CHAIN_KEYS: Record<number, string> = {
   59144: 'linea',
   204:   'opbnb',
   143:   'monad',
+  0:     'solana', 
 }
 
 function buildPancakeSwapLink(params: {

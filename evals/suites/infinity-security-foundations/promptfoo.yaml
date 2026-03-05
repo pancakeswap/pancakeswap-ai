@@ -1,0 +1,125 @@
+description: 'Infinity Security Foundations Skill Evaluation'
+
+# Run one test at a time — rubric grading LLM calls cause 429s at higher concurrency
+concurrency: 1
+
+prompts:
+  - |
+    You are an AI assistant. The user has loaded the following skill:
+
+    <skill>
+    {{skill_content}}
+    </skill>
+
+    Now answer the following user request:
+
+    <user_request>
+    {{case_content}}
+    </user_request>
+
+providers:
+  - id: anthropic:claude-sonnet-4-5-20250929
+    config:
+      temperature: 0
+      max_tokens: 4096
+
+defaultTest:
+  options:
+    timeout: 180000
+  vars:
+    skill_content: file://../../../packages/plugins/pancakeswap-infinity/skills/infinity-security-foundations/SKILL.md
+
+tests:
+  # Test 1: Hook security review — basic beforeSwap hook
+  - vars:
+      case_content: file://cases/basic-hook-review.md
+    assert:
+      - type: llm-rubric
+        value: |
+          The response should review a basic PancakeSwap Infinity CL hook for security issues.
+          It must mention: PoolManager caller verification (msg.sender check), the need for
+          onlyPoolManager modifier, delta accounting considerations, and gas budget awareness.
+          It should reference correct Infinity imports (CLBaseHook, ICLPoolManager, IVault)
+          NOT Uniswap v4 imports.
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'CLBaseHook'
+          - 'ICLPoolManager'
+          - 'poolManager'
+          - 'onlyPoolManager'
+      - type: contains-any
+        value:
+          - 'PoolManager'
+          - 'caller'
+          - 'msg.sender'
+          - 'access control'
+
+  # Test 2: NoOp rug pull vulnerability
+  - vars:
+      case_content: file://cases/noop-rug-pull.md
+    assert:
+      - type: llm-rubric
+        value: |
+          The response should explain the NoOp rug pull attack pattern in PancakeSwap Infinity hooks.
+          It must cover: beforeSwapReturnDelta permission being CRITICAL risk, how a malicious hook
+          can claim to handle the swap via delta but steal input tokens, detection methods,
+          and mitigations. It should use Infinity-specific terminology (Vault settlement, CLPoolManager).
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'beforeSwapReturnDelta'
+          - 'NoOp'
+          - 'rug pull'
+          - 'delta'
+      - type: contains-any
+        value:
+          - 'CRITICAL'
+          - 'critical'
+          - 'steal'
+          - 'drain'
+          - 'malicious'
+
+  # Test 3: Base hook template generation
+  - vars:
+      case_content: file://cases/hook-template.md
+    assert:
+      - type: llm-rubric
+        value: |
+          The response should provide a secure base hook template for PancakeSwap Infinity CL pools.
+          It must use correct imports from infinity-core and infinity-hooks (NOT Uniswap v4 packages).
+          All 14 permissions should be disabled by default. It should include router allowlisting
+          and admin access control patterns. Solidity version should be ^0.8.26.
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'infinity-core'
+          - 'infinity-hooks'
+          - 'CLBaseHook'
+      - type: contains-any
+        value:
+          - 'getHookPermissions'
+          - 'Permissions'
+          - 'false'
+
+  # Test 4: Bin pool security considerations
+  - vars:
+      case_content: file://cases/bin-pool-security.md
+    assert:
+      - type: llm-rubric
+        value: |
+          The response should cover security considerations specific to PancakeSwap Infinity Bin pools.
+          It must mention BinBaseHook (not CLBaseHook), BinPoolManager, bin-specific hook permissions,
+          and unique risks like bin price manipulation and cross-pool-type attacks.
+          This is PancakeSwap-specific content that has no equivalent in Uniswap v4.
+        threshold: 0.75
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'BinBaseHook'
+          - 'BinPoolManager'
+          - 'Bin'
+          - 'bin'

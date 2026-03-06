@@ -312,10 +312,15 @@ cast call "$TOKEN" "decimals()(uint8)"  --rpc-url "$RPC"
 ### Fetch USD Prices (DexScreener)
 
 ```bash
-SYMBOL='CAKE'
-curl -s -G "https://api.dexscreener.com/latest/dex/search" \
-  --data-urlencode "q=$SYMBOL" | \
-  jq '[.pairs[] | select(.chainId == "bsc" and .dexId == "pancakeswap") | {symbol: .baseToken.symbol, priceUsd: .priceUsd}] | .[0]'
+# TOKEN should be the ERC-20 token address for which you want a price (see step above)
+# Set CHAIN_ID to the current chain (e.g. bsc, ethereum, base, arbitrum, etc.)
+CHAIN_ID="bsc"
+
+curl -s "https://api.dexscreener.com/latest/dex/tokens/$TOKEN" | \
+  jq '[.pairs[] 
+       | select(.chainId == env.CHAIN_ID and .dexId == "pancakeswap") 
+       | {symbol: .baseToken.symbol, priceUsd: (.priceUsd | tonumber)}] 
+      | .[0]'
 ```
 
 ### Compute USD Value of Pending Fees

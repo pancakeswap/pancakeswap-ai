@@ -1,0 +1,1 @@
+I'm starting a new PancakeSwap Infinity hook project for CL pools. Give me a secure base template with all permissions disabled by default, proper access control, and correct imports. I want to be able to selectively enable only the callbacks I need.

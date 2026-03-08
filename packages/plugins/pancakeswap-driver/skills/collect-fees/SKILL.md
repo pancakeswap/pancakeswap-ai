@@ -128,7 +128,7 @@ cast call "$POSITION_MANAGER" \
   "$TOKEN_ID" --rpc-url "$RPC"
 ```
 
-**Skip positions where `liquidity = 0`** — these are fully closed positions.
+**Do not skip positions solely because `liquidity = 0`.** V3 NFTs can still have collectable fees even after liquidity is fully removed.
 
 `tokensOwed0` and `tokensOwed1` (the last two `uint128` fields) are the **crystallised pending fees**. Actual collectable fees shown in the UI may be slightly higher because accrued in-range fees are added at collection time.
 
@@ -318,7 +318,7 @@ CHAIN_ID="bsc"
 
 curl -s "https://api.dexscreener.com/latest/dex/tokens/$TOKEN" | \
   jq '[.pairs[] 
-       | select(.chainId == env.CHAIN_ID and .dexId == "pancakeswap") 
+       | select(.chainId == "$CHAIN_ID" and .dexId == "pancakeswap")
        | {symbol: .baseToken.symbol, priceUsd: (.priceUsd | tonumber)}] 
       | .[0]'
 ```
@@ -387,7 +387,7 @@ CAKE Farming Rewards: Auto-distributed every 8 hours via Merkle proofs.
 No manual harvest is needed for CAKE rewards.
 
 → All positions overview:
-  https://pancakeswap.finance/liquidity/positions?network=56
+  https://pancakeswap.finance/liquidity/positions
 ```
 
 If no Infinity positions are found for either type, clearly state this.

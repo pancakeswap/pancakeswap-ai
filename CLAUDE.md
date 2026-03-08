@@ -43,6 +43,7 @@ pancakeswap-ai/
 **Skills:**
 - `swap-planner` — Discover tokens, verify contracts, fetch prices, and generate pancakeswap.finance deep links.
 - `liquidity-planner` — Plan LP positions (V2, V3, StableSwap), assess pool liquidity/APY, recommend fee tiers and price ranges, generate liquidity deep links.
+- `collect-fees` — Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions.
 
 **Install:**
 ```bash
@@ -63,7 +64,7 @@ claude plugin add @pancakeswap/pancakeswap-infinity
 
 ### pancakeswap-farming
 
-**Purpose:** Plan yield farming, CAKE staking, and reward harvesting on PancakeSwap.
+**Purpose:** Plan yield farming and CAKE staking on PancakeSwap.
 
 **Skills:**
 - `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.

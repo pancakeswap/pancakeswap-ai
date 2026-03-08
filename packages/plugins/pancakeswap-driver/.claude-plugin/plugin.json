@@ -9,5 +9,5 @@
   "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
   "keywords": ["pancakeswap", "swap", "liquidity", "lp", "defi", "deep-links", "token-discovery", "bsc", "bnb", "cake"],
   "license": "MIT",
-"skills": ["./skills/swap-planner", "./skills/liquidity-planner"]
+  "skills": ["./skills/swap-planner", "./skills/liquidity-planner", "./skills/collect-fees"]
 }

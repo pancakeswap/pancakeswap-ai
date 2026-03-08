@@ -9,5 +9,5 @@
   "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
   "keywords": ["pancakeswap", "farming", "yield", "cake", "staking", "syrup-pools", "bsc", "bnb", "defi"],
   "license": "MIT",
-  "skills": ["./skills/farming-planner", "./skills/collect-fees"]
+  "skills": ["./skills/farming-planner"]
 }

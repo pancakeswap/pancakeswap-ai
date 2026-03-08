@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.0.0'
+  version: '1.1.0'
 ---
 
 # PancakeSwap Collect Fees
@@ -20,7 +20,7 @@ This skill **does not execute transactions** — it reads on-chain state and gen
 **Key features:**
 - **5-step workflow**: Gather intent → Discover positions → Resolve tokens + prices → Display fee summary → Generate deep links
 - **V3**: On-chain position discovery via NonfungiblePositionManager (tokenId-based, ERC-721)
-- **Infinity (v4)**: Singleton PoolManager model — no NFT, UI-indexed; CAKE rewards auto-distributed every 8 hours
+- **Infinity (v4)**: Singleton PoolManager model — no NFT; positions discovered via Explorer API, CL fees computed on-chain; CAKE rewards auto-distributed every 8 hours
 - **V2 scope**: V2 fees are embedded in LP token value — no separate collection step (redirects to Remove Liquidity)
 - **Multi-chain**: 7 networks for V3; BSC and Base for Infinity
 
@@ -66,10 +66,10 @@ The routing decision is made after Step 1 based on the user's pool type preferen
 
 ### Infinity (v4) — Supported Chains Only
 
-| Chain           | Chain ID | Deep Link Key | Notes                          |
-|-----------------|----------|---------------|--------------------------------|
-| BNB Smart Chain | 56       | `bsc`         | CL pools + Bin pools           |
-| Base            | 8453     | `base`        | CL pools only (no Bin on Base) |
+| Chain           | Chain ID | Deep Link Key |
+|-----------------|----------|---------------|
+| BNB Smart Chain | 56       | `bsc`         |
+| Base            | 8453     | `base`        |
 
 **Infinity contract addresses (same on BSC and Base):**
 
@@ -149,18 +149,18 @@ curl -sf -X POST "$RPC" \
 
 ## Step 2B: Discover Infinity Positions
 
-Infinity uses a singleton `PoolManager` — positions are not ERC-721 NFTs. Use the PancakeSwap Explorer API to enumerate them. There are two pool types: **CL** (concentrated liquidity) and **Bin** (BSC only).
+Infinity uses a singleton `PoolManager` — positions are not ERC-721 NFTs. Use the PancakeSwap Explorer API to enumerate them. There are two pool types: **CL** (concentrated liquidity) and **Bin** (liquidity book).
 
 The API supports cursor-based pagination via `before` and `after` query parameters. Leave both empty for the first page; use `endCursor` from the response as `after` to fetch the next page if `hasNextPage` is `true`.
 
 ```bash
 EXPLORER='https://explorer.pancakeswap.com/api/cached/pools/positions'
-CHAIN='bsc'   # or 'base' for Base (CL only — no Bin on Base)
+CHAIN='bsc'   # or 'base' for Base
 
 # Infinity CL positions
 curl -s "${EXPLORER}/infinityCl/${CHAIN}/${WALLET}?before=&after=" | jq '.'
 
-# Infinity Bin positions (BSC only)
+# Infinity Bin positions
 curl -s "${EXPLORER}/infinityBin/${CHAIN}/poolsByOwner/${WALLET}?before=&after=" | jq '.'
 ```
 
@@ -381,7 +381,7 @@ Infinity (v4) Positions — BNB Smart Chain
 |-------------|------------|------------|----------------------|
 | (none found)                                                  |
 
-Note: Bin position fee amounts are visible in the PancakeSwap UI.
+Note: Bin position fee amounts require on-chain calculation not covered here; use the PancakeSwap UI for exact Bin fee amounts.
 
 CAKE Farming Rewards: Auto-distributed every 8 hours via Merkle proofs.
 No manual harvest is needed for CAKE rewards.

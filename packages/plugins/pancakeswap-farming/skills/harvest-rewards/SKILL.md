@@ -66,11 +66,11 @@ Route to the correct step based on what the user wants:
 
 | Chain    | RPC URL                                       |
 | -------- | --------------------------------------------- |
-| BSC      | `https://bsc-rpc.publicnode.com`              |
+| BSC      | `https://bsc-dataseed1.binance.org`           |
 | Ethereum | `https://ethereum-rpc.publicnode.com`         |
-| Arbitrum | `https://arbitrum-one-rpc.publicnode.com`     |
-| Base     | `https://base-rpc.publicnode.com`             |
-| zkSync   | `https://zksync-era-rpc.publicnode.com`       |
+| Arbitrum | `https://arb1.arbitrum.io/rpc`                |
+| Base     | `https://mainnet.base.org`                    |
+| zkSync   | `https://mainnet.era.zksync.io`               |
 
 ---
 
@@ -107,7 +107,7 @@ Run the appropriate scan for each position type the user has (or scan all four o
 
 ### 1a. V2 Farm — Check Pending CAKE
 
-Iterate over common V2 pool IDs (0–5 covers the highest-TVL farms). For each PID, call `pendingCake`:
+Iterate over common V2 pool IDs (0–7 covers the highest-TVL farms). For each PID, call `pendingCake`:
 
 ```bash
 [[ "$YOUR_ADDRESS" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid address"; exit 1; }

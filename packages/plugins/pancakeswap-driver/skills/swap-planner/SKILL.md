@@ -140,7 +140,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 For well-known PancakeSwap-listed tokens, check the official token list first:
 
 ```bash
-curl -s "https://tokens.pancakeswap.finance/pancakeswap-default.tokenlist.json" | \
+curl -s "https://tokens.pancakeswap.finance/pancakeswap-extended.json" | \
   jq --arg sym "CAKE" '.tokens[] | select(.symbol == $sym) | {name, symbol, address, chainId, decimals}'
 ```
 

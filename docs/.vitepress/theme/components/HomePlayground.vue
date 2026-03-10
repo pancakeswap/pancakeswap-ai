@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 
 const loaded = ref(false)
+
+const bypass = import.meta.env.VITE_PLAYGROUND_BYPASS_SECRET
+const playgroundUrl = `https://pancake-kitchen-git-vercel-ably.pancake.run/${bypass ? `?x-vercel-protection-bypass=${bypass}` : ''}`
 </script>
 
 <template>
@@ -17,7 +20,7 @@ const loaded = ref(false)
           <span class="pg-loader-text">Loading playground…</span>
         </div>
         <iframe
-          src="http://167.172.74.177:888/"
+          :src="playgroundUrl"
           title="PancakeSwap AI Playground"
           allow="clipboard-write"
           loading="lazy"

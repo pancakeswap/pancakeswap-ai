@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.0.0'
+  version: '1.2.0'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -98,12 +98,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 
 ### B. PancakeSwap Token List (Official Tokens)
 
-For well-known PancakeSwap-listed tokens, check the official token list:
-
-```bash
-curl -s "https://tokens.pancakeswap.finance/pancakeswap-default.tokenlist.json" | \
-  jq --arg sym "CAKE" '.tokens[] | select(.symbol == $sym) | {name, symbol, address, chainId, decimals}'
-```
+Read `../common/token-lists.md` for the per-chain primary token list URLs and resolution algorithm. Tokens found in a primary PancakeSwap list are **whitelisted** — skip the red-flag checks in Step 3. Tokens found only in secondary lists still require Step 3 verification. Tokens **not found in any list** are a **red flag** — warn the user prominently before proceeding.
 
 ### C. Native Tokens & URL Format
 
@@ -161,6 +156,7 @@ curl -sf -X POST "$RPC" \
 - Deployed < 48 hours with no audits
 - Liquidity entirely in a single wallet (rug risk)
 - Address from unverified source (DM, social comment)
+- Token not found in any PancakeSwap or community token list (primary or secondary) for this chain
 
 ---
 
@@ -506,7 +502,7 @@ Mention these opportunities when discussing position management:
 Before generating any deep link, confirm:
 
 - [ ] Both token addresses verified on-chain (name, symbol, decimals match)
-- [ ] Tokens exist on the specified chain (token list or on-chain lookup)
+- [ ] Tokens found in at least one token list; if absent from all lists, user has been explicitly warned
 - [ ] Pool exists on PancakeSwap with reasonable liquidity (> $10K USD)
 - [ ] Fee tier is valid for the chain and pool type
 - [ ] Chain ID and deep link key match
@@ -599,3 +595,4 @@ Before presenting a deep link to the user, confirm **all** of the following:
 
 - **Data Providers**: See `references/data-providers.md` for DexScreener, DefiLlama, and PancakeSwap API endpoints
 - **Position Types**: See `references/position-types.md` for V2 vs. V3 vs. StableSwap comparison matrices
+- **Token Lists**: See `../common/token-lists.md` for per-chain PancakeSwap token list URLs. Use these to resolve token symbols/decimals and to determine whether a token is PancakeSwap-whitelisted before assessing a pool.

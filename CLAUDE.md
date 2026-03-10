@@ -18,10 +18,12 @@ pancakeswap-ai/
 │   └── suites/               # Per-skill eval suites
 │       ├── swap-planner/       # pancakeswap-driver skill evals
 │       ├── liquidity-planner/  # pancakeswap-driver skill evals
-│       └── farming-planner/    # pancakeswap-farming skill evals
+│       ├── farming-planner/    # pancakeswap-farming skill evals
+│       └── infinity-security-foundations/  # pancakeswap-infinity skill evals
 ├── packages/
 │   └── plugins/              # Claude Code plugins
 │       ├── pancakeswap-driver/    # Swap planner + liquidity planner skills
+│       ├── pancakeswap-infinity/  # Infinity (v4) hook security foundations
 │       └── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
 ├── scripts/
 │   └── validate-plugin.cjs   # Plugin validation
@@ -41,15 +43,28 @@ pancakeswap-ai/
 **Skills:**
 - `swap-planner` — Discover tokens, verify contracts, fetch prices, and generate pancakeswap.finance deep links.
 - `liquidity-planner` — Plan LP positions (V2, V3, StableSwap), assess pool liquidity/APY, recommend fee tiers and price ranges, generate liquidity deep links.
+- `collect-fees` — Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions.
 
 **Install:**
 ```bash
 claude plugin add @pancakeswap/pancakeswap-driver
 ```
 
+### pancakeswap-infinity
+
+**Purpose:** Security-first AI tools for developing PancakeSwap Infinity (v4) hooks.
+
+**Skills:**
+- `infinity-security-foundations` — Threat models, permission flags risk matrix, delta accounting, access control patterns, vulnerability catalog, audit checklists, and base hook templates for CL and Bin pool hooks.
+
+**Install:**
+```bash
+claude plugin add @pancakeswap/pancakeswap-infinity
+```
+
 ### pancakeswap-farming
 
-**Purpose:** Plan yield farming, CAKE staking, and reward harvesting on PancakeSwap.
+**Purpose:** Plan yield farming and CAKE staking on PancakeSwap.
 
 **Skills:**
 - `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.

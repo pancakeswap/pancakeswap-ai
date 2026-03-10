@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.3.0'
+  version: '1.5.0'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -176,14 +176,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 
 ### C. PancakeSwap Token List (Official Tokens)
 
-For well-known PancakeSwap-listed tokens, check the official token list first:
-
-```bash
-curl -s "https://tokens.pancakeswap.finance/pancakeswap-extended.json" | \
-  jq --arg sym "CAKE" '.tokens[] | select(.symbol == $sym) | {name, symbol, address, chainId, decimals}'
-```
-
-Replace `"CAKE"` with the symbol the user mentioned. This is the most trustworthy source for tokens that PancakeSwap officially lists.
+Read `../common/token-lists.md` for the per-chain primary token list URLs. Tokens found in a primary PancakeSwap list are **whitelisted** — skip the scam/red-flag checks in Step 3 for these tokens. Tokens found only in secondary lists still require Step 3 verification. Tokens **not found in any list** (primary or secondary) are a **red flag** — surface a prominent warning to the user before proceeding.
 
 ### D. GeckoTerminal Fallback (when DexScreener returns no results)
 
@@ -381,6 +374,7 @@ curl -sf -X POST "$RPC" \
 - Token deployed within the last 24–48 hours with no audits
 - Liquidity is entirely in a single wallet (rug risk)
 - Address came from a DM, social media comment, or unverified source
+- Token not found in any PancakeSwap or community token list (primary or secondary) for this chain
 
 
 ### Method C: Solana RPC (SPL tokens)
@@ -655,6 +649,7 @@ Before presenting a deep link to the user, confirm all of the following:
 - [ ] No extreme 24h price drop without explanation
 - [ ] `exactAmount` is human-readable (not wei)
 - [ ] `chain` key matches the token's actual chain
+- [ ] If token is absent from all token lists, user has been explicitly warned
 
 ---
 

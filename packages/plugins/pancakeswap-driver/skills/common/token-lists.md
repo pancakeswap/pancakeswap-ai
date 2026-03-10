@@ -22,7 +22,7 @@ If a token is absent from **all** lists (primary and secondary) for its chain, t
 | opBNB           | 204      | `https://tokens.pancakeswap.finance/pancakeswap-opbnb-default.json`                                              | —                                                                                                                                                              |
 | Monad Mainnet   | 143.     | `https://tokens.pancakeswap.finance/pancakeswap-monad-default.json`                                              | —                                                                                                                                                              |
 | Monad Testnet   | 10143    | `https://tokens.pancakeswap.finance/pancakeswap-monad-testnet-default.json`                                      | —                                                                                                                                                              |
-| Solana          | -        | `https://tokens.pancakeswap.finance/pancakeswap-solana-default.json`                                             | -                                                                                                                                                              |
+| Solana          | -        | `https://tokens.pancakeswap.finance/pancakeswap-solana-default.json`                                             | —                                                                                                                                                              |
 
 ---
 

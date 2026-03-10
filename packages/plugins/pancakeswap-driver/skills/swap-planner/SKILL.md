@@ -546,6 +546,7 @@ const EVM_CHAIN_KEYS: Record<number, string> = {
   59144: 'linea',
   204: 'opbnb',
   143: 'monad',
+  0: 'solana',
 }
 
 // Solana has no EVM chain ID — pass chainKey: 'sol' directly

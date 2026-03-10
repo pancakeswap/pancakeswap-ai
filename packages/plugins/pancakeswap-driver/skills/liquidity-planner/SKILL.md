@@ -53,7 +53,6 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 | opBNB           | 204      | `opbnb`       | BNB          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | BSC Testnet     | 97       | `bsctest`     | BNB          | V2, V3 (dev/testing only)                                                                                        |
 | Solana          | -        | `sol`         | SOL          | V3 (0.01%, 0.02%, 0.03%, 0.04%, 0.05%, 0.1%, 0.15%, 0.16%, 0.18%, 0.2%, 0.25%, 0.4%, 0.6%, 0.8%, 1%, 2%, 3%, 4%) |
-
 ---
 
 ## Step 1: Gather LP Intent

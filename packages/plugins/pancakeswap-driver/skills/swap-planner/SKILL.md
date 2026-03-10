@@ -124,7 +124,7 @@ When PCSX is relevant, include in the output:
 | BNB Smart Chain    | 56       | `bsc`         | BNB          | RWAs only    | `https://bsc-dataseed1.binance.org`     |
 | Ethereum           | 1        | `eth`         | ETH          | Crypto       | `https://cloudflare-eth.com`            |
 | Arbitrum One       | 42161    | `arb`         | ETH          | Crypto       | `https://arb1.arbitrum.io/rpc`          |
-| Base               | 8453     | `base`        | ETH          | —            | `https://mainnet.base.org`              |
+| Base               | 8453     | `base`        | ETH          | Crypto       | `https://mainnet.base.org`              |
 | zkSync Era         | 324      | `zksync`      | ETH          | —            | `https://mainnet.era.zksync.io`         |
 | Linea              | 59144    | `linea`       | ETH          | —            | `https://rpc.linea.build`               |
 | opBNB              | 204      | `opbnb`       | BNB          | —            | `https://opbnb-mainnet-rpc.bnbchain.org`|

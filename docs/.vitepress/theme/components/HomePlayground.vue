@@ -4,7 +4,7 @@ import { ref } from 'vue'
 const loaded = ref(false)
 
 const bypass = import.meta.env.VITE_PLAYGROUND_BYPASS_SECRET
-const playgroundUrl = `https://pancake-kitchen-git-vercel-ably.pancake.run/${bypass ? `?x-vercel-protection-bypass=${bypass}` : ''}`
+const playgroundUrl = `https://pancake-kitchen.pancake.run/${bypass ? `?x-vercel-protection-bypass=${bypass}` : ''}`
 </script>
 
 <template>

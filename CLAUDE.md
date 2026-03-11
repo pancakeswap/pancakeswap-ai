@@ -25,8 +25,8 @@ pancakeswap-ai/
 │       └── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
 ├── scripts/
 │   └── validate-plugin.cjs   # Plugin validation
-├── CLAUDE.md                 # This file (also symlinked as AGENTS.md)
-├── AGENTS.md                 # Symlink → CLAUDE.md (agent-agnostic)
+├── CLAUDE.md                 # This file — developer + project instructions
+├── AGENTS.md                 # Machine-readable skill index for AI agents
 ├── nx.json                   # Nx workspace config
 ├── package.json              # Root package (workspaces)
 └── tsconfig.base.json        # Base TypeScript config
@@ -166,7 +166,7 @@ Content of the skill...
 
 This repo is designed to work with **any** LLM coding agent (Claude Code, Cursor, Copilot, etc.):
 
-- `AGENTS.md` is a symlink to `CLAUDE.md` — agents that look for either file will find the same content
+- `AGENTS.md` is a machine-readable skill index — agents fetch it to discover skills, invocation patterns, and install commands
 - Skills use plain Markdown — no vendor-specific formats
 - Prompts avoid Claude-specific instructions
 - Tool permissions are declared in skill frontmatter (enforced by Claude Code, advisory for others)

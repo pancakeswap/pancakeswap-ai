@@ -2,7 +2,7 @@
 
 This file is the machine-readable index for AI agents. It describes available skills, when to invoke them, and example invocation patterns.
 
-This is a standalone machine-readable manifest for the agents defined in `CLAUDE.md` in this repository: <https://github.com/pancakeswap/pancakeswap-ai>.
+For developer and project instructions, see `CLAUDE.md` or the full repository at <https://github.com/pancakeswap/pancakeswap-ai>.
 
 ---
 

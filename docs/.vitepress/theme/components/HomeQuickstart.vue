@@ -8,16 +8,29 @@ const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancake
 
 const llmCode = `https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md`
 
+async function copyToClipboard(text: string, copiedFlag: { value: boolean }) {
+  if (typeof navigator === 'undefined' || !navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+    console.error('Clipboard API is not available in this environment.')
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedFlag.value = true
+    setTimeout(() => {
+      copiedFlag.value = false
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy to clipboard:', error)
+  }
+}
+
 function copyHuman() {
-  navigator.clipboard.writeText(humanPrompt)
-  humanCopied.value = true
-  setTimeout(() => { humanCopied.value = false }, 2000)
+  copyToClipboard(humanPrompt, humanCopied)
 }
 
 function copyLLM() {
-  navigator.clipboard.writeText(llmCode)
-  llmCopied.value = true
-  setTimeout(() => { llmCopied.value = false }, 2000)
+  copyToClipboard(llmCode, llmCopied)
 }
 </script>
 

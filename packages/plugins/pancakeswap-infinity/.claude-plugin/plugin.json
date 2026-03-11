@@ -7,7 +7,17 @@
     "email": "chef.sanji@pancakeswap.com"
   },
   "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
-  "keywords": ["pancakeswap", "infinity", "hooks", "v4", "security", "audit", "cl-pool", "bin-pool", "solidity"],
+  "keywords": [
+    "pancakeswap",
+    "infinity",
+    "hooks",
+    "v4",
+    "security",
+    "audit",
+    "cl-pool",
+    "bin-pool",
+    "solidity"
+  ],
   "license": "MIT",
   "skills": ["./skills/infinity-security-foundations"]
 }

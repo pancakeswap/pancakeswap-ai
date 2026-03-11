@@ -59,9 +59,9 @@ Or reference the skill path in your Cursor rules configuration.
 
 Some features require environment variables:
 
-| Variable | Required For | Description |
-|----------|-------------|-------------|
-| `ANTHROPIC_API_KEY` | LLM evals | Anthropic API key for promptfoo evals |
+| Variable            | Required For | Description                           |
+| ------------------- | ------------ | ------------------------------------- |
+| `ANTHROPIC_API_KEY` | LLM evals    | Anthropic API key for promptfoo evals |
 
 ::: warning
 Never use a mainnet private key in environment variables.

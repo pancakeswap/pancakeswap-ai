@@ -41,11 +41,13 @@ pancakeswap-ai/
 **Purpose:** Plan swaps and liquidity positions, generate deep links to the PancakeSwap interface.
 
 **Skills:**
+
 - `swap-planner` — Discover tokens, verify contracts, fetch prices, and generate pancakeswap.finance deep links.
 - `liquidity-planner` — Plan LP positions (V2, V3, StableSwap), assess pool liquidity/APY, recommend fee tiers and price ranges, generate liquidity deep links.
 - `collect-fees` — Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions.
 
 **Install:**
+
 ```bash
 claude plugin add @pancakeswap/pancakeswap-driver
 ```
@@ -55,9 +57,11 @@ claude plugin add @pancakeswap/pancakeswap-driver
 **Purpose:** Security-first AI tools for developing PancakeSwap Infinity (v4) hooks.
 
 **Skills:**
+
 - `infinity-security-foundations` — Threat models, permission flags risk matrix, delta accounting, access control patterns, vulnerability catalog, audit checklists, and base hook templates for CL and Bin pool hooks.
 
 **Install:**
+
 ```bash
 claude plugin add @pancakeswap/pancakeswap-infinity
 ```
@@ -67,9 +71,11 @@ claude plugin add @pancakeswap/pancakeswap-infinity
 **Purpose:** Plan yield farming and CAKE staking on PancakeSwap.
 
 **Skills:**
+
 - `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.
 
 **Install:**
+
 ```bash
 claude plugin add @pancakeswap/pancakeswap-farming
 ```
@@ -171,7 +177,6 @@ metadata:
   author: pancakeswap
   version: 'X.Y.Z'
 ---
-
 # Skill Title
 
 Content of the skill...

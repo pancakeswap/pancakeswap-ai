@@ -36,6 +36,7 @@ A comprehensive security guide for developing hooks on PancakeSwap Infinity. Thi
 11. [Gas Budget Guidelines](#gas-budget-guidelines)
 12. [Risk Scoring System](#risk-scoring-system)
 13. [Bin Pool Considerations](#bin-pool-considerations)
+
 ---
 
 ## Architecture Overview
@@ -44,15 +45,15 @@ PancakeSwap Infinity differs fundamentally from Uniswap v4 in its core architect
 
 ### Key Architectural Differences
 
-| Component | Uniswap v4 | PancakeSwap Infinity |
-|-----------|-----------|---------------------|
-| **Settlement Model** | PoolManager.unlock | Vault.lock + lockAcquired |
-| **Pool Types** | Single (concentrated) | Dual: CL (CLPoolManager) + Bin (BinPoolManager) |
-| **Hook Base Contracts** | BaseHook | CLBaseHook, BinBaseHook |
-| **Entry Point** | poolManager.execute() | vault.lock(data) |
-| **Permission Bits** | 8 CL hooks | 14 CL hooks + Bin-specific |
-| **Fee Override** | beforeSwap returns BeforeSwapDelta | returns (bytes4, BeforeSwapDelta, uint24) |
-| **Token Transfer** | Direct transfers | vault.sync() → transfer → vault.settle() |
+| Component               | Uniswap v4                         | PancakeSwap Infinity                            |
+| ----------------------- | ---------------------------------- | ----------------------------------------------- |
+| **Settlement Model**    | PoolManager.unlock                 | Vault.lock + lockAcquired                       |
+| **Pool Types**          | Single (concentrated)              | Dual: CL (CLPoolManager) + Bin (BinPoolManager) |
+| **Hook Base Contracts** | BaseHook                           | CLBaseHook, BinBaseHook                         |
+| **Entry Point**         | poolManager.execute()              | vault.lock(data)                                |
+| **Permission Bits**     | 8 CL hooks                         | 14 CL hooks + Bin-specific                      |
+| **Fee Override**        | beforeSwap returns BeforeSwapDelta | returns (bytes4, BeforeSwapDelta, uint24)       |
+| **Token Transfer**      | Direct transfers                   | vault.sync() → transfer → vault.settle()        |
 
 ### Critical Imports (PancakeSwap Infinity)
 
@@ -79,6 +80,7 @@ import {BeforeSwapDelta} from "infinity-core/src/types/BeforeSwapDelta.sol";
 **Risk**: Attacker contracts may impersonate legitimate callers to vault.lock()
 
 **Attack Vector**:
+
 ```solidity
 // VULNERABLE: Hook doesn't verify true caller
 function beforeSwap(address sender, PoolKey calldata key, ICLPoolManager.SwapParams calldata params, bytes calldata)
@@ -137,22 +139,22 @@ function beforeSwap(...) external override returns (bytes4, BeforeSwapDelta, uin
 
 ### CL Pool Hook Permissions (14 bits)
 
-| Permission | Hook Callback | Risk Level | Ability |
-|-----------|---------------|-----------|---------|
-| 0x0001 | beforeInitialize | CRITICAL | Prevent pool creation, observe key |
-| 0x0002 | afterInitialize | HIGH | Observe initial state |
-| 0x0004 | beforeAddLiquidity | CRITICAL | Drain liquidity, reject deposits |
-| 0x0008 | afterAddLiquidity | HIGH | State changes after LP adds |
-| 0x0010 | beforeRemoveLiquidity | CRITICAL | Prevent exits, DOS liquidity providers |
-| 0x0020 | afterRemoveLiquidity | HIGH | Track LP exits |
-| 0x0040 | beforeSwap | CRITICAL | Prevent swaps, manipulate pricing, fee override |
-| 0x0080 | afterSwap | HIGH | Track swap data |
-| 0x0100 | beforeDonate | MEDIUM | Reject donations |
-| 0x0200 | afterDonate | MEDIUM | Track donations |
-| 0x0400 | beforeSwapReturnDelta | CRITICAL | Return arbitrary delta, cause vault loss |
-| 0x0800 | afterSwapReturnDelta | CRITICAL | Modify output amounts |
-| 0x1000 | afterAddLiquidityReturnDelta | CRITICAL | Mint more LP tokens than earned |
-| 0x2000 | afterRemoveLiquidityReturnDelta | CRITICAL | Give away vault tokens |
+| Permission | Hook Callback                   | Risk Level | Ability                                         |
+| ---------- | ------------------------------- | ---------- | ----------------------------------------------- |
+| 0x0001     | beforeInitialize                | CRITICAL   | Prevent pool creation, observe key              |
+| 0x0002     | afterInitialize                 | HIGH       | Observe initial state                           |
+| 0x0004     | beforeAddLiquidity              | CRITICAL   | Drain liquidity, reject deposits                |
+| 0x0008     | afterAddLiquidity               | HIGH       | State changes after LP adds                     |
+| 0x0010     | beforeRemoveLiquidity           | CRITICAL   | Prevent exits, DOS liquidity providers          |
+| 0x0020     | afterRemoveLiquidity            | HIGH       | Track LP exits                                  |
+| 0x0040     | beforeSwap                      | CRITICAL   | Prevent swaps, manipulate pricing, fee override |
+| 0x0080     | afterSwap                       | HIGH       | Track swap data                                 |
+| 0x0100     | beforeDonate                    | MEDIUM     | Reject donations                                |
+| 0x0200     | afterDonate                     | MEDIUM     | Track donations                                 |
+| 0x0400     | beforeSwapReturnDelta           | CRITICAL   | Return arbitrary delta, cause vault loss        |
+| 0x0800     | afterSwapReturnDelta            | CRITICAL   | Modify output amounts                           |
+| 0x1000     | afterAddLiquidityReturnDelta    | CRITICAL   | Mint more LP tokens than earned                 |
+| 0x2000     | afterRemoveLiquidityReturnDelta | CRITICAL   | Give away vault tokens                          |
 
 ### Risk Classification
 
@@ -163,6 +165,7 @@ function beforeSwap(...) external override returns (bytes4, BeforeSwapDelta, uin
 ### Bin Pool Permissions (Unique)
 
 Bin pools have slightly different callback signatures. Verify with BinPoolManager interface:
+
 - beforeInitialize, afterInitialize (same as CL)
 - beforeSwap, afterSwap (different signature - uses binDelta)
 - beforeAddLiquidity, beforeRemoveLiquidity (Bin-specific delta types)
@@ -869,63 +872,75 @@ contract SecureHookTemplate is CLBaseHook {
 Before deploying any Infinity hook, verify:
 
 1. **Hook Permissions**
+
    - [ ] Only minimum required permissions are registered
-   - [ ] No unnecessary CRITICAL permissions (beforeSwap, *ReturnDelta)
+   - [ ] No unnecessary CRITICAL permissions (beforeSwap, \*ReturnDelta)
    - [ ] Pool manager verifies permissions during initialization
 
 2. **Access Control**
+
    - [ ] All callbacks use `onlyPoolManager` modifier
    - [ ] No external functions that modify hook state
    - [ ] Constructor stores poolManager and vault as immutable
 
 3. **Delta Accounting**
+
    - [ ] All `*ReturnDelta` hooks return unmodified or audit-approved deltas
    - [ ] No stealing from vault via delta manipulation
    - [ ] Delta math is overflow/underflow safe
 
 4. **Token Safety**
+
    - [ ] Handles fee-on-transfer tokens gracefully
    - [ ] Uses vault.sync() before critical operations
    - [ ] Checks actual balance changes, not assumed amounts
    - [ ] No reentrancy vulnerabilities with ERC-777
 
 5. **State Management**
+
    - [ ] No upgradeable patterns or admin keys
    - [ ] State changes are idempotent where possible
    - [ ] Events emitted for critical operations
 
 6. **Gas Efficiency**
+
    - [ ] Callbacks execute within gas budgets
    - [ ] No excessive state reads in hot paths
    - [ ] Avoid loops in hooks unless bounded
 
 7. **Testing**
+
    - [ ] Unit tests for all callbacks
    - [ ] Integration tests with vault settlement
    - [ ] Fuzz tests with 10k+ runs
    - [ ] Run with `forge test --isolate`
 
 8. **Dual Pool Support** (if applicable)
+
    - [ ] CLBaseHook used only for CL pools
    - [ ] Validate pool type in beforeInitialize
    - [ ] No assumptions about pool structure
 
 9. **Fee Override Logic** (if used)
+
    - [ ] Fee override is deterministic
    - [ ] Fee does not exceed MAX_FEE
    - [ ] No reentrancy in fee calculation
 
 10. **Router Verification** (if applicable)
+
     - [ ] Router/sender allowlisting is enforced
     - [ ] Allowlist can't be modified post-deployment
     - [ ] No logic bypasses on missing sender
 
 11. **Error Handling**
+
     - [ ] Clear error messages for debugging
     - [ ] Invalid input validation in callbacks
     - [ ] No silent failures in state updates
 
 12. **Documentation**
+
     - [ ] README explaining hook behavior
     - [ ] NatSpec comments on all functions
     - [ ] Security assumptions documented
@@ -943,22 +958,22 @@ Hook callbacks have strict gas budgets. Exceed them and transactions revert.
 
 ### Per-Callback Gas Limits
 
-| Callback | Approx Budget | Notes |
-|----------|---------------|-------|
-| beforeInitialize | 20,000 | Validation only |
-| afterInitialize | 20,000 | State updates okay |
-| beforeAddLiquidity | 50,000 | May check LP status |
-| afterAddLiquidity | 50,000 | Update tracking |
-| beforeRemoveLiquidity | 50,000 | Validate removal |
-| afterRemoveLiquidity | 50,000 | Cleanup |
-| beforeSwap | 100,000 | Can be expensive; fee logic |
-| afterSwap | 50,000 | Log swap data |
-| beforeDonate | 20,000 | Minimal |
-| afterDonate | 20,000 | Minimal |
-| beforeSwapReturnDelta | 20,000 | Return only |
-| afterSwapReturnDelta | 20,000 | Return delta |
-| afterAddLiquidityReturnDelta | 20,000 | Return delta |
-| afterRemoveLiquidityReturnDelta | 20,000 | Return delta |
+| Callback                        | Approx Budget | Notes                       |
+| ------------------------------- | ------------- | --------------------------- |
+| beforeInitialize                | 20,000        | Validation only             |
+| afterInitialize                 | 20,000        | State updates okay          |
+| beforeAddLiquidity              | 50,000        | May check LP status         |
+| afterAddLiquidity               | 50,000        | Update tracking             |
+| beforeRemoveLiquidity           | 50,000        | Validate removal            |
+| afterRemoveLiquidity            | 50,000        | Cleanup                     |
+| beforeSwap                      | 100,000       | Can be expensive; fee logic |
+| afterSwap                       | 50,000        | Log swap data               |
+| beforeDonate                    | 20,000        | Minimal                     |
+| afterDonate                     | 20,000        | Minimal                     |
+| beforeSwapReturnDelta           | 20,000        | Return only                 |
+| afterSwapReturnDelta            | 20,000        | Return delta                |
+| afterAddLiquidityReturnDelta    | 20,000        | Return delta                |
+| afterRemoveLiquidityReturnDelta | 20,000        | Return delta                |
 
 ### Optimization Tips
 
@@ -989,26 +1004,31 @@ Use this framework when evaluating hooks for audit:
 ### Scoring (1-10, higher = riskier)
 
 **Permission Risk**: Number of CRITICAL permissions used
+
 - 0 CRITICAL = 1 point
 - 1 CRITICAL = 5 points
 - 2+ CRITICAL = 10 points
 
 **Delta Manipulation Risk**: Does hook modify deltas?
+
 - Never modifies = 1 point
 - Modifies with clear audit trail = 5 points
 - Modifies without documentation = 10 points
 
 **State Complexity**: Number of storage mappings
+
 - < 3 = 1 point
 - 3-10 = 5 points
 - > 10 = 10 points
 
 **External Call Risk**: Calls to other contracts
+
 - No calls = 1 point
 - Calls to audited contracts = 5 points
 - Calls to user-supplied contracts = 10 points
 
 **Gas Risk**: Expected gas usage vs budget
+
 - < 50% budget = 1 point
 - 50-80% budget = 5 points
 - > 80% budget = 10 points
@@ -1032,14 +1052,14 @@ PancakeSwap Infinity's Bin pools are unique to PancakeSwap and differ from CL po
 
 ### Key Differences
 
-| Aspect | CL Pools | Bin Pools |
-|--------|----------|-----------|
-| **Liquidity Distribution** | Concentrated around ticks | Distributed across bins |
-| **Tick Size** | Dynamic (1.0001^n) | Fixed bin width (0.5%) |
-| **Hook Type** | CLBaseHook | BinBaseHook |
-| **Delta Types** | int128 (amount0, amount1) | BinDelta (similar but bin-indexed) |
-| **Fee Model** | Per-basis-points | Can vary per bin |
-| **Callback Signature** | Uses tick-based params | Uses bin-based params |
+| Aspect                     | CL Pools                  | Bin Pools                          |
+| -------------------------- | ------------------------- | ---------------------------------- |
+| **Liquidity Distribution** | Concentrated around ticks | Distributed across bins            |
+| **Tick Size**              | Dynamic (1.0001^n)        | Fixed bin width (0.5%)             |
+| **Hook Type**              | CLBaseHook                | BinBaseHook                        |
+| **Delta Types**            | int128 (amount0, amount1) | BinDelta (similar but bin-indexed) |
+| **Fee Model**              | Per-basis-points          | Can vary per bin                   |
+| **Callback Signature**     | Uses tick-based params    | Uses bin-based params              |
 
 ### BinBaseHook Import
 
@@ -1074,7 +1094,6 @@ If bridging CL hooks to Bin:
 **Never assume CL logic works on Bin pools without explicit testing.**
 
 ---
-
 
 ---
 

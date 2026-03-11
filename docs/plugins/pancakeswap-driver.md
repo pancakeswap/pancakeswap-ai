@@ -4,12 +4,12 @@ AI-powered assistance for planning PancakeSwap swaps and liquidity positions —
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| **Name** | `pancakeswap-driver` |
-| **Version** | 1.0.0 |
-| **Author** | PancakeSwap |
-| **License** | MIT |
+| Field        | Value                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------- |
+| **Name**     | `pancakeswap-driver`                                                                                    |
+| **Version**  | 1.0.0                                                                                                   |
+| **Author**   | PancakeSwap                                                                                             |
+| **License**  | MIT                                                                                                     |
 | **Keywords** | `pancakeswap`, `swap`, `liquidity`, `lp`, `defi`, `deep-links`, `token-discovery`, `bsc`, `bnb`, `cake` |
 
 ## Skills
@@ -19,6 +19,7 @@ AI-powered assistance for planning PancakeSwap swaps and liquidity positions —
 Plan token swaps by gathering user intent and generating deep links to the PancakeSwap UI.
 
 **Capabilities:**
+
 - Token discovery and contract verification via on-chain calls
 - Price fetching from CoinGecko and on-chain quotes
 - Multi-chain deep link generation (BSC, Ethereum, Arbitrum, Base, and more)
@@ -30,6 +31,7 @@ Plan token swaps by gathering user intent and generating deep links to the Panca
 Plan LP positions with pool assessment and APY analysis.
 
 **Capabilities:**
+
 - 9-step workflow: intent → tokens → validation → pools → liquidity → APY → price range → fee tier → deep link
 - V2, V3, and StableSwap pool support
 - Fee tier guidance (0.01%, 0.05%, 0.25%, 1%)

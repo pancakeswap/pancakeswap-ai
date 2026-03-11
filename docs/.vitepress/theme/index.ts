@@ -4,7 +4,8 @@ import './custom.css'
 
 export default {
   ...DefaultTheme,
-  enhanceApp({ app }) {
-    app.component('HomeQuickstart', HomeQuickstart)
-  }
+  enhanceApp(ctx) {
+    DefaultTheme.enhanceApp?.(ctx)
+    ctx.app.component('HomeQuickstart', HomeQuickstart)
+}
 }

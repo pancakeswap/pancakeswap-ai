@@ -56,7 +56,7 @@ If `PCS_HUB_TOKEN` is not set, stop and tell the user to set it, then continue w
 | Rate limit            | 100 requests/minute (dev); contact PancakeSwap to increase    |
 | Amount format         | Wei (raw units) — must convert from human-readable            |
 | Native token (BSC)    | Use zero address `0x0000000000000000000000000000000000000000` |
-| Router contract (BSC) | `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`                  |
+| Router contract (BSC) | `0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a`                  |
 
 > If the user requests a chain other than BSC, skip the Hub API and go directly to Step 5 (generate a standard PancakeSwap deep link with a note that Hub routing is BSC-only).
 
@@ -104,14 +104,14 @@ https://link.trustwallet.com/send?asset=c20000714&address={router}&amount={decim
 | Parameter | Value                                                                          |
 | --------- | ------------------------------------------------------------------------------ |
 | `asset`   | `c20000714` (BNB Smart Chain native — SLIP44 714 with chain prefix)            |
-| `address` | Router address `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`                    |
+| `address` | Router address `0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a`                    |
 | `amount`  | `TX_VALUE` converted from hex wei → decimal BNB (or `0` for ERC-20-only swaps) |
 | `data`    | Hex-encoded calldata (`TX_DATA`)                                               |
 
 Construction:
 
 ```bash
-PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+PCS_HUB_ROUTER="0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a"
 
 # Convert hex value to decimal BNB (18 decimals)
 TX_VALUE_DEC=$(python3 -c "
@@ -135,8 +135,8 @@ Return a structured JSON payload suitable for programmatic use:
   "outputToken": { "address": "...", "symbol": "...", "estimatedAmount": "..." },
   "routes": [...],
   "gas": 306000,
-  "eip681Url": "ethereum:0x13f4EA83D0bd40E75C8222255bc855a974568Dd4@56?value=0x00&data=0x...",
-  "txTo": "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4",
+  "eip681Url": "ethereum:0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a@56?value=0x00&data=0x...",
+  "txTo": "0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a",
   "txValue": "0x00",
   "txData": "0x..."
 }
@@ -469,7 +469,7 @@ Only call `/calldata` when the Step 4 quote succeeded (no `error` field in the r
 - Otherwise use the zero address (`0x0000000000000000000000000000000000000000`); the router sends to `msg.sender`.
 
 ```bash
-PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+PCS_HUB_ROUTER="0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a"
 RECIPIENT="${RECIPIENT_ADDRESS:-0x0000000000000000000000000000000000000000}"  # msg.sender if unknown
 SLIPPAGE="0.005"  # 0.5% default; override from user input
 
@@ -497,7 +497,7 @@ TX_DATA=$(echo "$CALLDATA_RESPONSE" | jq -r '.calldata')  # hex-encoded calldata
 ### EIP-681 URL (for `pancakeswap`, `binance-wallet`, and `headless` channels)
 
 ```bash
-PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+PCS_HUB_ROUTER="0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a"
 CHAIN_ID=56
 
 # TX_VALUE is already hex from calldata response (e.g. "0x3E2C284391C0000")
@@ -567,7 +567,7 @@ Route Splits:
 💡  Verify token addresses on BSCScan before confirming
 
 🔗 Transaction (EIP-681):
-ethereum:0x13f4EA83D0bd40E75C8222255bc855a974568Dd4@56?value=0x00&data=0x9aa90356...
+ethereum:0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a@56?value=0x00&data=0x9aa90356...
 ```
 
 For `binance-wallet` channel, append:
@@ -580,7 +580,7 @@ For `trust-wallet` channel, output the Trust Wallet send link instead of the EIP
 
 ```
 🔗 Open in Trust Wallet:
-https://link.trustwallet.com/send?asset=c20000714&address=0x13f4EA83D0bd40E75C8222255bc855a974568Dd4&amount=0.28&data=0x9aa90356...
+https://link.trustwallet.com/send?asset=c20000714&address=0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a&amount=0.28&data=0x9aa90356...
 
 (Tapping this link opens Trust Wallet's native transaction signing flow.)
 ```
@@ -655,7 +655,7 @@ Before presenting output to the user, confirm all of the following:
 - [ ] Hub API error field checked before parsing quote fields
 - [ ] `/calldata` error field checked before using `value` / `calldata`
 - [ ] `recipient` is a valid `^0x[0-9a-fA-F]{40}$` address if supplied
-- [ ] EIP-681 URL contains the correct router address (`0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`)
+- [ ] EIP-681 URL contains the correct router address (`0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a`)
 
 ---
 

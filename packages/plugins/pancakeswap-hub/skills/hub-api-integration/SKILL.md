@@ -80,7 +80,7 @@ Define the frontend screens and state transitions for the selected mode.
 | 3   | **Quote fetch**       | Call `POST /quote` on input change (debounced ~500 ms). Show loading state. Disable confirm button while fetching.                                                                                                          | `fetching`             |
 | 4   | **Route display**     | Render `protocols[]` splits table: percentage, DEX, pool type, path. Show gas estimate.                                                                                                                                     | `quoted`               |
 | 5   | **Refresh / requote** | Quote has no explicit TTL — implement a 15–30 s client-side countdown. Auto-requote on expiry; block execution until fresh quote is available. Show countdown UI.                                                           | `stale` → `fetching`   |
-| 6   | **Approval check**    | For ERC-20 source tokens, check allowance via `eth_call` against router `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4` before generating calldata. If allowance < `amountIn`, show "Approve" button and estimate approve gas. | `needs_approval`       |
+| 6   | **Approval check**    | For ERC-20 source tokens, check allowance via `eth_call` against router `0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a` before generating calldata. If allowance < `amountIn`, show "Approve" button and estimate approve gas. | `needs_approval`       |
 | 7   | **Execution handoff** | Call `POST /calldata` with the quote object + `recipient` + `slippageTolerance`. Construct EIP-681 URI or Trust Wallet send link. Hand off to wallet.                                                                       | `executing`            |
 | 8   | **Success / fail**    | Track tx hash. Poll `eth_getTransactionReceipt` or BSCScan API for confirmation. Show success with explorer link, or error with retry CTA.                                                                                  | `confirmed` / `failed` |
 
@@ -118,7 +118,7 @@ quoted
 | Supported chain | BSC only (chainId: 56)                                    |
 | Amount format   | Wei (raw units)                                           |
 | Native token    | Zero address `0x0000000000000000000000000000000000000000` |
-| Router contract | `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`              |
+| Router contract | `0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a`              |
 | Rate limit      | 100 req/min (dev); contact PancakeSwap to increase        |
 
 ### Token Metadata Object
@@ -221,7 +221,7 @@ Before calling `/calldata` for ERC-20 source tokens, check allowance:
 # eth_call allowance(owner, spender) on the source token contract
 # Function selector for allowance(address,address) = 0xdd62ed3e
 OWNER="0x<user_wallet>"
-SPENDER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"  # Hub router
+SPENDER="0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a"  # Hub router
 
 curl -sf -X POST "https://bsc-dataseed1.binance.org" \
   -H "Content-Type: application/json" \
@@ -279,22 +279,16 @@ The request body is the full `/quote` response object with two additional fields
 **EIP-681** (for embedded wallets, webview `WalletConnect`, browser extensions):
 
 ```
-ethereum:0x13f4EA83D0bd40E75C8222255bc855a974568Dd4@56?value={hex_value}&data={calldata_hex}
+ethereum:0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a@56?value={hex_value}&data={calldata_hex}
 ```
 
 **Trust Wallet send link** (for Trust Wallet mobile):
 
 ```
-https://link.trustwallet.com/send?asset=c20000714&address=0x13f4EA83D0bd40E75C8222255bc855a974568Dd4&amount={decimal_bnb}&data={calldata_hex}
+https://link.trustwallet.com/send?asset=c20000714&address=0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a&amount={decimal_bnb}&data={calldata_hex}
 ```
 
 `amount` is the BNB value as a decimal string (e.g., `"0.28"`); use `"0"` for ERC-20-only swaps.
-
-**PancakeSwap fallback deep link** (when Hub API unavailable):
-
-```
-https://pancakeswap.finance/swap?chain=bsc&inputCurrency={src}&outputCurrency={dst}&exactAmount={human_amount}&exactField=input
-```
 
 ### Status Polling
 
@@ -331,7 +325,6 @@ Adjust the handoff and signing flow based on the partner's channel type.
 | **Webview / partner browser**       | EIP-681 URI or WalletConnect          | `ethereum:router@56?value=…&data=…`                                                         | Send via `WalletConnect eth_sendTransaction` or open URI        |
 | **Browser extension partner**       | Injected provider                     | `window.ethereum.request({ method: 'eth_sendTransaction', params: [{ to, value, data }] })` | Use `value` and `calldata` from `/calldata` response            |
 | **Headless / bot**                  | Return JSON payload                   | Structured JSON                                                                             | No UI; caller constructs and signs the tx                       |
-| **Binance Web3 Wallet**             | PancakeSwap deep link in DApp browser | `https://pancakeswap.finance/swap?...`                                                      | User opens link in Binance App → Web3 Wallet → DApp Browser     |
 
 ---
 

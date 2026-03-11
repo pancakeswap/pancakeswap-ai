@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.5.0'
+  version: '1.6.0'
 ---
 
 # PCS Hub Swap Planner
@@ -49,13 +49,14 @@ If `PCS_HUB_TOKEN` is not set, stop and tell the user to set it, then continue w
 
 ## Hub API Constraints
 
-| Constraint         | Value                                                         |
-| ------------------ | ------------------------------------------------------------- |
-| Supported chains   | BSC only (chainId: 56)                                        |
-| API base URL       | `https://hub-api.pancakeswap.com/aggregator`                  |
-| Rate limit         | 100 requests/minute (dev); contact PancakeSwap to increase    |
-| Amount format      | Wei (raw units) — must convert from human-readable            |
-| Native token (BSC) | Use zero address `0x0000000000000000000000000000000000000000` |
+| Constraint            | Value                                                         |
+| --------------------- | ------------------------------------------------------------- |
+| Supported chains      | BSC only (chainId: 56)                                        |
+| API base URL          | `https://hub-api.pancakeswap.com/aggregator`                  |
+| Rate limit            | 100 requests/minute (dev); contact PancakeSwap to increase    |
+| Amount format         | Wei (raw units) — must convert from human-readable            |
+| Native token (BSC)    | Use zero address `0x0000000000000000000000000000000000000000` |
+| Router contract (BSC) | `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`                  |
 
 > If the user requests a chain other than BSC, skip the Hub API and go directly to Step 5 (generate a standard PancakeSwap deep link with a note that Hub routing is BSC-only).
 
@@ -94,32 +95,32 @@ Include instructions: _"Open this link in Binance App → Web3 Wallet → DApp B
 
 **Trust Wallet**
 
-Trust Wallet supports a deep link that opens any dApp URL directly in the in-app
-browser. Wrap the PancakeSwap swap URL using the Trust Wallet open_url scheme, setting
-`coin_id` to the SLIP-0044 ID for the swap's chain:
+For BSC Hub swaps, Trust Wallet uses its native `send` deep link (not `open_url`). This invokes Trust Wallet's native transaction signing flow directly — no in-app browser required.
 
-| Chain           | SLIP-0044 coin_id | Trust Wallet deep link support                    |
-| --------------- | ----------------- | ------------------------------------------------- |
-| BNB Smart Chain | 714               | ✅                                                |
-| Ethereum        | 60                | ✅                                                |
-| Arbitrum One    | 9001              | ✅                                                |
-| Base            | 8453              | ✅                                                |
-| zkSync Era      | 804               | ✅                                                |
-| Linea           | —                 | ❌ No SLIP-0044 ID; use standard PancakeSwap link |
-| Solana          | 501               | ✅                                                |
+```
+https://link.trustwallet.com/send?asset=c20000714&address={router}&amount={decimal_bnb}&data={calldata_hex}
+```
 
-Deep link format:
-https://link.trustwallet.com/open_url?coin_id={SLIP44}&url={url-encoded-pancakeswap-swap-url}
+| Parameter | Value                                                                          |
+| --------- | ------------------------------------------------------------------------------ |
+| `asset`   | `c20000714` (BNB Smart Chain native — SLIP44 714 with chain prefix)            |
+| `address` | Router address `0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`                    |
+| `amount`  | `TX_VALUE` converted from hex wei → decimal BNB (or `0` for ERC-20-only swaps) |
+| `data`    | Hex-encoded calldata (`TX_DATA`)                                               |
 
-Construction example (BSC):
-PANCAKE_URL="https://pancakeswap.finance/swap?chain=bsc&inputCurrency=...&outputCurrency=...&exactAmount=...&exactField=input"
-COIN_ID=714 # SLIP-0044 for BNB Smart Chain
-ENCODED_URL=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$PANCAKE_URL")
-TRUST_LINK="https://link.trustwallet.com/open_url?coin_id=${COIN_ID}&url=${ENCODED_URL}"
+Construction:
 
-For Linea: Trust Wallet deep links are not available (no SLIP-0044 coin_id). Fall back to
-the standard PancakeSwap link with manual instructions: "Open Trust Wallet → Browser tab
-→ paste the link."
+```bash
+PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+
+# Convert hex value to decimal BNB (18 decimals)
+TX_VALUE_DEC=$(python3 -c "
+val = int('${TX_VALUE}', 16)
+print('{:.18f}'.format(val / 10**18).rstrip('0').rstrip('.') or '0')
+")
+
+TRUST_SEND_LINK="https://link.trustwallet.com/send?asset=c20000714&address=${PCS_HUB_ROUTER}&amount=${TX_VALUE_DEC}&data=${TX_DATA}"
+```
 
 **Headless / API**
 
@@ -134,7 +135,10 @@ Return a structured JSON payload suitable for programmatic use:
   "outputToken": { "address": "...", "symbol": "...", "estimatedAmount": "..." },
   "routes": [...],
   "gas": 306000,
-  "deepLink": "https://pancakeswap.finance/swap?..."
+  "eip681Url": "ethereum:0x13f4EA83D0bd40E75C8222255bc855a974568Dd4@56?value=0x00&data=0x...",
+  "txTo": "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4",
+  "txValue": "0x00",
+  "txData": "0x..."
 }
 ```
 
@@ -294,6 +298,7 @@ The Hub API uses the **zero address** (`0x00000000000000000000000000000000000000
 > and decimals — use those values directly. On-chain re-verification is not required.
 >
 > Proceed with Step 3 when:
+>
 > - The token was sourced from the secondary (community) list
 > - The token was not found in any list (user confirmed proceeding)
 > - The token address was supplied directly by the user without list confirmation
@@ -447,49 +452,72 @@ print(f'\${price * amount:,.2f}')
 
 Surface these before generating the link:
 
-| Condition                          | Warning                                                        |
-| ---------------------------------- | -------------------------------------------------------------- |
-| `priceUSD` is empty / null         | "Price unavailable — verify token is tradeable on BSC"         |
-| Estimated output USD < $1          | "Estimated output value is very low — check amounts"           |
+| Condition                  | Warning                                                |
+| -------------------------- | ------------------------------------------------------ |
+| `priceUSD` is empty / null | "Price unavailable — verify token is tradeable on BSC" |
+| Estimated output USD < $1  | "Estimated output value is very low — check amounts"   |
 
 ---
 
-## Step 5: Generate Deep Link
+## Step 4.5: Call Hub API `/calldata`
 
-### URL Parameters
+Only call `/calldata` when the Step 4 quote succeeded (no `error` field in the response).
 
-| Parameter        | Required | Description                                        | Example              |
-| ---------------- | -------- | -------------------------------------------------- | -------------------- |
-| `chain`          | Yes      | Chain key                                          | `bsc`                |
-| `inputCurrency`  | Yes      | Input token address, or `BNB` for native           | `BNB`, `0x55d398...` |
-| `outputCurrency` | Yes      | Output token address, or `BNB` for native          | `0x0E09FaBB...`      |
-| `exactAmount`    | No       | Human-readable amount                              | `1.5`, `100`         |
-| `exactField`     | No       | `input` (selling exact) or `output` (buying exact) | `input`              |
+**Recipient guidance:**
 
-### Deep Link Construction
+- If the user supplied a recipient address in Step 1 optional params, use it (validate: `^0x[0-9a-fA-F]{40}$`).
+- Otherwise use the zero address (`0x0000000000000000000000000000000000000000`); the router sends to `msg.sender`.
 
 ```bash
-CHAIN_KEY="bsc"
-INPUT_CURRENCY="BNB"             # Use BNB/symbol for native, address for ERC-20
-OUTPUT_CURRENCY="0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
-EXACT_AMOUNT="1.5"
-EXACT_FIELD="input"
+PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+RECIPIENT="${RECIPIENT_ADDRESS:-0x0000000000000000000000000000000000000000}"  # msg.sender if unknown
+SLIPPAGE="0.005"  # 0.5% default; override from user input
 
-DEEP_LINK="https://pancakeswap.finance/swap?chain=${CHAIN_KEY}&inputCurrency=${INPUT_CURRENCY}&outputCurrency=${OUTPUT_CURRENCY}&exactAmount=${EXACT_AMOUNT}&exactField=${EXACT_FIELD}"
+CALLDATA_RESPONSE=$(curl -sf -X POST "https://hub-api.pancakeswap.com/aggregator/api/calldata" \
+  -H "Content-Type: application/json" \
+  -H "x-secure-token: $PCS_HUB_TOKEN" \
+  -d "$(echo "$QUOTE" | jq \
+    --arg recipient "$RECIPIENT" \
+    --argjson slippage "$SLIPPAGE" \
+    '. + {recipient: $recipient, slippageTolerance: $slippage}')")
+
+# Check for error
+echo "$CALLDATA_RESPONSE" | jq '.error // empty'
+
+TX_VALUE=$(echo "$CALLDATA_RESPONSE" | jq -r '.value')    # hex, e.g. "0x00"
+TX_DATA=$(echo "$CALLDATA_RESPONSE" | jq -r '.calldata')  # hex-encoded calldata
 ```
 
-### Deep Link Examples
+**Error handling**: If `/calldata` returns an error or fails, skip EIP-681 link generation and show only the route summary with a clear error note. Do **not** fall back to the old web deep link — notify the user that link generation failed and they should retry.
 
-**BNB → CAKE on BSC (sell 0.5 BNB)**
+---
 
+## Step 5: Generate Transaction URL
+
+### EIP-681 URL (for `pancakeswap`, `binance-wallet`, and `headless` channels)
+
+```bash
+PCS_HUB_ROUTER="0x13f4EA83D0bd40E75C8222255bc855a974568Dd4"
+CHAIN_ID=56
+
+# TX_VALUE is already hex from calldata response (e.g. "0x3E2C284391C0000")
+# TX_DATA is the calldata hex
+
+EIP681_URL="ethereum:${PCS_HUB_ROUTER}@${CHAIN_ID}?value=${TX_VALUE}&data=${TX_DATA}"
 ```
-https://pancakeswap.finance/swap?chain=bsc&inputCurrency=BNB&outputCurrency=0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82&exactAmount=0.5&exactField=input
-```
 
-**ETH (BSC) → USDT on BSC (sell 1 ETH token)**
+### Trust Wallet Send Link (for `trust-wallet` channel)
 
-```
-https://pancakeswap.finance/swap?chain=bsc&inputCurrency=0x2170Ed0880ac9A755fd29B2688956BD959F933F8&outputCurrency=0x55d398326f99059fF775485246999027B3197955&exactAmount=1&exactField=input
+Trust Wallet does **not** support EIP-681. Use the native `send` deep link instead:
+
+```bash
+# Convert hex value to decimal BNB (18 decimals)
+TX_VALUE_DEC=$(python3 -c "
+val = int('${TX_VALUE}', 16)
+print('{:.18f}'.format(val / 10**18).rstrip('0').rstrip('.') or '0')
+")
+
+TRUST_SEND_LINK="https://link.trustwallet.com/send?asset=c20000714&address=${PCS_HUB_ROUTER}&amount=${TX_VALUE_DEC}&data=${TX_DATA}"
 ```
 
 ---
@@ -538,59 +566,47 @@ Route Splits:
 ⚠️  Slippage: Use 0.1% for stable output tokens
 💡  Verify token addresses on BSCScan before confirming
 
-🔗 Open in PancakeSwap:
-https://pancakeswap.finance/swap?chain=bsc&inputCurrency=0x2170Ed0880ac9A755fd29B2688956BD959F933F8&outputCurrency=0x55d398326f99059fF775485246999027B3197955&exactAmount=1&exactField=input
+🔗 Transaction (EIP-681):
+ethereum:0x13f4EA83D0bd40E75C8222255bc855a974568Dd4@56?value=0x00&data=0x9aa90356...
 ```
 
 For `binance-wallet` channel, append:
 
 ```
-📱 Binance Wallet: Open the Binance app → Web3 Wallet → DApp Browser → paste the link above.
+📱 Binance Wallet: Import this EIP-681 URI into the Binance App → Web3 Wallet to sign the transaction.
 ```
 
-For `trust-wallet` channel on chains with a SLIP-0044 coin_id (all except Linea), output:
+For `trust-wallet` channel, output the Trust Wallet send link instead of the EIP-681 URL:
 
 ```
 🔗 Open in Trust Wallet:
-https://link.trustwallet.com/open_url?coin_id=<SLIP44>&url=<encoded-pancakeswap-url>
+https://link.trustwallet.com/send?asset=c20000714&address=0x13f4EA83D0bd40E75C8222255bc855a974568Dd4&amount=0.28&data=0x9aa90356...
 
-(Tapping this link opens PancakeSwap directly in the Trust Wallet in-app browser.)
-```
-
-For `trust-wallet` channel on Linea (no SLIP-0044), output:
-
-```
-📱 Trust Wallet: Open Trust Wallet → Browser tab → paste the link above.
-   (Trust Wallet deep links are unavailable for Linea — no SLIP-0044 coin_id.)
+(Tapping this link opens Trust Wallet's native transaction signing flow.)
 ```
 
 For `headless` channel, output the structured JSON payload (see Distribution Channels section).
 
-### Attempt to Open Browser (non-headless channels)
+### Attempt to Open (non-headless channels)
 
-For `trust-wallet` channel when the chain has a SLIP-0044 coin_id, open the Trust Wallet
-deep link instead of the plain PancakeSwap URL:
+For `trust-wallet` channel, open the Trust Wallet send link:
 
 ```bash
-# Build Trust Wallet deep link (when channel=trust-wallet and SLIP44 is known)
-ENCODED_URL=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$DEEP_LINK")
-TRUST_LINK="https://link.trustwallet.com/open_url?coin_id=${COIN_ID}&url=${ENCODED_URL}"
-
 # macOS
-open "$TRUST_LINK"
+open "$TRUST_SEND_LINK"
 
 # Linux
-xdg-open "$TRUST_LINK"
+xdg-open "$TRUST_SEND_LINK"
 ```
 
-For all other non-headless channels (or Linea with trust-wallet):
+For all other non-headless channels (`pancakeswap`, `binance-wallet`), display the EIP-681 URL prominently — most wallets and QR code scanners can parse it directly. Optionally attempt to open it:
 
 ```bash
 # macOS
-open "$DEEP_LINK"
+open "$EIP681_URL"
 
 # Linux
-xdg-open "$DEEP_LINK"
+xdg-open "$EIP681_URL"
 ```
 
 If the open command fails or is unavailable (headless environment), display the URL prominently for copy-paste.
@@ -637,6 +653,9 @@ Before presenting output to the user, confirm all of the following:
 - [ ] `chain` key matches the token's actual chain
 - [ ] `PCS_HUB_TOKEN` never printed in any output
 - [ ] Hub API error field checked before parsing quote fields
+- [ ] `/calldata` error field checked before using `value` / `calldata`
+- [ ] `recipient` is a valid `^0x[0-9a-fA-F]{40}$` address if supplied
+- [ ] EIP-681 URL contains the correct router address (`0x13f4EA83D0bd40E75C8222255bc855a974568Dd4`)
 
 ---
 

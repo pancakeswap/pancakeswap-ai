@@ -2,7 +2,7 @@
 
 This file is the machine-readable index for AI agents. It describes available skills, when to invoke them, and example invocation patterns.
 
-Source: <https://github.com/pancakeswap/pancakeswap-ai>
+This is a standalone machine-readable manifest for the agents defined in `CLAUDE.md` in this repository: <https://github.com/pancakeswap/pancakeswap-ai>.
 
 ---
 
@@ -11,7 +11,7 @@ Source: <https://github.com/pancakeswap/pancakeswap-ai>
 ### swap-planner
 
 **Plugin:** `@pancakeswap/pancakeswap-driver`
-**Version:** 1.2.0
+**Version:** 1.0.0
 
 **What it does:** Plans token swaps on PancakeSwap. Discovers tokens, verifies contracts, fetches live prices, and generates a deep link to the PancakeSwap UI pre-filled with swap parameters. Does not execute transactions.
 
@@ -66,7 +66,7 @@ Create a V3 LP position for CAKE/BNB with a tight range
 ### farming-planner
 
 **Plugin:** `@pancakeswap/pancakeswap-farming`
-**Version:** 1.1.0
+**Version:** 1.0.0
 
 **What it does:** Plans yield farming and CAKE staking on PancakeSwap. Discovers active farms, compares APR/APY across farm types, plans CAKE staking in Syrup Pools, and generates deep links to the farming UI. Does not execute transactions.
 

@@ -51,6 +51,7 @@ function beforeSwap(
 ```
 
 **Detection:**
+
 - Slither: `external-function`
 - Manual: Check all hook callbacks for `msg.sender` validation
 
@@ -105,6 +106,7 @@ function setFeePercentage(uint256 newFee) external onlyAdmin {
 ```
 
 **Detection:**
+
 - Slither: `unprotected-function`
 - Manual: Review all state-modifying external functions
 
@@ -154,6 +156,7 @@ function lockAcquired(bytes calldata data) external override returns (bytes memo
 ```
 
 **Detection:**
+
 - Manual: Trace all vault.settle() calls
 - Foundry: Fuzz with multiple operations, track vault balance delta
 
@@ -207,6 +210,7 @@ function beforeSwap(
 ```
 
 **Detection:**
+
 - Slither: `incorrect-modifier`
 - Mythril: Pattern matching on BeforeSwapDelta
 - Manual: Code review of delta calculations
@@ -280,6 +284,7 @@ function getHookPermissions()
 ```
 
 **Detection:**
+
 - Manual: Match enabled permissions with implemented callbacks
 - Slither: Unused function warnings
 
@@ -413,6 +418,7 @@ function lockAcquired(bytes calldata data) external override returns (bytes memo
 ```
 
 **Detection:**
+
 - Mythril: Reentrancy detection
 - Manual: Code review of hook callbacks
 - Foundry: Test with reentrant contract
@@ -524,6 +530,7 @@ function updateUserData(address[] calldata users) external onlyAdmin {
 ```
 
 **Detection:**
+
 - Slither: `loop-indexed-variable`
 - Manual: Review all loops in callbacks for unbounded iteration
 
@@ -990,6 +997,7 @@ function beforeSwap(
 ```
 
 **Detection:**
+
 - Manual: Review price calculation in bin swap hooks
 - Echidna: Fuzz price manipulation scenarios
 
@@ -1285,20 +1293,20 @@ echidna . --contract InfinityHook --solc-args 0.8.26
 
 ## Summary
 
-| Category | Count | Severity |
-|----------|-------|----------|
-| Access Control | 2 | HIGH |
-| Delta Accounting | 2 | CRITICAL |
-| Permissions | 2 | MEDIUM |
-| Reentrancy | 2 | CRITICAL |
-| Gas & DoS | 2 | HIGH/MEDIUM |
-| Input Validation | 2 | MEDIUM |
-| State Management | 1 | MEDIUM |
-| Upgrades | 1 | CRITICAL |
-| Vault Lock Reentrancy | 2 | MEDIUM |
-| Bin Price Manipulation | 2 | CRITICAL |
-| Cross-Pool Attack | 1 | HIGH |
-| Documentation & Testing | 2 | MEDIUM |
+| Category                | Count | Severity    |
+| ----------------------- | ----- | ----------- |
+| Access Control          | 2     | HIGH        |
+| Delta Accounting        | 2     | CRITICAL    |
+| Permissions             | 2     | MEDIUM      |
+| Reentrancy              | 2     | CRITICAL    |
+| Gas & DoS               | 2     | HIGH/MEDIUM |
+| Input Validation        | 2     | MEDIUM      |
+| State Management        | 1     | MEDIUM      |
+| Upgrades                | 1     | CRITICAL    |
+| Vault Lock Reentrancy   | 2     | MEDIUM      |
+| Bin Price Manipulation  | 2     | CRITICAL    |
+| Cross-Pool Attack       | 1     | HIGH        |
+| Documentation & Testing | 2     | MEDIUM      |
 
 **Total: 21 vulnerability patterns**
 

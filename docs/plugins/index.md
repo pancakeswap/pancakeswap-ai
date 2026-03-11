@@ -30,11 +30,11 @@ packages/plugins/
 
 ## At a Glance
 
-| Plugin | Skills | Description |
-|--------|--------|-------------|
-| [`pancakeswap-driver`](/plugins/pancakeswap-driver) | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
-| [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations` | Security guide for Infinity hook development |
-| [`pancakeswap-farming`](/plugins/pancakeswap-farming) | `farming-planner` | Plan yield farming, CAKE staking, and reward harvesting |
+| Plugin                                                  | Skills                              | Description                                                       |
+| ------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
+| [`pancakeswap-driver`](/plugins/pancakeswap-driver)     | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
+| [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations`     | Security guide for Infinity hook development                      |
+| [`pancakeswap-farming`](/plugins/pancakeswap-farming)   | `farming-planner`                   | Plan yield farming, CAKE staking, and reward harvesting           |
 
 ## Plugin Structure
 

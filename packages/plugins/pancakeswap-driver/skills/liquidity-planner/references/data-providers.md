@@ -18,15 +18,15 @@ jq 'select(.dexId == "pancakeswap")'
 
 PancakeSwap operates across multiple networks via DexScreener:
 
-| Network | DexScreener ID | Primary Use |
-|---------|---|---|
-| BSC | `bsc` | Main liquidity, lowest fees |
-| Ethereum | `ethereum` | Cross-chain assets |
-| Arbitrum | `arbitrum` | Layer 2 scaling |
-| Base | `base` | Coinbase ecosystem |
-| zkSync | `zksync` | Low-cost transactions |
-| Linea | `linea` | Ethereum compatibility |
-| opBNB | `opbnb` | BSC Layer 2 |
+| Network  | DexScreener ID | Primary Use                 |
+| -------- | -------------- | --------------------------- |
+| BSC      | `bsc`          | Main liquidity, lowest fees |
+| Ethereum | `ethereum`     | Cross-chain assets          |
+| Arbitrum | `arbitrum`     | Layer 2 scaling             |
+| Base     | `base`         | Coinbase ecosystem          |
+| zkSync   | `zksync`       | Low-cost transactions       |
+| Linea    | `linea`        | Ethereum compatibility      |
+| opBNB    | `opbnb`        | BSC Layer 2                 |
 
 ### Pool Discovery by Token Address
 
@@ -78,19 +78,19 @@ curl -s "https://api.dexscreener.com/latest/dex/pairs/bsc/0x0ed7e52944161450261c
 
 ### Response Field Reference
 
-| Field | Type | Description |
-|-------|------|---|
-| `pairAddress` | string | Smart contract address of the pool |
-| `dexId` | string | DEX identifier (always "pancakeswap" for this guide) |
-| `chainId` | string | Blockchain network identifier |
-| `baseToken` | object | Primary token in the pair |
-| `quoteToken` | object | Secondary token in the pair |
-| `priceNative` | string | Price in native blockchain currency |
-| `priceUsd` | string | Price in USD (when available) |
-| `liquidity` | string | Total liquidity in USD |
-| `volume24h` | string | 24-hour trading volume in USD |
-| `txns` | object | Transaction count (buys, sells, total) over time periods |
-| `labels` | array | Pool metadata ("v2", "v3", "verified", etc.) |
+| Field         | Type   | Description                                              |
+| ------------- | ------ | -------------------------------------------------------- |
+| `pairAddress` | string | Smart contract address of the pool                       |
+| `dexId`       | string | DEX identifier (always "pancakeswap" for this guide)     |
+| `chainId`     | string | Blockchain network identifier                            |
+| `baseToken`   | object | Primary token in the pair                                |
+| `quoteToken`  | object | Secondary token in the pair                              |
+| `priceNative` | string | Price in native blockchain currency                      |
+| `priceUsd`    | string | Price in USD (when available)                            |
+| `liquidity`   | string | Total liquidity in USD                                   |
+| `volume24h`   | string | 24-hour trading volume in USD                            |
+| `txns`        | object | Transaction count (buys, sells, total) over time periods |
+| `labels`      | array  | Pool metadata ("v2", "v3", "verified", etc.)             |
 
 ### Important Notes on StableSwap Pools
 
@@ -98,9 +98,11 @@ DexScreener treats PancakeSwap StableSwap pools specially:
 
 - **Labeling**: Some StableSwap pools appear with `dexId == "pancakeswap-stableswap"` instead of `"pancakeswap"`
 - **Discovery**: To find all StableSwap pools, filter for both:
+
   ```bash
   jq '.pairs[] | select(.dexId == "pancakeswap" or .dexId == "pancakeswap-stableswap")'
   ```
+
 - **Version identifier**: Not explicitly shown in `labels` for StableSwap (unlike "v2"/"v3")
 - **Recommendation**: Cross-reference with DefiLlama or PancakeSwap API to confirm pool type
 
@@ -114,23 +116,23 @@ DefiLlama aggregates yield farming data across DeFi protocols. Use it to find AP
 
 PancakeSwap projects are identified by version:
 
-| Version | Project ID | Supported Chains |
-|---------|---|---|
-| V3 | `pancakeswap-amm-v3` | BSC, Ethereum, Arbitrum, Base, zkSync, Linea, opBNB, Monad |
-| V2 | `pancakeswap-amm` | BSC, Ethereum, Arbitrum, Base, opBNB |
-| StableSwap | `pancakeswap-stableswap` | BSC only |
+| Version    | Project ID               | Supported Chains                                           |
+| ---------- | ------------------------ | ---------------------------------------------------------- |
+| V3         | `pancakeswap-amm-v3`     | BSC, Ethereum, Arbitrum, Base, zkSync, Linea, opBNB, Monad |
+| V2         | `pancakeswap-amm`        | BSC, Ethereum, Arbitrum, Base, opBNB                       |
+| StableSwap | `pancakeswap-stableswap` | BSC only                                                   |
 
 ### Chain Identifiers in DefiLlama
 
-| Network | DefiLlama Name |
-|---------|---|
-| BSC | `BSC` |
-| Ethereum | `Ethereum` |
-| Arbitrum | `Arbitrum` |
-| Base | `Base` |
-| zkSync | `zkSync` |
-| Linea | `Linea` |
-| opBNB | `opBNB` |
+| Network  | DefiLlama Name |
+| -------- | -------------- |
+| BSC      | `BSC`          |
+| Ethereum | `Ethereum`     |
+| Arbitrum | `Arbitrum`     |
+| Base     | `Base`         |
+| zkSync   | `zkSync`       |
+| Linea    | `Linea`        |
+| opBNB    | `opBNB`        |
 
 ### Fetching APY Data
 
@@ -151,18 +153,18 @@ curl -s "https://yields.llama.fi/pools" | \
 
 ### Response Field Reference
 
-| Field | Type | Description |
-|-------|------|---|
-| `pool` | string | Unique pool identifier |
-| `project` | string | Protocol name (pancakeswap-amm-v3, etc.) |
-| `chain` | string | Blockchain network |
-| `symbol` | string | Token pair symbol (e.g., "CAKE-WBNB") |
-| `tvlUsd` | number | Total Value Locked in USD |
-| `apy` | number | Annual Percentage Yield (percentage) |
-| `apyBase` | number | Base APY from swap fees |
-| `apyReward` | number | Additional reward APY (if any) |
-| `rewardTokens` | array | Tokens used for rewards |
-| `poolMeta` | string | Additional metadata (fee tier, etc.) |
+| Field          | Type   | Description                              |
+| -------------- | ------ | ---------------------------------------- |
+| `pool`         | string | Unique pool identifier                   |
+| `project`      | string | Protocol name (pancakeswap-amm-v3, etc.) |
+| `chain`        | string | Blockchain network                       |
+| `symbol`       | string | Token pair symbol (e.g., "CAKE-WBNB")    |
+| `tvlUsd`       | number | Total Value Locked in USD                |
+| `apy`          | number | Annual Percentage Yield (percentage)     |
+| `apyBase`      | number | Base APY from swap fees                  |
+| `apyReward`    | number | Additional reward APY (if any)           |
+| `rewardTokens` | array  | Tokens used for rewards                  |
+| `poolMeta`     | string | Additional metadata (fee tier, etc.)     |
 
 ### Coverage Limitations
 
@@ -203,14 +205,14 @@ curl -s "https://tokens.pancakeswap.finance/pancakeswap-extended.json" | \
 
 ### Token Object Fields
 
-| Field | Type | Description |
-|-------|------|---|
-| `chainId` | number | Blockchain network (56 = BSC, 1 = Ethereum, etc.) |
-| `address` | string | Token contract address |
-| `name` | string | Full token name |
-| `symbol` | string | Token ticker symbol |
-| `decimals` | number | Number of decimal places |
-| `logoURI` | string | URL to token icon (optional) |
+| Field      | Type   | Description                                       |
+| ---------- | ------ | ------------------------------------------------- |
+| `chainId`  | number | Blockchain network (56 = BSC, 1 = Ethereum, etc.) |
+| `address`  | string | Token contract address                            |
+| `name`     | string | Full token name                                   |
+| `symbol`   | string | Token ticker symbol                               |
+| `decimals` | number | Number of decimal places                          |
+| `logoURI`  | string | URL to token icon (optional)                      |
 
 ### When to Use This API
 
@@ -235,6 +237,7 @@ curl -s "https://api.dexscreener.com/latest/dex/search?q={searchQuery}" | \
 ```
 
 **Output needed**:
+
 - Pair address
 - Token addresses and symbols
 - Current liquidity (USD)
@@ -250,6 +253,7 @@ curl -s "https://yields.llama.fi/pools" | \
 ```
 
 **Output needed**:
+
 - APY (base + rewards)
 - TVL in USD
 - Pool metadata (fee tier for V3)
@@ -258,13 +262,13 @@ curl -s "https://yields.llama.fi/pools" | \
 
 Evaluate if liquidity is sufficient for your position size:
 
-| TVL (USD) | Assessment | Risk Level |
-|-----------|---|---|
-| > $10M | Deep, excellent for large positions | Low |
-| $1M - $10M | Moderate-to-good depth | Low to Medium |
-| $100K - $1M | Moderate, suitable for medium positions | Medium |
+| TVL (USD)    | Assessment                              | Risk Level     |
+| ------------ | --------------------------------------- | -------------- |
+| > $10M       | Deep, excellent for large positions     | Low            |
+| $1M - $10M   | Moderate-to-good depth                  | Low to Medium  |
+| $100K - $1M  | Moderate, suitable for medium positions | Medium         |
 | $10K - $100K | Shallow, large positions cause slippage | Medium to High |
-| < $10K | Very shallow, high slippage risk | High |
+| < $10K       | Very shallow, high slippage risk        | High           |
 
 ### Step 4: Calculate Price Range (for V3)
 
@@ -290,13 +294,13 @@ print(f"Price range: ${lower_bound:.4f} to ${upper_bound:.4f}")
 
 ### Error Handling
 
-| Error | Cause | Resolution |
-|-------|---|---|
-| Pool not found | DexScreener doesn't index this pool yet | Try token search instead; verify pair address manually |
-| No APY data | Pool too new or not tracked by DefiLlama | Monitor pool directly; estimate from volume |
-| Stale price | API lag or low volume | Cross-check with multiple sources; add buffer to ranges |
-| Token not found | Token list outdated or not supported | Verify token address on blockchain explorer |
-| Network mismatch | Querying wrong chainId for pool | Check pool address format; confirm network in dexId |
+| Error            | Cause                                    | Resolution                                              |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------- |
+| Pool not found   | DexScreener doesn't index this pool yet  | Try token search instead; verify pair address manually  |
+| No APY data      | Pool too new or not tracked by DefiLlama | Monitor pool directly; estimate from volume             |
+| Stale price      | API lag or low volume                    | Cross-check with multiple sources; add buffer to ranges |
+| Token not found  | Token list outdated or not supported     | Verify token address on blockchain explorer             |
+| Network mismatch | Querying wrong chainId for pool          | Check pool address format; confirm network in dexId     |
 
 ---
 

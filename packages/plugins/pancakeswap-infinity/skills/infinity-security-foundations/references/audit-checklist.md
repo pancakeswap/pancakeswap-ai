@@ -1,6 +1,7 @@
 # PancakeSwap Infinity Security Audit Checklist
 
 ## Overview
+
 This checklist provides a comprehensive framework for auditing PancakeSwap Infinity hooks and protocol integrations. Adapt from Uniswap V4 guidelines with Infinity-specific requirements for Vault, PoolManager, and dual pool types (CL and Bin).
 
 **Protocol Version:** PancakeSwap Infinity (V4 architecture)
@@ -14,18 +15,21 @@ This checklist provides a comprehensive framework for auditing PancakeSwap Infin
 ### Core Verification Points
 
 - [ ] **Vault Access Control**
+
   - [ ] Hook callbacks verify `msg.sender == address(vault)` for `lockAcquired()`
   - [ ] Vault.lock() pattern properly restricts callback execution
   - [ ] No external calls bypass vault lock context
   - [ ] Emergency pause/freeze mechanisms require multi-sig
 
 - [ ] **PoolManager Hook Callbacks**
+
   - [ ] All hook callbacks verify `msg.sender == address(poolManager)`
   - [ ] Callbacks only execute when registered permissions are enabled
   - [ ] BeforeSwap, AfterSwap, BeforeAddLiquidity, AfterAddLiquidity all protected
   - [ ] No hook can call PoolManager during its own callback (reentrancy)
 
 - [ ] **Admin Functions**
+
   - [ ] Two-step ownership transfer implemented
   - [ ] Admin timelock for critical parameter changes (where applicable)
   - [ ] Role-based access for different operations (e.g., liquidity manager, fee setter)
@@ -64,12 +68,14 @@ function beforeSwap(
 ### Settlement Pattern Verification
 
 - [ ] **Correct Settlement Flow**
+
   - [ ] Swap: `vault.sync()` → token transfer → `vault.settle()`
   - [ ] Add Liquidity: `vault.sync()` → `vault.settle()`
   - [ ] Remove Liquidity: tokens transferred after `vault.unlock()`
   - [ ] All deltas properly accounted in multicall ordering
 
 - [ ] **Balance Tracking**
+
   - [ ] BalanceDelta accounting correct for all operations
   - [ ] No double-counting of tokens
   - [ ] Currency.native (ETH) vs ERC20 distinguished correctly
@@ -82,6 +88,7 @@ function beforeSwap(
   - [ ] No vault balance manipulation between lock sections
 
 ### Common Issues
+
 ```solidity
 // INCORRECT: Double settle
 vault.settle(token1);
@@ -98,44 +105,54 @@ vault.settle(currency);  // ✓ Once per lock
 ### CL Pool Permissions (14 Total)
 
 - [ ] **BeforeInitialize Permission**
+
   - [ ] Hook can inspect but not modify initialization
   - [ ] Return value restrictions checked (only allowance flags)
 
 - [ ] **AfterInitialize Permission**
+
   - [ ] Hook executes after pool initialization
   - [ ] Cannot prevent initialization completion
 
 - [ ] **BeforeAddLiquidity Permission**
+
   - [ ] Liquidity amount/range can be validated
   - [ ] Hook data properly parsed and validated
   - [ ] Reentrancy protection in place
 
 - [ ] **AfterAddLiquidity Permission**
+
   - [ ] Hooks receiving full liquidity details
   - [ ] Proper state tracking after position minted
 
 - [ ] **BeforeRemoveLiquidity Permission**
+
   - [ ] Liquidity burn amount restrictions possible
   - [ ] Position validity checks
 
 - [ ] **AfterRemoveLiquidity Permission**
+
   - [ ] Hook receives settlement data
   - [ ] No blocking of liquidity removal
 
 - [ ] **BeforeSwap Permission**
+
   - [ ] BeforeSwapDelta correctly modifies swap parameters
   - [ ] Direction (exact input/output) cannot be changed
   - [ ] No positive deltas returned (only reducing swaps)
 
 - [ ] **AfterSwap Permission**
+
   - [ ] Hook executes after swap completes
   - [ ] Cannot reverse successful swaps
 
 - [ ] **BeforeDonate Permission**
+
   - [ ] Donation amount validation
   - [ ] Fee donation mechanics preserved
 
 - [ ] **AfterDonate Permission**
+
   - [ ] Hook executes post-donation
   - [ ] Protocol fee accounting unaffected
 
@@ -181,11 +198,13 @@ if (!permissions.beforeSwap) revert HookNotEnabled();
 ### Vault Lock Reentrancy (Infinity-Specific)
 
 - [ ] **Lock Depth Validation**
+
   - [ ] Vault enforces maximum lock depth (typically 1)
   - [ ] Nested vault.lock() calls properly rejected
   - [ ] lockAcquired() callback cannot call vault.lock() again
 
 - [ ] **PoolManager Callback Reentrancy**
+
   - [ ] Hook callbacks cannot call back into PoolManager methods
   - [ ] BeforeSwap hook cannot call poolManager.swap()
   - [ ] AfterSwap hook cannot execute trades that require settle
@@ -224,12 +243,14 @@ function lockAcquired(bytes calldata data) external override {
 ### Gas Limits
 
 - [ ] **Hook Callback Gas Budgets**
+
   - [ ] BeforeSwap/AfterSwap gas usage < 100k typical
   - [ ] Add/Remove Liquidity hooks stay within limits
   - [ ] No unbounded loops in hook logic
   - [ ] Array iterations bounded by constants
 
 - [ ] **Block Gas Limit Protection**
+
   - [ ] Multicall operations gas-estimated
   - [ ] No single tx exceeds reasonable limits (~20M gas)
   - [ ] For loops have maximum iteration caps
@@ -241,6 +262,7 @@ function lockAcquired(bytes calldata data) external override {
 ### DoS Prevention
 
 - [ ] **Economic Attacks**
+
   - [ ] No unchecked min output settings (slippage protection)
   - [ ] Price oracle manipulations handled
   - [ ] MEV protection in critical operations
@@ -256,17 +278,20 @@ function lockAcquired(bytes calldata data) external override {
 ### Parameter Validation
 
 - [ ] **PoolKey Validation**
+
   - [ ] Currency0 < Currency1 enforced
   - [ ] Fee not zero and within expected ranges
   - [ ] Hooks field matches registered hook address
   - [ ] Ext field properly formatted
 
 - [ ] **Swap Parameters**
+
   - [ ] Amount0For1 / AmountSpecified validation
   - [ ] SqrtPriceLimit within valid price range
   - [ ] No zero amounts (where not allowed)
 
 - [ ] **Liquidity Operations**
+
   - [ ] Tick range validation (lower < upper)
   - [ ] Tick multiples match tickSpacing
   - [ ] Liquidity amounts > 0
@@ -294,10 +319,12 @@ if (data.length < 32) revert InvalidHookData();
 ### Hook State
 
 - [ ] **Initialization**
+
   - [ ] Constructor properly initializes PoolManager and Vault references
   - [ ] Cannot be reinitialized (if applicable)
 
 - [ ] **State Consistency**
+
   - [ ] Atomic updates (no partial state changes on revert)
   - [ ] Validation before state modification
 
@@ -313,6 +340,7 @@ if (data.length < 32) revert InvalidHookData();
 ### Hook Contract Upgrades
 
 - [ ] **Permission Change Handling**
+
   - [ ] New permissions don't introduce vulnerabilities
   - [ ] Existing pool state compatible with new logic
   - [ ] No exploit path from permission flag changes
@@ -346,11 +374,13 @@ require(hook == poolKey.hooks, "Hook mismatch");
 ### Foundry Test Coverage
 
 - [ ] **Unit Tests**
+
   - [ ] All hook callbacks tested individually
   - [ ] Permission bitmap combinations tested
   - [ ] Edge cases: zero amounts, max values, boundary ticks
 
 - [ ] **Integration Tests**
+
   - [ ] Multi-step operations (swap + callback)
   - [ ] Multiple hooks on same pool
 
@@ -362,6 +392,7 @@ require(hook == poolKey.hooks, "Hook mismatch");
 ### Fuzz Testing
 
 - [ ] **Minimum Fuzz Runs**
+
   - [ ] Development: 1,000 runs
   - [ ] Internal: 10,000 runs
   - [ ] Main branch: 100,000 runs
@@ -396,15 +427,18 @@ function testFuzz_SwapWithHookDeltaCorrectness(
 ### Tool Checklist
 
 - [ ] **Slither**
+
   - [ ] Run: `slither . --solc-version 0.8.26`
   - [ ] Address all medium/high severity issues
   - [ ] False positives documented
 
 - [ ] **Mythril**
+
   - [ ] Run: `myth analyze src/hooks/InfinityHook.sol`
   - [ ] Check for common patterns (reentrancy, timestamp, delegate call)
 
 - [ ] **Foundry Compiler Warnings**
+
   - [ ] `forge build` with no warnings
   - [ ] All unreachable code removed
   - [ ] Unused variables eliminated
@@ -420,12 +454,14 @@ function testFuzz_SwapWithHookDeltaCorrectness(
 ### Required Documentation
 
 - [ ] **Hook Specification**
+
   - [ ] Purpose and security model clearly stated
   - [ ] All callback implementations documented
   - [ ] Hook data structure defined (if used)
   - [ ] Risk assumptions listed
 
 - [ ] **Deployment Guide**
+
   - [ ] CREATE3 salt derivation explained
   - [ ] Permission bitmap initialization verified
   - [ ] Integration steps with router/protocol
@@ -442,11 +478,13 @@ function testFuzz_SwapWithHookDeltaCorrectness(
 ### Pre-Deployment Checklist
 
 - [ ] **Network Validation**
+
   - [ ] PoolManager address correct for target network
   - [ ] Vault address correct and verified
   - [ ] All dependencies deployed and verified
 
 - [ ] **Hook Verification**
+
   - [ ] Hook code deployed matches audited source
   - [ ] Bytecode verified on chain explorers
   - [ ] Permission bitmap matches expected config
@@ -460,20 +498,20 @@ function testFuzz_SwapWithHookDeltaCorrectness(
 
 ## Audit Sign-Off Table
 
-| Section | Reviewer | Status | Notes | Date |
-|---------|----------|--------|-------|------|
-| Access Control | | ⬜ Pending | | |
-| Delta Accounting | | ⬜ Pending | | |
-| Permissions Review | | ⬜ Pending | | |
-| Reentrancy | | ⬜ Pending | | |
-| Gas & DoS | | ⬜ Pending | | |
-| Input Validation | | ⬜ Pending | | |
-| State Management | | ⬜ Pending | | |
-| Upgrade Safety | | ⬜ Pending | | |
-| Testing | | ⬜ Pending | | |
-| Static Analysis | | ⬜ Pending | | |
-| Documentation | | ⬜ Pending | | |
-| Deployment | | ⬜ Pending | | |
+| Section            | Reviewer | Status     | Notes | Date |
+| ------------------ | -------- | ---------- | ----- | ---- |
+| Access Control     |          | ⬜ Pending |       |      |
+| Delta Accounting   |          | ⬜ Pending |       |      |
+| Permissions Review |          | ⬜ Pending |       |      |
+| Reentrancy         |          | ⬜ Pending |       |      |
+| Gas & DoS          |          | ⬜ Pending |       |      |
+| Input Validation   |          | ⬜ Pending |       |      |
+| State Management   |          | ⬜ Pending |       |      |
+| Upgrade Safety     |          | ⬜ Pending |       |      |
+| Testing            |          | ⬜ Pending |       |      |
+| Static Analysis    |          | ⬜ Pending |       |      |
+| Documentation      |          | ⬜ Pending |       |      |
+| Deployment         |          | ⬜ Pending |       |      |
 
 **Overall Risk Assessment:** 🟡 Pending Review
 
@@ -482,15 +520,19 @@ function testFuzz_SwapWithHookDeltaCorrectness(
 ## Risk Assessment Summary
 
 ### Critical Issues Found
+
 - [ ] None documented
 
 ### High Severity Issues
+
 - [ ] None documented
 
 ### Medium Severity Issues
+
 - [ ] None documented
 
 ### Low Severity Issues / Recommendations
+
 - [ ] None documented
 
 ---

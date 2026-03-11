@@ -4,12 +4,12 @@ Security-first AI tools for developing PancakeSwap Infinity (v4) hooks.
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| **Name** | `pancakeswap-infinity` |
-| **Version** | 1.0.0 |
-| **Author** | PancakeSwap |
-| **License** | MIT |
+| Field        | Value                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------ |
+| **Name**     | `pancakeswap-infinity`                                                                           |
+| **Version**  | 1.0.0                                                                                            |
+| **Author**   | PancakeSwap                                                                                      |
+| **License**  | MIT                                                                                              |
 | **Keywords** | `pancakeswap`, `infinity`, `hooks`, `v4`, `security`, `audit`, `cl-pool`, `bin-pool`, `solidity` |
 
 ## Skills

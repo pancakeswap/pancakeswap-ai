@@ -4,12 +4,12 @@ AI-powered assistance for yield farming, CAKE staking, and reward management on 
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| **Name** | `pancakeswap-farming` |
-| **Version** | 1.0.0 |
-| **Author** | PancakeSwap |
-| **License** | MIT |
+| Field        | Value                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| **Name**     | `pancakeswap-farming`                                                                     |
+| **Version**  | 1.0.0                                                                                     |
+| **Author**   | PancakeSwap                                                                               |
+| **License**  | MIT                                                                                       |
 | **Keywords** | `pancakeswap`, `farming`, `yield`, `cake`, `staking`, `syrup-pools`, `bsc`, `bnb`, `defi` |
 
 ## Skills
@@ -19,6 +19,7 @@ AI-powered assistance for yield farming, CAKE staking, and reward management on 
 Plan yield farming strategies on PancakeSwap — from discovering active farms to harvesting CAKE rewards.
 
 **Capabilities:**
+
 - Farm discovery via CampaignManager contract and DefiLlama API
 - APR/APY comparison across V2, V3, and Infinity farms
 - CAKE staking options (Syrup Pools)
@@ -67,9 +68,9 @@ Link: https://pancakeswap.finance/pools
 
 ## Key Contracts
 
-| Contract | Address | Purpose |
-|----------|---------|---------|
-| MasterChef v3 | `0x556B9306...04c2Cd59e` | V3 position farming |
-| CampaignManager | `0x26Bde0AC...9c9115` | Infinity farm registry |
-| Distributor | `0xEA8620aA...40877` | Infinity CAKE reward claims |
-| CAKE | `0x0E09FaBB...cE82` | CAKE token |
+| Contract        | Address                  | Purpose                     |
+| --------------- | ------------------------ | --------------------------- |
+| MasterChef v3   | `0x556B9306...04c2Cd59e` | V3 position farming         |
+| CampaignManager | `0x26Bde0AC...9c9115`    | Infinity farm registry      |
+| Distributor     | `0xEA8620aA...40877`     | Infinity CAKE reward claims |
+| CAKE            | `0x0E09FaBB...cE82`      | CAKE token                  |

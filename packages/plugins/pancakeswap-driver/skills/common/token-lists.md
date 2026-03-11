@@ -10,18 +10,19 @@ If a token is absent from **all** lists (primary and secondary) for its chain, t
 
 ## Chain → Token List URLs
 
-| Chain           | Chain ID | Primary URL | Secondary URL(s) |
-|-----------------|----------|-------------|-----------------|
-| BNB Smart Chain | 56       | `https://tokens.pancakeswap.finance/pancakeswap-extended.json` | `https://tokens.coingecko.com/binance-smart-chain/all.json`, `https://tokens.pancakeswap.finance/ondo-rwa-tokens.json` |
-| Ethereum        | 1        | `https://tokens.pancakeswap.finance/pancakeswap-eth-default.json` | `https://tokens.coingecko.com/uniswap/all.json`, `https://tokens.pancakeswap.finance/ondo-rwa-tokens.json` |
-| zkSync Era      | 324      | `https://tokens.pancakeswap.finance/pancakeswap-zksync-default.json` | — |
-| Linea           | 59144    | `https://tokens.pancakeswap.finance/pancakeswap-linea-default.json` | `https://tokens.coingecko.com/linea/all.json` |
-| Base            | 8453     | `https://tokens.pancakeswap.finance/pancakeswap-base-default.json` | `https://raw.githubusercontent.com/ethereum-optimism/ethereum-optimism.github.io/master/optimism.tokenlist.json`, `https://tokens.coingecko.com/base/all.json` |
-| Arbitrum One    | 42161    | `https://tokens.pancakeswap.finance/pancakeswap-arbitrum-default.json` | `https://tokens.coingecko.com/arbitrum-one/all.json` |
-| Optimism        | 10       | `https://raw.githubusercontent.com/ethereum-optimism/ethereum-optimism.github.io/master/optimism.tokenlist.json` | — |
-| opBNB           | 204      | `https://tokens.pancakeswap.finance/pancakeswap-opbnb-default.json` | — |
-| Monad Mainnet   | 10143    | `https://tokens.pancakeswap.finance/pancakeswap-monad-default.json` | — |
-| Monad Testnet   | 10143    | `https://tokens.pancakeswap.finance/pancakeswap-monad-testnet-default.json` | — |
+| Chain           | Chain ID | Primary URL                                                                                                      | Secondary URL(s)                                                                                                                                               |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BNB Smart Chain | 56       | `https://tokens.pancakeswap.finance/pancakeswap-extended.json`                                                   | `https://tokens.coingecko.com/binance-smart-chain/all.json`, `https://tokens.pancakeswap.finance/ondo-rwa-tokens.json`                                         |
+| Ethereum        | 1        | `https://tokens.pancakeswap.finance/pancakeswap-eth-default.json`                                                | `https://tokens.coingecko.com/uniswap/all.json`, `https://tokens.pancakeswap.finance/ondo-rwa-tokens.json`                                                     |
+| zkSync Era      | 324      | `https://tokens.pancakeswap.finance/pancakeswap-zksync-default.json`                                             | —                                                                                                                                                              |
+| Linea           | 59144    | `https://tokens.pancakeswap.finance/pancakeswap-linea-default.json`                                              | `https://tokens.coingecko.com/linea/all.json`                                                                                                                  |
+| Base            | 8453     | `https://tokens.pancakeswap.finance/pancakeswap-base-default.json`                                               | `https://raw.githubusercontent.com/ethereum-optimism/ethereum-optimism.github.io/master/optimism.tokenlist.json`, `https://tokens.coingecko.com/base/all.json` |
+| Arbitrum One    | 42161    | `https://tokens.pancakeswap.finance/pancakeswap-arbitrum-default.json`                                           | `https://tokens.coingecko.com/arbitrum-one/all.json`                                                                                                           |
+| Optimism        | 10       | `https://raw.githubusercontent.com/ethereum-optimism/ethereum-optimism.github.io/master/optimism.tokenlist.json` | —                                                                                                                                                              |
+| opBNB           | 204      | `https://tokens.pancakeswap.finance/pancakeswap-opbnb-default.json`                                              | —                                                                                                                                                              |
+| Monad Mainnet   | 143.     | `https://tokens.pancakeswap.finance/pancakeswap-monad-default.json`                                              | —                                                                                                                                                              |
+| Monad Testnet   | 10143    | `https://tokens.pancakeswap.finance/pancakeswap-monad-testnet-default.json`                                      | —                                                                                                                                                              |
+| Solana          | -        | `https://tokens.pancakeswap.finance/pancakeswap-solana-default.json`                                             | -                                                                                                                                                              |
 
 ---
 

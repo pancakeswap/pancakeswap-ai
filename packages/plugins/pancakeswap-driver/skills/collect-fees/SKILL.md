@@ -44,11 +44,11 @@ This skill **does not execute transactions** — it reads on-chain state and gen
 
 The routing decision is made after Step 1 based on the user's pool type preference and chain:
 
-| Pool Type         | Discovery Method                                         | Chains                                    | Position Model                 | Fee Query Method                                       |
-| ----------------- | -------------------------------------------------------- | ----------------------------------------- | ------------------------------ | ------------------------------------------------------ |
-| **V3**            | On-chain: NonfungiblePositionManager NFT                 | BSC, ETH, ARB, Base, zkSync, Linea, opBNB, Monad | ERC-721 NFT (tokenId)          | On-chain via NonfungiblePositionManager (`tokensOwed`) |
-| **Infinity (v4)** | **Explorer API only** (no NFT, no `balanceOf`)           | BSC, Base only                            | Singleton PoolManager (no NFT) | Explorer API (CL + Bin); CAKE auto-distributed         |
-| **V2**            | Out of scope                                             | BSC only                                  | ERC-20 LP token                | Out of scope — fees embedded in LP value               |
+| Pool Type         | Discovery Method                               | Chains                                           | Position Model                 | Fee Query Method                                       |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------ | ------------------------------ | ------------------------------------------------------ |
+| **V3**            | On-chain: NonfungiblePositionManager NFT       | BSC, ETH, ARB, Base, zkSync, Linea, opBNB, Monad | ERC-721 NFT (tokenId)          | On-chain via NonfungiblePositionManager (`tokensOwed`) |
+| **Infinity (v4)** | **Explorer API only** (no NFT, no `balanceOf`) | BSC, Base only                                   | Singleton PoolManager (no NFT) | Explorer API (CL + Bin); CAKE auto-distributed         |
+| **V2**            | Out of scope                                   | BSC only                                         | ERC-20 LP token                | Out of scope — fees embedded in LP value               |
 
 ---
 
@@ -329,7 +329,7 @@ Read `../common/token-lists.md` for the full chain → token list URL table, the
 Use the PancakeSwap Explorer API for batch token price lookups. All chains use their numeric chain ID as the identifier.
 
 | Chain           | Chain ID |
-|-----------------|----------|
+| --------------- | -------- |
 | BNB Smart Chain | 56       |
 | Ethereum        | 1        |
 | Arbitrum One    | 42161    |

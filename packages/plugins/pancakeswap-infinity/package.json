@@ -10,6 +10,20 @@
     "url": "https://github.com/pancakeswap/pancakeswap-ai.git",
     "directory": "packages/plugins/pancakeswap-infinity"
   },
-  "keywords": ["claude-code", "plugin", "pancakeswap", "infinity", "hooks", "v4", "security", "solidity"],
-  "files": [".claude-plugin", "skills", "agents", "README.md"]
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "pancakeswap",
+    "infinity",
+    "hooks",
+    "v4",
+    "security",
+    "solidity"
+  ],
+  "files": [
+    ".claude-plugin",
+    "skills",
+    "agents",
+    "README.md"
+  ]
 }

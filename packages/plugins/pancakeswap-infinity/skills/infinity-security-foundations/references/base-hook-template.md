@@ -550,6 +550,7 @@ contract InfinityBinHook is BinBaseHook {
 ### Step 1: Choose Pool Type
 
 - **CL (Concentrated Liquidity):** Use `InfinityHook` template
+
   - Continuous price space, concentrated ranges
   - Use when: Custom swap fees, range-based rewards, concentrated LP strategies
 

@@ -108,6 +108,88 @@ DexScreener treats PancakeSwap StableSwap pools specially:
 
 ---
 
+## PancakeSwap Explorer API
+
+The PancakeSwap Explorer API (`explorer.pancakeswap.com`) provides first-party pool data including TVL, 24h volume, fee APR, and protocol classification. It is the primary source for pool discovery in the liquidity planner — more accurate and lower-latency than third-party aggregators.
+
+### Endpoints
+
+#### Pair endpoint (AND — both tokens known)
+
+Returns pools that contain **both** specified tokens:
+
+```
+GET https://explorer.pancakeswap.com/api/cached/pools/list/pair/{token0Address}/{token1Address}?chains={chain}&protocols={protocols}&orderBy=tvlUSD
+```
+
+#### List endpoint (OR — zero or one token known)
+
+Returns pools containing **any** of the specified tokens:
+
+```
+GET https://explorer.pancakeswap.com/api/cached/pools/list?chains={chain}&protocols={protocols}&orderBy=tvlUSD&tokens={chainId}:{address}
+```
+
+Repeat `tokens` parameter for each known token (via `--data-urlencode` with `-G` in curl).
+
+### Token Format
+
+Tokens are specified as `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC USDT). For native tokens (BNB, ETH), omit the tokens filter and filter results by symbol.
+
+### Chain Identifiers
+
+| Chain      | `chains` value | Numeric Chain ID |
+| ---------- | -------------- | ---------------- |
+| BSC        | `bsc`          | `56`             |
+| Ethereum   | `eth`          | `1`              |
+| Arbitrum   | `arb`          | `42161`          |
+| Base       | `base`         | `8453`           |
+| zkSync Era | `zksync`       | `324`            |
+| Linea      | `linea`        | `59144`          |
+| opBNB      | `opbnb`        | `204`            |
+| Solana     | `sol`          | —                |
+
+### Protocol Values
+
+| `protocols` value | Pool Type                       |
+| ----------------- | ------------------------------- |
+| `v2`              | PancakeSwap V2                  |
+| `v3`              | PancakeSwap V3                  |
+| `infinityCl`      | Infinity Concentrated Liquidity |
+| `infinityBin`     | Infinity Bin pool               |
+| `infinityStable`  | Infinity StableSwap             |
+
+### Response Field Reference
+
+| Field          | Type   | Description                                                                     |
+| -------------- | ------ | ------------------------------------------------------------------------------- |
+| `id`           | string | Pool contract address                                                           |
+| `chainId`      | number | Numeric chain ID                                                                |
+| `protocol`     | string | Pool type (`v2`, `v3`, `infinityCl`, `infinityBin`, `infinityStable`)           |
+| `feeTier`      | number | Fee tier in basis points (e.g., `2500` = 0.25%)                                 |
+| `tvlUSD`       | number | Total Value Locked in USD                                                       |
+| `volumeUSD24h` | number | 24-hour trading volume in USD                                                   |
+| `apr24h`       | number | Fee APR as a decimal (e.g., `0.2166` = 21.66%) — multiply by 100 for percentage |
+| `token0`       | object | First token metadata (`symbol`, `address`, `decimals`)                          |
+| `token1`       | object | Second token metadata (`symbol`, `address`, `decimals`)                         |
+
+### `feeTier` to Human-Readable Mapping
+
+| `feeTier` value | Human-readable |
+| --------------- | -------------- |
+| `100`           | `0.01%`        |
+| `500`           | `0.05%`        |
+| `2500`          | `0.25%`        |
+| `10000`         | `1.0%`         |
+
+### Important Notes
+
+- **`apr24h` is a decimal**: Always multiply by 100 before displaying as a percentage.
+- **Fee APR only**: `apr24h` covers swap fees only (24h annualized). CAKE farming rewards are not included — use DefiLlama for full reward APY breakdown when requested.
+- **Fallback**: If the Explorer API returns no results (e.g., brand-new pool), fall back to DexScreener.
+
+---
+
 ## DefiLlama Yields API
 
 DefiLlama aggregates yield farming data across DeFi protocols. Use it to find APY/APR information for PancakeSwap positions.
@@ -227,25 +309,39 @@ curl -s "https://tokens.pancakeswap.finance/pancakeswap-extended.json" | \
 
 Follow this sequence to gather complete pool and position data:
 
-### Step 1: Discover Pools
+### Step 1: Discover Pools and Assess Metrics
 
-Use DexScreener to find candidate pools matching your criteria:
+Use the PancakeSwap Explorer API to find candidate pools — it returns TVL, volume, APR, and protocol in a single call:
 
 ```bash
-curl -s "https://api.dexscreener.com/latest/dex/search?q={searchQuery}" | \
-  jq '.pairs[] | select(.dexId == "pancakeswap" or .dexId == "pancakeswap-stableswap")'
+# Both tokens known: pair endpoint
+curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/{token0}/{token1}?chains={chain}&protocols=v2&protocols=v3&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD"
+
+# One token known: list endpoint
+curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
+  --data-urlencode "chains={chain}" \
+  --data-urlencode "protocols=v2" \
+  --data-urlencode "protocols=v3" \
+  --data-urlencode "protocols=infinityCl" \
+  --data-urlencode "protocols=infinityBin" \
+  --data-urlencode "protocols=infinityStable" \
+  --data-urlencode "orderBy=tvlUSD" \
+  --data-urlencode "tokens={chainId}:{tokenAddress}"
 ```
 
-**Output needed**:
+**Output available directly**:
 
-- Pair address
-- Token addresses and symbols
-- Current liquidity (USD)
-- 24h volume
+- Pool address (`id`)
+- Protocol and fee tier
+- TVL in USD (`tvlUSD`)
+- 24h volume (`volumeUSD24h`)
+- Fee APR as decimal (`apr24h` × 100 = percentage)
 
-### Step 2: Check Yields (APY)
+If the Explorer API returns no results, fall back to DexScreener (see DexScreener section above).
 
-Query DefiLlama for farming returns on promising pools:
+### Step 2: Check Farming Rewards (Optional)
+
+If the user asks for a detailed CAKE reward APY breakdown, query DefiLlama:
 
 ```bash
 curl -s "https://yields.llama.fi/pools" | \
@@ -294,13 +390,14 @@ print(f"Price range: ${lower_bound:.4f} to ${upper_bound:.4f}")
 
 ### Error Handling
 
-| Error            | Cause                                    | Resolution                                              |
-| ---------------- | ---------------------------------------- | ------------------------------------------------------- |
-| Pool not found   | DexScreener doesn't index this pool yet  | Try token search instead; verify pair address manually  |
-| No APY data      | Pool too new or not tracked by DefiLlama | Monitor pool directly; estimate from volume             |
-| Stale price      | API lag or low volume                    | Cross-check with multiple sources; add buffer to ranges |
-| Token not found  | Token list outdated or not supported     | Verify token address on blockchain explorer             |
-| Network mismatch | Querying wrong chainId for pool          | Check pool address format; confirm network in dexId     |
+| Error                    | Cause                                    | Resolution                                              |
+| ------------------------ | ---------------------------------------- | ------------------------------------------------------- |
+| Explorer returns no rows | Pool too new or not yet indexed          | Fall back to DexScreener pair/token search              |
+| Pool not found           | DexScreener doesn't index this pool yet  | Try token search instead; verify pair address manually  |
+| No APY data              | Pool too new or not tracked by DefiLlama | Use `apr24h` from Explorer API; estimate from volume    |
+| Stale price              | API lag or low volume                    | Cross-check with multiple sources; add buffer to ranges |
+| Token not found          | Token list outdated or not supported     | Verify token address on blockchain explorer             |
+| Network mismatch         | Querying wrong chainId for pool          | Check pool address format; confirm network in dexId     |
 
 ---
 

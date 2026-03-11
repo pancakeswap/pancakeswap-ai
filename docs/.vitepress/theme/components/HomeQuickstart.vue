@@ -45,14 +45,13 @@ function copyLLM() {
             <span class="qs-icon">👤</span>
             <h3>Human Quickstart</h3>
           </div>
-          <p class="qs-desc">Paste this prompt into Claude Code, Cursor, or any AI agent:</p>
+          <p class="qs-desc">Paste this prompt into Claude Code, Cursor, or any AI agent or <a href="/getting-started/installation">install manually</a>:</p>
           <div class="qs-code-block">
             <pre><code>{{ humanPrompt }}</code></pre>
             <button class="qs-copy-btn" @click="copyHuman">
               {{ humanCopied ? '✓ Copied' : 'Copy prompt' }}
             </button>
           </div>
-          <a class="qs-link" href="/getting-started/installation">Manual quickstart →</a>
         </div>
 
         <!-- LLM Quickstart -->
@@ -72,12 +71,27 @@ function copyLLM() {
         </div>
 
       </div>
+      <hr class="qs-divider" />
     </div>
   </section>
 </template>
 
 <style scoped>
-.qs-section {}
+.qs-section {
+  padding: 0 24px 48px;
+}
+
+@media (min-width: 640px) {
+  .qs-section {
+    padding: 0 48px;
+  }
+}
+
+@media (min-width: 960px) {
+  .qs-section {
+    padding: 0 64px;
+  }
+}
 
 .qs-inner {
   max-width: 1152px;
@@ -129,6 +143,16 @@ function copyLLM() {
   color: var(--vp-c-text-2);
   margin: 0;
   line-height: 1.5;
+}
+
+.qs-desc a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.qs-desc a:hover {
+  text-decoration: underline;
 }
 
 .qs-code-block {
@@ -187,5 +211,11 @@ function copyLLM() {
 
 .qs-link:hover {
   text-decoration: underline;
+}
+
+.qs-divider {
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
+  margin: 48px 0 0;
 }
 </style>

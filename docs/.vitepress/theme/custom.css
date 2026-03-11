@@ -246,24 +246,21 @@ a:not(.VPButton):hover {
   color: #666171;
 }
 
+.VPFeatures {
+  margin-top: 48px;
+}
+
 /* Homepage extra content (skills + chains tables) */
 .home-extra {
   max-width: 1152px;
   margin: 0 auto;
-  padding: 64px 24px;
 }
 
 .home-extra h2 {
-  text-align: center;
+  text-align: left;
   font-size: 24px;
   font-weight: 800;
   margin-bottom: 24px;
-}
-
-@media (max-width: 640px) {
-  .home-extra {
-    padding: 48px 20px;
-  }
 }
 
 :root {

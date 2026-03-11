@@ -39,6 +39,8 @@ features:
     link: /getting-started/#agent-agnostic-design
 ---
 
+<div class="vp-doc home-extra">
+
 ## How It Works
 
 ```
@@ -63,3 +65,5 @@ User: "Swap 0.1 BNB for USDT on PancakeSwap"
 | Linea (59144) | ✅ | ✅ | — | — | — |
 | opBNB (204) | ✅ | ✅ | — | — | — |
 | Monad (143) | ✅ | ✅ | — | — | — |
+
+</div>

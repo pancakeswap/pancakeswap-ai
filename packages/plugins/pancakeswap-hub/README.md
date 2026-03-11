@@ -1,6 +1,6 @@
 # pancakeswap-hub
 
-Central hub for PancakeSwap — brings together tools for managing your full DeFi activity.
+AI-powered assistance for integrating and using Pancakeswap Hub.
 
 ## Skills
 
@@ -11,7 +11,11 @@ Plan token swaps through PCS Hub, PancakeSwap's aggregator API. Fetches optimal 
 ## Installation
 
 ```bash
-claude plugin add @pancakeswap/pancakeswap-hub
+# Claude Code
+/plugin install pancakeswap-hub
+
+# Manual
+cp -r skills/hub-api-integration/SKILL.md .cursor/skills/hub-api-integration/SKILL.md
 ```
 
 ## License

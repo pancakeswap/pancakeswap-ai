@@ -2,7 +2,7 @@
   "name": "@pancakeswap/pancakeswap-hub",
   "version": "1.0.0",
   "private": true,
-  "description": "Central hub for PancakeSwap — brings together tools for managing your full DeFi activity",
+  "description": "AI-powered assistance for integrating and using Pancakeswap Hub.",
   "author": "PancakeSwap <chef.sanji@pancakeswap.com>",
   "license": "MIT",
   "repository": {

@@ -246,6 +246,26 @@ a:not(.VPButton):hover {
   color: #666171;
 }
 
+/* Homepage extra content (skills + chains tables) */
+.home-extra {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.home-extra h2 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .home-extra {
+    padding: 48px 20px;
+  }
+}
+
 :root {
   --vp-badge-info-border: transparent;
   --vp-badge-info-text: var(--vp-c-brand-1);

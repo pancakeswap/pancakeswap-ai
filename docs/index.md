@@ -15,51 +15,31 @@ hero:
     - theme: alt
       text: View on GitHub
       link: https://github.com/pancakeswap/pancakeswap-ai
-
-features:
-  - icon: 🗺️
-    title: Swap Planner
-    details: Discover tokens, verify contracts, fetch prices, and generate ready-to-use deep links to the PancakeSwap UI.
-    link: /skills/swap-planner
-  - icon: 💧
-    title: Liquidity Planner
-    details: Plan LP positions across V2, V3, and StableSwap — with pool assessment, APY analysis, and deep link generation.
-    link: /skills/liquidity-planner
-  - icon: 🌾
-    title: Farming Planner
-    details: Discover farms, compare APR/APY, plan CAKE staking strategies, and generate deep links to the farming UI.
-    link: /skills/farming-planner
-  - icon: 🧪
-    title: LLM Evaluations
-    details: Promptfoo-based eval suites with llm-rubric grading. Enforce ≥ 85% pass rate on every PR.
-    link: /evals/
-  - icon: 🤖
-    title: Agent-Agnostic
-    details: Works with Claude Code, Cursor, Windsurf, Copilot, and any LLM agent that reads Markdown skills.
-    link: /getting-started/#agent-agnostic-design
 ---
 
-## How It Works
+<HomeQuickstart />
 
-```
-User: "Swap 0.1 BNB for USDT on PancakeSwap"
-        │
-        ▼
-[PLAN]  swap-planner skill      → deep link for UI confirmation
-        │
-        ▼
-[PLAN]  liquidity-planner skill → LP plan with fee tier + range suggestions
-```
+<div class="vp-doc home-extra">
+
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| [Swap Planner](/skills/swap-planner) | Token discovery, price fetching, and deep links for swaps |
+| [Liquidity Planner](/skills/liquidity-planner) | LP positions across V2, V3, StableSwap with APY analysis |
+| [Farming Planner](/skills/farming-planner) | Farm discovery, CAKE staking, and farming deep links |
 
 ## Supported Chains
 
-| Chain | V2 | V3 | Infinity | Infinity Stable | StableSwap |
-|-------|----|----|----------|-----------------|------------|
-| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Ethereum (1) | ✅ | ✅ | — | — | ✅ |
-| Arbitrum One (42161) | ✅ | ✅ | — | — | ✅ |
-| Base (8453) | ✅ | ✅ | ✅ | — | — |
-| zkSync Era (324) | ✅ | ✅ | — | — | — |
-| Linea (59144) | ✅ | ✅ | — | — | — |
-| opBNB (204) | ✅ | ✅ | — | — | — |
-| Monad (143) | ✅ | ✅ | — | — | — |
+| Chain | V2 | V3 | Infinity | StableSwap |
+|-------|----|----|----------|------------|
+| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ |
+| Ethereum (1) | ✅ | ✅ | — | ✅ |
+| Arbitrum One (42161) | ✅ | ✅ | — | ✅ |
+| Base (8453) | ✅ | ✅ | ✅ | — |
+| zkSync Era (324) | ✅ | ✅ | — | — |
+| Linea (59144) | ✅ | ✅ | — | — |
+| opBNB (204) | ✅ | ✅ | — | — |
+| Monad (143) | ✅ | ✅ | — | — |
+
+</div>

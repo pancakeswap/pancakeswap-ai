@@ -1,6 +1,6 @@
 # pancakeswap-hub
 
-AI-powered assistance for integrating and using Pancakeswap Hub.
+AI-powered assistance for integrating and using PancakeSwap Hub.
 
 ## Skills
 

@@ -1,7 +1,7 @@
 {
   "name": "pancakeswap-hub",
   "version": "1.7.0",
-  "description": "Central hub for PancakeSwap — brings together tools for managing your full DeFi activity",
+  "description": "Tools for integrating and interacting with PancakeSwap Hub",
   "author": {
     "name": "PancakeSwap",
     "email": "chef.sanji@pancakeswap.com"

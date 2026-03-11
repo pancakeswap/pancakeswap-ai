@@ -28,7 +28,7 @@
     {
       "name": "pancakeswap-hub",
       "source": "./packages/plugins/pancakeswap-hub",
-      "description": "Central hub for PancakeSwap — brings together tools for managing your full DeFi activity"
+      "description": "Integrate and plan swaps through PanckaeStap Hub"
     }
   ]
 }

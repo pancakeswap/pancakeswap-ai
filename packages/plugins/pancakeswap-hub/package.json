@@ -2,7 +2,7 @@
   "name": "@pancakeswap/pancakeswap-hub",
   "version": "1.0.0",
   "private": true,
-  "description": "AI-powered assistance for integrating and using Pancakeswap Hub.",
+  "description": "AI-powered assistance for integrating and using PancakeSwap Hub.",
   "author": "PancakeSwap <chef.sanji@pancakeswap.com>",
   "license": "MIT",
   "repository": {

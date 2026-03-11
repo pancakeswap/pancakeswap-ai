@@ -1,6 +1,6 @@
 {
   "name": "pancakeswap-hub",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Central hub for PancakeSwap — brings together tools for managing your full DeFi activity",
   "author": {
     "name": "PancakeSwap",
@@ -9,5 +9,5 @@
   "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
   "keywords": ["pancakeswap", "defi", "hub", "portfolio", "bsc", "bnb", "cake"],
   "license": "MIT",
-  "skills": ["./skills/hub-swap-planner"]
+  "skills": ["./skills/hub-swap-planner", "./skills/hub-api-integration"]
 }

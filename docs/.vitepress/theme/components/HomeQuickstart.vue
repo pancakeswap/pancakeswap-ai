@@ -4,7 +4,7 @@ import { ref } from 'vue'
 const humanCopied = ref(false)
 const llmCopied = ref(false)
 
-const humanPrompt = `Add skills from https://github.com/pancakeswap/pancakeswap-ai so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
+const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md and install the skills described there so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
 
 const llmCode = `https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md`
 

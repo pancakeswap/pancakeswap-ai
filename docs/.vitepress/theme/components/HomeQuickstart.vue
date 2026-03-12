@@ -10,7 +10,11 @@ const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancake
 const llmCode = `https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md`
 
 async function copyToClipboard(text: string, copiedFlag: { value: boolean }) {
-  if (typeof navigator === 'undefined' || !navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+  if (
+    typeof navigator === 'undefined' ||
+    !navigator.clipboard ||
+    typeof navigator.clipboard.writeText !== 'function'
+  ) {
     console.error('Clipboard API is not available in this environment.')
     return
   }
@@ -56,14 +60,16 @@ async function toggleFullscreen() {
   <section class="qs-section">
     <div class="qs-inner">
       <div class="qs-grid">
-
         <!-- Human Quickstart -->
         <div class="qs-card">
           <div class="qs-card-header">
             <span class="qs-icon">👤</span>
             <h3>Human Quickstart</h3>
           </div>
-          <p class="qs-desc">Paste this prompt into Claude Code, Cursor, or any AI agent or <a href="/getting-started/installation">install manually</a>:</p>
+          <p class="qs-desc">
+            Paste this prompt into Claude Code, Cursor, or any AI agent or
+            <a href="/getting-started/installation">install manually</a>:
+          </p>
           <div class="qs-code-block">
             <pre><code>{{ humanPrompt }}</code></pre>
             <button class="qs-copy-btn" @click="copyHuman">
@@ -78,16 +84,23 @@ async function toggleFullscreen() {
             <span class="qs-icon">🤖</span>
             <h3>LLM Quickstart</h3>
           </div>
-          <p class="qs-desc">Fetch this URL to discover all available skills, invocation patterns, and examples:</p>
+          <p class="qs-desc">
+            Fetch this URL to discover all available skills, invocation patterns, and examples:
+          </p>
           <div class="qs-code-block qs-code-block--bash">
             <pre><code>{{ llmCode }}</code></pre>
             <button class="qs-copy-btn" @click="copyLLM">
               {{ llmCopied ? '✓ Copied' : 'Copy URL' }}
             </button>
           </div>
-          <a class="qs-link" href="https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md" target="_blank" rel="noopener">View AGENTS.md →</a>
+          <a
+            class="qs-link"
+            href="https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md"
+            target="_blank"
+            rel="noopener"
+            >View AGENTS.md →</a
+          >
         </div>
-
       </div>
       <div class="qs-embed-card">
         <div class="qs-card-header">
@@ -95,7 +108,12 @@ async function toggleFullscreen() {
             <span class="qs-icon">🥞</span>
             <h3>PancakeSwap Town</h3>
           </div>
-          <button class="qs-fullscreen-btn" type="button" aria-label="Toggle fullscreen preview" @click="toggleFullscreen">
+          <button
+            class="qs-fullscreen-btn"
+            type="button"
+            aria-label="Toggle fullscreen preview"
+            @click="toggleFullscreen"
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"
@@ -116,7 +134,6 @@ async function toggleFullscreen() {
             title="Pancake Kitchen"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"
-            sandbox="allow-scripts allow-forms allow-popups"
             allow="fullscreen"
             allowfullscreen
           />

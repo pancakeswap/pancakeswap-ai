@@ -116,6 +116,8 @@ async function toggleFullscreen() {
             title="Pancake Kitchen"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"
+            sandbox="allow-scripts allow-forms allow-popups"
+            allow="fullscreen"
             allowfullscreen
           />
         </div>

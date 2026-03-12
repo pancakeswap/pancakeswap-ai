@@ -14,12 +14,35 @@ model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # PancakeSwap Infinity Security Foundations
 
 A comprehensive security guide for developing hooks on PancakeSwap Infinity. This skill adapts Uniswap v4's security principles for Infinity's vault-centric, dual pool architecture (Concentrated Liquidity and Bin pools).
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/infinity-security-foundations`) without asking about a specific security topic — output
+the help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PancakeSwap Infinity Security Foundations**
+
+A security guide for developing hooks on PancakeSwap Infinity (v4) — covering threat models,
+permission flags, delta accounting, access control patterns, and common vulnerabilities.
+
+**How to use:** Ask about a specific security topic, request a hook template, or describe
+your hook and ask for a security review.
+
+**Examples:**
+- `Give me a base CL pool hook template`
+- `What permission flags should I use for a before-swap hook?`
+- `Review my hook for reentrancy and delta accounting issues`
+
+---
 
 ## Table of Contents
 

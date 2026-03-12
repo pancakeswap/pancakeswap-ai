@@ -6,12 +6,34 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.1.0'
+  version: '1.2.0'
 ---
 
 # PancakeSwap Farming Planner
 
 Plan yield farming, CAKE staking, and reward harvesting on PancakeSwap by discovering active farms, comparing APR/APY, and generating deep links to the PancakeSwap farming interface.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/farming-planner`) without providing a farming action or other details — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PancakeSwap Farming Planner**
+
+Discover yield farms, plan CAKE staking, and get deep links to the PancakeSwap farming UI.
+
+**How to use:** Tell me what you want to do — discover farms, stake CAKE, stake LP tokens,
+unstake, or harvest rewards.
+
+**Examples:**
+- `Find the best farms on BSC right now`
+- `Stake my CAKE in a Syrup Pool`
+- `Stake my CAKE/BNB LP tokens in a V3 farm`
+
+---
 
 ## Overview
 

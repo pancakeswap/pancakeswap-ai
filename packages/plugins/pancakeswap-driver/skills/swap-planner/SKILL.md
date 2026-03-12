@@ -1,12 +1,12 @@
 ---
 name: swap-planner
-description: Plan and generate deep links for token swaps on PancakeSwap. Use when user says "swap on pancakeswap", "buy [token] with BNB", "pancakeswap swap", "I want to swap", or describes wanting to exchange tokens on PancakeSwap without writing code.
+description: Plan and generate deep links for token swaps on PancakeSwap. Use when user says "swap on pancakeswap", "buy [token] with BNB", "pancakeswap swap", "I want to swap", "cross-chain swap", "bridge swap", or describes wanting to exchange tokens on PancakeSwap without writing code.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.8.0'
+  version: '1.9.0'
 ---
 
 # PancakeSwap Swap Planner
@@ -31,6 +31,7 @@ Plan token swaps on PancakeSwap and get a ready-to-use deep link — no code req
 - `Swap 100 USDT for BNB on BSC`
 - `Buy CAKE with 0.5 ETH on Ethereum`
 - `Swap 50 USDC to ARB on Arbitrum One`
+- `Swap 1 ETH on Base for USDC on Arbitrum`
 
 ---
 
@@ -101,6 +102,35 @@ When PCSX is relevant, include in the output:
 - Note that the swap may execute via PancakeSwap X (gasless, MEV-protected)
 - Mention that fill time can be up to 2 minutes
 - Note that slippage settings don't apply to PCSX orders (fillers guarantee price)
+
+---
+
+## Cross-Chain Swaps
+
+PancakeSwap supports swapping tokens across different blockchains in a single step. When the source chain and destination chain differ, the interface routes through a bridge protocol automatically — no manual bridging required.
+
+### Bridge Protocols
+
+| Protocol | Use Case          | Typical Speed              |
+| -------- | ----------------- | -------------------------- |
+| Across   | EVM ↔ EVM         | Seconds to under a minute  |
+| Relay    | Solana ↔ EVM      | Seconds to under a minute  |
+
+### Supported Cross-Chain Pairs
+
+Cross-chain swaps are supported between: BNB Chain, Ethereum, Arbitrum, Base, zkSync Era, Linea, and Solana.
+
+> **Note:** opBNB and Monad are not supported for cross-chain swaps.
+
+### Fees
+
+PancakeSwap charges **no cross-chain fee**. Users pay:
+- Standard trading fees on the source chain
+- Bridge fees charged by Across or Relay (deducted from the output amount)
+
+### When to Use
+
+Use cross-chain swaps when the user specifies **different source and destination chains** — for example, "swap ETH on Base for USDC on Ethereum" or "send BNB from BSC to ETH on Arbitrum".
 
 ---
 
@@ -263,7 +293,8 @@ Required information:
 - **Input token** — What are they selling? (BNB, USDT, or a token address)
 - **Output token** — What are they buying?
 - **Amount** — How much of the input token?
-- **Chain** — Which blockchain? (default: BSC if not specified)
+- **Chain** — Which source blockchain? (default: BSC if not specified)
+- **Destination Chain** — Which blockchain should the output token land on? (required when different from source chain — triggers cross-chain swap via bridge)
 
 Optional but useful:
 
@@ -508,13 +539,14 @@ https://pancakeswap.finance/swap
 
 ### URL Parameters
 
-| Parameter        | Required | Description                                                          | Example Value                      |
-| ---------------- | -------- | -------------------------------------------------------------------- | ---------------------------------- |
-| `chain`          | Yes      | Chain key (see Supported Chains table)                               | `bsc`, `eth`, `arb`, `base`        |
-| `inputCurrency`  | Yes      | Input token address, or native symbol                                | `BNB`, `ETH`, `MON`, `0x55d398...` |
-| `outputCurrency` | Yes      | Output token address, or native symbol                               | `0x0E09FaBB...`, `ETH`             |
-| `exactAmount`    | No       | Amount in human-readable units (not wei)                             | `0.5`, `100`, `1000`               |
-| `exactField`     | No       | `"input"` (selling exact amount) or `"output"` (buying exact amount) | `input`                            |
+| Parameter        | Required         | Description                                                          | Example Value                      |
+| ---------------- | ---------------- | -------------------------------------------------------------------- | ---------------------------------- |
+| `chain`          | Yes              | Source chain key (see Supported Chains table)                        | `bsc`, `eth`, `arb`, `base`        |
+| `inputCurrency`  | Yes              | Input token address, or native symbol                                | `BNB`, `ETH`, `MON`, `0x55d398...` |
+| `outputCurrency` | Yes              | Output token address, or native symbol                               | `0x0E09FaBB...`, `ETH`             |
+| `exactAmount`    | No               | Amount in human-readable units (not wei)                             | `0.5`, `100`, `1000`               |
+| `exactField`     | No               | `"input"` (selling exact amount) or `"output"` (buying exact amount) | `input`                            |
+| `chainOut`       | Cross-chain only | Destination chain key when different from `chain`                    | `eth`, `arb`, `bsc`                |
 
 ### Deep Link Examples
 
@@ -554,6 +586,18 @@ https://pancakeswap.finance/swap?chain=sol&inputCurrency=SOL&outputCurrency=Es9v
 https://pancakeswap.finance/swap?chain=sol&inputCurrency=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&outputCurrency=SOL&exactAmount=1&exactField=output
 ```
 
+**ETH on Base → USDC on Ethereum (cross-chain, sell 1 ETH)**
+
+```
+https://pancakeswap.finance/swap?chain=base&inputCurrency=ETH&outputCurrency=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&chainOut=eth&exactAmount=1&exactField=input
+```
+
+**USDC on Arbitrum → BNB on BSC (cross-chain, sell 100 USDC)**
+
+```
+https://pancakeswap.finance/swap?chain=arb&inputCurrency=0xaf88d065e77c8cC2239327C5EDb3A432268e5831&outputCurrency=BNB&chainOut=bsc&exactAmount=100&exactField=input
+```
+
 ### URL Builder (TypeScript)
 
 ```typescript
@@ -578,6 +622,8 @@ function buildPancakeSwapLink(params: {
   outputCurrency: string // address or native symbol
   exactAmount?: string // human-readable, e.g. "0.5"
   exactField?: 'input' | 'output'
+  chainOutId?: number // EVM chain ID of destination chain (cross-chain swaps)
+  chainOutKey?: string // Destination chain key (cross-chain swaps, e.g. 'eth', 'arb')
 }): string {
   const chain =
     params.chainKey ?? (params.chainId !== undefined ? EVM_CHAIN_KEYS[params.chainId] : undefined)
@@ -590,6 +636,12 @@ function buildPancakeSwapLink(params: {
   })
   if (params.exactAmount) query.set('exactAmount', params.exactAmount)
   if (params.exactField) query.set('exactField', params.exactField)
+
+  // Cross-chain: add chainOut when destination differs from source
+  const chainOut =
+    params.chainOutKey ??
+    (params.chainOutId !== undefined ? EVM_CHAIN_KEYS[params.chainOutId] : undefined)
+  if (chainOut && chainOut !== chain) query.set('chainOut', chainOut)
 
   return `https://pancakeswap.finance/swap?${query.toString()}`
 }
@@ -641,6 +693,26 @@ Buy:     WETH
 https://pancakeswap.finance/swap?chain=eth&inputCurrency=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&outputCurrency=ETH&exactAmount=1000&exactField=input
 ```
 
+**Cross-chain swap (chain ≠ chainOut):**
+
+```
+✅ Cross-Chain Swap Plan
+
+From:    Base  →  Ethereum
+Sell:    1 ETH  (~$X,XXX.XX USD)
+Buy:     USDC on Ethereum
+         Est. output: ~$X,XXX USDC (after bridge fees)
+
+🌉 Bridge: Across Protocol (EVM ↔ EVM)
+⏱️  Estimated time: seconds to under a minute
+💸 Fees: Trading fee on Base + Across bridge fee (deducted from output)
+⚠️  PancakeSwap charges no cross-chain fee — bridge fees are charged by Across
+💡  Verify token addresses on both BaseScan and Etherscan before confirming
+
+🔗 Open in PancakeSwap:
+https://pancakeswap.finance/swap?chain=base&inputCurrency=ETH&outputCurrency=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&chainOut=eth&exactAmount=1&exactField=input
+```
+
 ### Attempt to Open Browser
 
 ```bash
@@ -681,6 +753,7 @@ Before presenting a deep link to the user, confirm all of the following:
 - [ ] No extreme 24h price drop without explanation
 - [ ] `exactAmount` is human-readable (not wei)
 - [ ] `chain` key matches the token's actual chain
+- [ ] If `chain ≠ chainOut`, both token addresses verified on their respective chains
 - [ ] If token is absent from all token lists, user has been explicitly warned
 
 ---

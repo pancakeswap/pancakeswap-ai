@@ -6,12 +6,34 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.6.0'
+  version: '1.7.0'
 ---
 
 # PancakeSwap Collect Fees
 
 Discover pending LP fees across PancakeSwap V3 and Infinity (v4) positions, display a fee summary with USD estimates, and generate deep links to the PancakeSwap interface for collection.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/collect-fees`) without providing a wallet address or other details — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PancakeSwap Collect Fees**
+
+Check pending LP fees across your V3 and Infinity positions and get a deep link to collect them.
+
+**How to use:** Give me your wallet address and optionally the token pair or chain you want
+to check.
+
+**Examples:**
+- `Check my LP fees on BSC for 0xYourWallet`
+- `How much ETH/USDC fees have I earned on Arbitrum?`
+- `Collect my CAKE/BNB fees — wallet 0xYourWallet`
+
+---
 
 ## Overview
 

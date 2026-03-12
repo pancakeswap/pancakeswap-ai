@@ -6,12 +6,35 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.6.0'
+  version: '1.7.0'
 ---
 
 # PCS Hub Swap Planner
 
 Plan token swaps through **PCS Hub** — PancakeSwap's aggregator API. Fetches optimal routing across multiple DEXs on BSC, presents a route summary with split breakdowns, and generates a ready-to-use **channel-specific handoff link** for the target distribution interface.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/hub-swap-planner`) without providing tokens, amounts, or other details — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PCS Hub Swap Planner**
+
+Plan token swaps through PCS Hub — PancakeSwap's aggregator API — and get a channel-specific
+handoff link for your chosen partner interface.
+
+**How to use:** Tell me what tokens you want to swap, how much, and which channel to use
+(e.g. Trust Wallet, Binance Wallet, or default PancakeSwap).
+
+**Examples:**
+- `Swap 100 USDT for BNB via Trust Wallet`
+- `Find the best Hub route for 1 BNB to CAKE`
+- `Swap via Binance Wallet: 500 USDC → ETH`
+
+---
 
 ## Overview
 

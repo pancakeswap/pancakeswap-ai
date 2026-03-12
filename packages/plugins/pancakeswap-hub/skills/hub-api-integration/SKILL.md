@@ -6,12 +6,34 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.0.0'
+  version: '1.1.0'
 ---
 
 # PCS Hub API Integration Guide
 
 Design the quote, route, and execution handoff flow for embedding **PCS Hub** into an external UI — wallet apps, mobile apps, webviews, partner browsers, or headless bots.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/hub-api-integration`) without describing an integration use case — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PCS Hub API Integration Guide**
+
+Design the full integration spec for embedding PCS Hub swap functionality into an external
+UI — wallet apps, webviews, mobile apps, or headless bots.
+
+**How to use:** Describe your app or use case and what you want to integrate.
+
+**Examples:**
+- `I'm building a mobile wallet — how do I embed PCS Hub swaps?`
+- `Generate an integration spec for a browser extension that needs token swaps`
+- `Show me how to fetch Hub quotes and route data via API`
+
+---
 
 ## Overview
 

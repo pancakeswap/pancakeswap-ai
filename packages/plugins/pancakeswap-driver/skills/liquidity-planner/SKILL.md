@@ -7,7 +7,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.7.0'
+  version: '1.8.0'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -36,6 +36,28 @@ metadata:
 # PancakeSwap Liquidity Planner
 
 Plan liquidity provision on PancakeSwap by gathering user intent, discovering and verifying tokens, assessing pool metrics, recommending price ranges and fee tiers, and generating a ready-to-use deep link to the PancakeSwap interface.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/liquidity-planner`) without providing tokens, amounts, or other details — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PancakeSwap Liquidity Planner**
+
+Plan a liquidity position on PancakeSwap and get a ready-to-use deep link — no code required.
+
+**How to use:** Tell me which token pair you want to provide liquidity for, on which chain,
+and how much you want to deposit.
+
+**Examples:**
+- `Add liquidity for BNB/CAKE on BSC`
+- `Provide 1 ETH + 2000 USDC liquidity on Arbitrum`
+- `LP 500 USDT and 500 USDC stableswap on BSC`
+
+---
 
 ## Overview
 

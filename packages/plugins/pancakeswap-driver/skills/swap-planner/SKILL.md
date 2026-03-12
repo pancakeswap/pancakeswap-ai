@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.7.0'
+  version: '1.8.0'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -37,6 +37,27 @@ metadata:
 # PancakeSwap Swap Planner
 
 Plan token swaps on PancakeSwap by gathering user intent, discovering and verifying tokens, fetching price data, and generating a ready-to-use deep link to the PancakeSwap interface.
+
+## No-Argument Invocation
+
+If this skill was invoked with no specific request — the user simply typed the skill name
+(e.g. `/swap-planner`) without providing tokens, amounts, or other details — output the
+help text below **exactly as written** and then stop. Do not begin any workflow.
+
+---
+
+**PancakeSwap Swap Planner**
+
+Plan token swaps on PancakeSwap and get a ready-to-use deep link — no code required.
+
+**How to use:** Tell me what you want to swap, on which chain, and how much.
+
+**Examples:**
+- `Swap 100 USDT for BNB on BSC`
+- `Buy CAKE with 0.5 ETH on Ethereum`
+- `Swap 50 USDC to ARB on Arbitrum One`
+
+---
 
 ## Overview
 

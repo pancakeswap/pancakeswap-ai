@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.8.1'
+  version: '1.8.2'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -65,18 +65,18 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 
 ## Supported Chains
 
-| Chain           | Chain ID | Deep Link Key | Native Token | Fee Tiers                                                                                                        |
-| --------------- | -------- | ------------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
-| BNB Smart Chain | 56       | `bsc`         | BNB          | V2 (0.25%), V3 (all), StableSwap                                                                                 |
-| Ethereum        | 1        | `eth`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%), StableSwap                                                                         |
-| Arbitrum One    | 42161    | `arb`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%), StableSwap                                                                         |
-| Base            | 8453     | `base`        | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| zkSync Era      | 324      | `zksync`      | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| Linea           | 59144    | `linea`       | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| opBNB           | 204      | `opbnb`       | BNB          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| Monad           | 143      | `monad`       | MON          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| BSC Testnet     | 97       | `bsctest`     | BNB          | V2, V3 (dev/testing only)                                                                                        |
-| Solana          | -        | `sol`         | SOL          | V3 (0.01%, 0.02%, 0.03%, 0.04%, 0.05%, 0.1%, 0.15%, 0.16%, 0.18%, 0.2%, 0.25%, 0.4%, 0.6%, 0.8%, 1%, 2%, 3%, 4%) |
+| Chain           | Chain ID | Deep Link Key | Native Token | Protocols                                      |
+| --------------- | -------- | ------------- | ------------ | ---------------------------------------------- |
+| BNB Smart Chain | 56       | `bsc`         | BNB          | V2, V3, StableSwap, Infinity (CL, Bin, Stable) |
+| Ethereum        | 1        | `eth`         | ETH          | V2, V3, StableSwap                             |
+| Arbitrum One    | 42161    | `arb`         | ETH          | V2, V3, StableSwap                             |
+| Base            | 8453     | `base`        | ETH          | V2, V3, Infinity (CL, Bin)                     |
+| zkSync Era      | 324      | `zksync`      | ETH          | V2, V3                                         |
+| Linea           | 59144    | `linea`       | ETH          | V2, V3                                         |
+| opBNB           | 204      | `opbnb`       | BNB          | V2, V3                                         |
+| Monad           | 143      | `monad`       | MON          | V2, V3                                         |
+| BSC Testnet     | 97       | `bsctest`     | BNB          | V2, V3                                         |
+| Solana          | -        | `sol`         | SOL          | V3                                             |
 
 ---
 

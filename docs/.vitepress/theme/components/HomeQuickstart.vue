@@ -106,7 +106,7 @@ async function toggleFullscreen() {
         <div class="qs-card-header">
           <div class="qs-embed-title">
             <span class="qs-icon">🥞</span>
-            <h3>PancakeSwap Town</h3>
+            <h3>Pancake Town</h3>
           </div>
           <button
             class="qs-fullscreen-btn"

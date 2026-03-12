@@ -3,6 +3,7 @@ import { ref } from 'vue'
 
 const humanCopied = ref(false)
 const llmCopied = ref(false)
+const embedFrame = ref<HTMLIFrameElement | null>(null)
 
 const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md and install the skills described there so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
 
@@ -31,6 +32,23 @@ function copyHuman() {
 
 function copyLLM() {
   copyToClipboard(llmCode, llmCopied)
+}
+
+async function toggleFullscreen() {
+  if (typeof document === 'undefined' || !embedFrame.value) {
+    return
+  }
+
+  try {
+    if (document.fullscreenElement === embedFrame.value) {
+      await document.exitFullscreen()
+      return
+    }
+
+    await embedFrame.value.requestFullscreen()
+  } catch (error) {
+    console.error('Failed to toggle fullscreen:', error)
+  }
 }
 </script>
 
@@ -70,6 +88,37 @@ function copyLLM() {
           <a class="qs-link" href="https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md" target="_blank" rel="noopener">View AGENTS.md →</a>
         </div>
 
+      </div>
+      <div class="qs-embed-card">
+        <div class="qs-card-header">
+          <div class="qs-embed-title">
+            <span class="qs-icon">🥞</span>
+            <h3>PancakeSwap Town</h3>
+          </div>
+          <button class="qs-fullscreen-btn" type="button" aria-label="Toggle fullscreen preview" @click="toggleFullscreen">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="qs-embed-frame-wrap">
+          <iframe
+            ref="embedFrame"
+            class="qs-embed-frame"
+            src="https://pancake-kitchen.pancake.run/"
+            title="Pancake Kitchen"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          />
+        </div>
       </div>
       <hr class="qs-divider" />
     </div>
@@ -121,6 +170,13 @@ function copyLLM() {
 }
 
 .qs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.qs-embed-title {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -217,5 +273,61 @@ function copyLLM() {
   border: none;
   border-top: 1px solid var(--vp-c-divider);
   margin: 48px 0 0;
+}
+
+.qs-embed-card {
+  margin-top: 24px;
+  background: var(--vp-c-bg-elv);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qs-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.qs-fullscreen-btn:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.qs-fullscreen-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.qs-embed-frame-wrap {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--vp-c-bg);
+  aspect-ratio: 16 / 8;
+}
+
+.qs-embed-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .qs-embed-frame-wrap {
+    aspect-ratio: 16 / 10;
+  }
 }
 </style>

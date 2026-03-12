@@ -73,6 +73,7 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 | zkSync Era      | 324      | `zksync`      | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | Linea           | 59144    | `linea`       | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | opBNB           | 204      | `opbnb`       | BNB          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
+| Monad           | 143      | `monad`       | MON          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | BSC Testnet     | 97       | `bsctest`     | BNB          | V2, V3 (dev/testing only)                                                                                        |
 | Solana          | -        | `sol`         | SOL          | V3 (0.01%, 0.02%, 0.03%, 0.04%, 0.05%, 0.1%, 0.15%, 0.16%, 0.18%, 0.2%, 0.25%, 0.4%, 0.6%, 0.8%, 1%, 2%, 3%, 4%) |
 
@@ -112,7 +113,7 @@ If the token is not found in the PancakeSwap token lists, fall back to DexScreen
 # Search by keyword — returns pairs across all DEXes
 # Use single quotes for KEYWORD to prevent shell injection
 KEYWORD='pancake'
-CHAIN="bsc"   # DexScreener chainId: bsc, ethereum, arbitrum, base, zksync, linea, opbnb
+CHAIN="bsc"   # DexScreener chainId: bsc, ethereum, arbitrum, base, zksync, linea, opbnb, monad
 
 curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$KEYWORD" | \
   jq --arg chain "$CHAIN" '[
@@ -141,6 +142,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 | Arbitrum   | `arbitrum`            |
 | Base       | `base`                |
 | zkSync Era | `zksync`              |
+| Monad.     | `monad`               |
 | Linea      | `linea`               |
 | Solana     | `solana`              |
 
@@ -153,6 +155,7 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 | Arbitrum | ETH    | `ETH`     |
 | Base     | ETH    | `ETH`     |
 | opBNB    | BNB    | `BNB`     |
+| Monad    | MON    | `MON`     |
 | Solana   | SOL    | `SOL`     |
 | Others   | ETH    | `ETH`     |
 
@@ -325,6 +328,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | zkSync Era | `zksync`       | `324`            |
 | Linea      | `linea`        | `59144`          |
 | opBNB      | `opbnb`        | `204`            |
+| Monad      | `monad`        | `143`            |
 | Solana     | `sol`          | —                |
 
 **Token format**: `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC). For native tokens (BNB, ETH), omit from the tokens filter and identify pools by symbol in results.
@@ -606,6 +610,7 @@ const EVM_CHAIN_KEYS: Record<number, string> = {
   324: 'zksync',
   59144: 'linea',
   204: 'opbnb',
+  143: 'monad',
   97: 'bsctest',
 }
 

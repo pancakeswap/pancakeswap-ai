@@ -42,7 +42,7 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 **Key features:**
 
 - **8-step workflow**: Gather intent → Resolve tokens → Input validation → Discover pools → Assess pool metrics → Recommend price ranges → Select fee tier → Generate deep links
-- **Pool type support**: V2 (BSC only), V3 (all chains), StableSwap (BSC only for stable pairs)
+- **Pool type support**: V2 (BSC only), V3 (all chains), StableSwap (BSC, Ethereum and Arbitrum only for stable pairs)
 - **Fee tier guidance**: 0.01%, 0.05%, 0.25%, 1% for V3; lower fees for StableSwap
 - **IL & APY analysis**: Impermanent loss warnings, yield data from DefiLlama
 - **StableSwap optimization**: Lower slippage for USDT/USDC/BUSD pairs on BSC
@@ -67,8 +67,8 @@ This skill **does not execute transactions** — it plans liquidity provision. T
 | Chain           | Chain ID | Deep Link Key | Native Token | Fee Tiers                                                                                                        |
 | --------------- | -------- | ------------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
 | BNB Smart Chain | 56       | `bsc`         | BNB          | V2 (0.25%), V3 (all), StableSwap                                                                                 |
-| Ethereum        | 1        | `eth`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
-| Arbitrum One    | 42161    | `arb`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
+| Ethereum        | 1        | `eth`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%), StableSwap                                                                         |
+| Arbitrum One    | 42161    | `arb`         | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%), StableSwap                                                                         |
 | Base            | 8453     | `base`        | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | zkSync Era      | 324      | `zksync`      | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
 | Linea           | 59144    | `linea`       | ETH          | V3 (0.01%, 0.05%, 0.25%, 1%)                                                                                     |
@@ -298,6 +298,7 @@ CHAIN_ID="56"   # numeric chain ID for token format
 # tokens param format: "{chainId}:{address}" — one per known token
 curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   --data-urlencode "chains=${CHAIN}" \
+  --data-urlencode "protocols=stable" \
   --data-urlencode "protocols=v2" \
   --data-urlencode "protocols=v3" \
   --data-urlencode "protocols=infinityCl" \
@@ -342,7 +343,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | `2500`          | `0.25%`        |
 | `10000`         | `1.0%`         |
 
-**Protocol values**: `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap)
+**Protocol values**: `stable`, `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap)
 
 **Infinity pool `id` field**: For `infinityCl`, `infinityBin`, and `infinityStable` pools, the Explorer API `id` field is the **pool contract address** — this is the `poolId` used in Infinity deep links.
 
@@ -491,7 +492,7 @@ Is the pair correlated but not strictly stable (e.g., BNB/ETH)?
 - Simpler but lower capital efficiency than V3
 - Good for: Passive LPs who don't want to rebalance positions
 
-### StableSwap (BSC Only)
+### StableSwap (BSC, Ethereum and Arbitrum Only)
 
 - Custom fee structure, typically **0.04%–0.1%**
 - Uses amplification coefficient (e.g., A=100) for tighter price stability
@@ -521,7 +522,7 @@ https://pancakeswap.finance/add/{tokenA}/{tokenB}/{feeAmount}?chain={chainKey}
 https://pancakeswap.finance/v2/add/{tokenA}/{tokenB}?chain={chainKey}
 ```
 
-### StableSwap Deep Link Format (BSC Only)
+### StableSwap Deep Link Format (BSC, Arbitrum, Ethereum Only)
 
 ```
 https://pancakeswap.finance/stable/add/{tokenA}/{tokenB}?chain=bsc
@@ -644,7 +645,6 @@ function buildPancakeSwapLiquidityLink(params: AddLiquidityParams): string {
   }
 
   if (params.version === 'stableswap') {
-    if (params.chainId !== 56) throw new Error('StableSwap only available on BSC')
     return `https://pancakeswap.finance/stable/add/${params.tokenA}/${params.tokenB}?chain=bsc`
   }
 
@@ -689,7 +689,7 @@ console.log(solLink)
 
 ## StableSwap: PancakeSwap-Specific Feature
 
-PancakeSwap offers **StableSwap** pools on BSC for efficiently trading between stablecoins and related assets. This is a unique advantage over other AMMs.
+PancakeSwap offers **StableSwap** pools on BSC, Ethereum and Arbitrum for efficiently trading between stablecoins and related assets. This is a unique advantage over other AMMs.
 
 ### Characteristics
 
@@ -709,7 +709,7 @@ PancakeSwap offers **StableSwap** pools on BSC for efficiently trading between s
 
 - Tokens aren't stable or tightly correlated
 - User wants maximum fee capture (V3 0.01%–0.25% often higher volume capture)
-- Chain is not BSC
+- Chain is not BSC, Ethereum or Arbitrum
 
 ### StableSwap Deep Link
 

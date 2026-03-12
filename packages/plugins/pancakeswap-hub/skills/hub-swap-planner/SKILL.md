@@ -30,6 +30,7 @@ handoff link for your chosen partner interface.
 (e.g. Trust Wallet, Binance Wallet, or default PancakeSwap).
 
 **Examples:**
+
 - `Swap 100 USDT for BNB via Trust Wallet`
 - `Find the best Hub route for 1 BNB to CAKE`
 - `Swap via Binance Wallet: 500 USDC → ETH`

@@ -94,12 +94,6 @@ cd pancakeswap-ai
 npm install
 ```
 
-### Google Analytics
-
-The docs site includes Google Analytics 4 using measurement ID `G-52VRCFXTN8`.
-
-Tracked events include normal docs pageviews plus `pancake_town_embed_loaded`, which counts users whose browser loaded the embedded game on the homepage.
-
 ### Adding a plugin
 
 1. Create `packages/plugins/your-plugin-name/`

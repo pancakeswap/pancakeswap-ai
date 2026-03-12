@@ -29,6 +29,7 @@ Discover yield farms, plan CAKE staking, and get deep links to the PancakeSwap f
 unstake, or harvest rewards.
 
 **Examples:**
+
 - `Find the best farms on BSC right now`
 - `Stake my CAKE in a Syrup Pool`
 - `Stake my CAKE/BNB LP tokens in a V3 farm`

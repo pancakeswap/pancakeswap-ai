@@ -29,6 +29,7 @@ UI — wallet apps, webviews, mobile apps, or headless bots.
 **How to use:** Describe your app or use case and what you want to integrate.
 
 **Examples:**
+
 - `I'm building a mobile wallet — how do I embed PCS Hub swaps?`
 - `Generate an integration spec for a browser extension that needs token swaps`
 - `Show me how to fetch Hub quotes and route data via API`
@@ -340,13 +341,13 @@ Recommended polling interval: 3–5 s. Stop after 10 minutes or on confirmed sta
 
 Adjust the handoff and signing flow based on the partner's channel type.
 
-| Channel                             | Signing approach                      | Handoff type                                                                                | Notes                                                           |
-| ----------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Embedded wallet** (controls keys) | Sign calldata directly in-app         | `{value, calldata}` payload                                                                 | No deep link needed; call wallet SDK with `to`, `value`, `data` |
-| **Mobile app** (external wallet)    | Trust Wallet send link                | `https://link.trustwallet.com/send?...`                                                     | Deep link opens Trust Wallet native signing flow                |
-| **Webview / partner browser**       | EIP-681 URI or WalletConnect          | `ethereum:router@56?value=…&data=…`                                                         | Send via `WalletConnect eth_sendTransaction` or open URI        |
-| **Browser extension partner**       | Injected provider                     | `window.ethereum.request({ method: 'eth_sendTransaction', params: [{ to, value, data }] })` | Use `value` and `calldata` from `/calldata` response            |
-| **Headless / bot**                  | Return JSON payload                   | Structured JSON                                                                             | No UI; caller constructs and signs the tx                       |
+| Channel                             | Signing approach              | Handoff type                                                                                | Notes                                                           |
+| ----------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Embedded wallet** (controls keys) | Sign calldata directly in-app | `{value, calldata}` payload                                                                 | No deep link needed; call wallet SDK with `to`, `value`, `data` |
+| **Mobile app** (external wallet)    | Trust Wallet send link        | `https://link.trustwallet.com/send?...`                                                     | Deep link opens Trust Wallet native signing flow                |
+| **Webview / partner browser**       | EIP-681 URI or WalletConnect  | `ethereum:router@56?value=…&data=…`                                                         | Send via `WalletConnect eth_sendTransaction` or open URI        |
+| **Browser extension partner**       | Injected provider             | `window.ethereum.request({ method: 'eth_sendTransaction', params: [{ to, value, data }] })` | Use `value` and `calldata` from `/calldata` response            |
+| **Headless / bot**                  | Return JSON payload           | Structured JSON                                                                             | No UI; caller constructs and signs the tx                       |
 
 ---
 

@@ -29,6 +29,7 @@ Check pending LP fees across your V3 and Infinity positions and get a deep link 
 to check.
 
 **Examples:**
+
 - `Check my LP fees on BSC for 0xYourWallet`
 - `How much ETH/USDC fees have I earned on Arbitrum?`
 - `Collect my CAKE/BNB fees — wallet 0xYourWallet`

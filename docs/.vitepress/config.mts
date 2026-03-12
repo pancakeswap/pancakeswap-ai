@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+const gaMeasurementId = 'G-52VRCFXTN8'
 
 export default defineConfig({
   title: 'PancakeSwap AI',
@@ -9,6 +10,22 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon-32x32.png', sizes: '32x32' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    [
+      'script',
+      {
+        async: '',
+        src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`,
+      },
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+window.gtag = window.gtag || gtag;
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}', { send_page_view: false });`,
+    ],
     [
       'link',
       {

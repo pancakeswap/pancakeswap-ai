@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { trackEvent } from '../lib/analytics'
 
 const humanCopied = ref(false)
 const llmCopied = ref(false)
 const embedFrame = ref<HTMLIFrameElement | null>(null)
+const gameLoadTracked = ref(false)
 
 const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md and install the skills described there so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
 
@@ -38,6 +40,18 @@ function copyLLM() {
   copyToClipboard(llmCode, llmCopied)
 }
 
+function trackGameLoad() {
+  if (gameLoadTracked.value) {
+    return
+  }
+
+  gameLoadTracked.value = true
+  trackEvent('pancake_town_embed_loaded', {
+    game_name: 'Pancake Kitchen',
+    embed_src: 'https://pancake-kitchen.pancake.run/',
+  })
+}
+
 async function toggleFullscreen() {
   if (typeof document === 'undefined' || !embedFrame.value) {
     return
@@ -45,10 +59,16 @@ async function toggleFullscreen() {
 
   try {
     if (document.fullscreenElement === embedFrame.value) {
+      trackEvent('pancake_town_fullscreen_exit', {
+        game_name: 'Pancake Kitchen',
+      })
       await document.exitFullscreen()
       return
     }
 
+    trackEvent('pancake_town_fullscreen_enter', {
+      game_name: 'Pancake Kitchen',
+    })
     await embedFrame.value.requestFullscreen()
   } catch (error) {
     console.error('Failed to toggle fullscreen:', error)
@@ -136,6 +156,7 @@ async function toggleFullscreen() {
             referrerpolicy="strict-origin-when-cross-origin"
             allow="fullscreen"
             allowfullscreen
+            @load="trackGameLoad"
           />
         </div>
       </div>

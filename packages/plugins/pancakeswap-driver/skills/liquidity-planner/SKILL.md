@@ -7,7 +7,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.8.0'
+  version: '1.8.1'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -53,6 +53,7 @@ Plan a liquidity position on PancakeSwap and get a ready-to-use deep link — no
 and how much you want to deposit.
 
 **Examples:**
+
 - `Add liquidity for BNB/CAKE on BSC`
 - `Provide 1 ETH + 2000 USDC liquidity on Arbitrum`
 - `LP 500 USDT and 500 USDC stableswap on BSC`
@@ -379,7 +380,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | `2500`          | `0.25%`        |
 | `10000`         | `1.0%`         |
 
-**Protocol values**: `stable`, `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap)
+**`protocols` (required for the list endpoint)**: Must include at least one of `stable`, `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap). Always pass all relevant protocols unless filtering intentionally — omitting `protocols` will return no results.
 
 **Infinity pool `id` field**: For `infinityCl`, `infinityBin`, and `infinityStable` pools, the Explorer API `id` field is the **pool contract address** — this is the `poolId` used in Infinity deep links.
 

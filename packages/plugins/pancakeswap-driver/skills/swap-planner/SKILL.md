@@ -53,6 +53,7 @@ Plan token swaps on PancakeSwap and get a ready-to-use deep link — no code req
 **How to use:** Tell me what you want to swap, on which chain, and how much.
 
 **Examples:**
+
 - `Swap 100 USDT for BNB on BSC`
 - `Buy CAKE with 0.5 ETH on Ethereum`
 - `Swap 50 USDC to ARB on Arbitrum One`
@@ -115,6 +116,7 @@ PancakeSwap X is an intent-based execution layer built into the PancakeSwap Swap
 | --------------- | ----------------------------- |
 | Ethereum        | Crypto tokens                 |
 | Arbitrum One    | Crypto tokens                 |
+| Base.           | Crypto tokens                 |
 | BNB Smart Chain | Real-world assets (RWAs) only |
 | Other chains    | Not available                 |
 
@@ -148,10 +150,10 @@ PancakeSwap supports swapping tokens across different blockchains in a single st
 
 ### Bridge Protocols
 
-| Protocol | Use Case          | Typical Speed              |
-| -------- | ----------------- | -------------------------- |
-| Across   | EVM ↔ EVM         | Seconds to under a minute  |
-| Relay    | Solana ↔ EVM      | Seconds to under a minute  |
+| Protocol | Use Case     | Typical Speed             |
+| -------- | ------------ | ------------------------- |
+| Across   | EVM ↔ EVM    | Seconds to under a minute |
+| Relay    | Solana ↔ EVM | Seconds to under a minute |
 
 ### Supported Cross-Chain Pairs
 
@@ -162,6 +164,7 @@ Cross-chain swaps are supported between: BNB Chain, Ethereum, Arbitrum, Base, zk
 ### Fees
 
 PancakeSwap charges **no cross-chain fee**. Users pay:
+
 - Standard trading fees on the source chain
 - Bridge fees charged by Across or Relay (deducted from the output amount)
 

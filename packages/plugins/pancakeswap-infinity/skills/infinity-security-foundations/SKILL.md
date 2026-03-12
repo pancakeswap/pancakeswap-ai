@@ -38,6 +38,7 @@ permission flags, delta accounting, access control patterns, and common vulnerab
 your hook and ask for a security review.
 
 **Examples:**
+
 - `Give me a base CL pool hook template`
 - `What permission flags should I use for a before-swap hook?`
 - `Review my hook for reentrancy and delta accounting issues`

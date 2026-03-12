@@ -223,17 +223,17 @@ Before calling `/calldata` for ERC-20 source tokens, check allowance:
 OWNER="0x<user_wallet>"
 SPENDER="0x5efc784D444126ECc05f22c49FF3FBD7D9F4868a"  # Hub router
 
+# Build calldata in a separate variable to avoid quoting conflicts in the JSON body
+OWNER_PAD=$(printf '%064s' "${OWNER#0x}" | tr ' ' '0')
+SPENDER_PAD=$(printf '%064s' "${SPENDER#0x}" | tr ' ' '0')
+CALLDATA="0xdd62ed3e${OWNER_PAD}${SPENDER_PAD}"
+
 curl -sf -X POST "https://bsc-dataseed1.binance.org" \
   -H "Content-Type: application/json" \
-  -d "{
-    \"jsonrpc\": \"2.0\",
-    \"id\": 1,
-    \"method\": \"eth_call\",
-    \"params\": [{
-      \"to\": \"$SRC_TOKEN\",
-      \"data\": \"0xdd62ed3e$(printf '%064s' "${OWNER#0x}" | tr ' ' '0')$(printf '%064s' "${SPENDER#0x}" | tr ' ' '0')\"
-    }, \"latest\"]
-  }"
+  -d "$(jq -n \
+    --arg to  "$SRC_TOKEN" \
+    --arg data "$CALLDATA" \
+    '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"to":$to,"data":$data},"latest"]}')"
 ```
 
 If the returned value (as uint256) is less than `amountIn`, the user must approve before executing.

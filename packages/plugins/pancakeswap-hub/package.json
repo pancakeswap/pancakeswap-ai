@@ -1,0 +1,29 @@
+{
+  "name": "@pancakeswap/pancakeswap-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered assistance for integrating and using PancakeSwap Hub.",
+  "author": "PancakeSwap <chef.sanji@pancakeswap.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pancakeswap/pancakeswap-ai.git",
+    "directory": "packages/plugins/pancakeswap-hub"
+  },
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "pancakeswap",
+    "defi",
+    "hub",
+    "portfolio",
+    "bsc",
+    "bnb",
+    "cake"
+  ],
+  "files": [
+    ".claude-plugin",
+    "skills",
+    "README.md"
+  ]
+}

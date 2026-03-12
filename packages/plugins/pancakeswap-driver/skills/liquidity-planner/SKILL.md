@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.6.0'
+  version: '1.7.0'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -76,7 +76,15 @@ If the user hasn't specified all parameters, use `AskUserQuestion` to ask (batch
 
 ## Step 2: Token Discovery & Resolution
 
-### A. DexScreener Token Search
+**Preferred method: PancakeSwap Token List (A).** Use DexScreener (B) only if the token is not found in the token lists.
+
+### A. PancakeSwap Token List (Official Tokens) — Preferred
+
+Read `../common/token-lists.md` for the per-chain primary token list URLs and resolution algorithm. Tokens found in a primary PancakeSwap list are **whitelisted** — skip the red-flag checks in Step 3. Tokens found only in secondary lists still require Step 3 verification. Tokens **not found in any list** are a **red flag** — warn the user prominently before proceeding.
+
+### B. DexScreener Token Search (Fallback)
+
+If the token is not found in the PancakeSwap token lists, fall back to DexScreener:
 
 ```bash
 # Search by keyword — returns pairs across all DEXes
@@ -100,10 +108,6 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
   | sort_by(-.liquidity)
   | .[0:5]'
 ```
-
-### B. PancakeSwap Token List (Official Tokens)
-
-Read `../common/token-lists.md` for the per-chain primary token list URLs and resolution algorithm. Tokens found in a primary PancakeSwap list are **whitelisted** — skip the red-flag checks in Step 3. Tokens found only in secondary lists still require Step 3 verification. Tokens **not found in any list** are a **red flag** — warn the user prominently before proceeding.
 
 ### C. DexScreener Chain ID Reference
 

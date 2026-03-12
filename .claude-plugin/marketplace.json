@@ -28,7 +28,7 @@
     {
       "name": "pancakeswap-hub",
       "source": "./packages/plugins/pancakeswap-hub",
-      "description": "Integrate and plan swaps through PanckaeStap Hub"
+      "description": "Integrate and plan swaps through PanckaeSwap Hub"
     }
   ]
 }

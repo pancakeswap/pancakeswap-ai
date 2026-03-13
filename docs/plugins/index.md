@@ -1,18 +1,22 @@
 # Plugins
 
-PancakeSwap AI ships three plugins, each packaging one or more skills for a specific domain.
+PancakeSwap AI ships four plugins, each packaging one or more skills for a specific domain.
 
 ## Plugin Architecture
 
 ```
 packages/plugins/
-├── pancakeswap-driver/         # Swap & liquidity planning + deep links
+├── pancakeswap-driver/         # Swap & liquidity planning, fee collection, swap integration
 │   ├── .claude-plugin/
 │   │   └── plugin.json
 │   └── skills/
 │       ├── swap-planner/
 │       │   └── SKILL.md
-│       └── liquidity-planner/
+│       ├── liquidity-planner/
+│       │   └── SKILL.md
+│       ├── collect-fees/
+│       │   └── SKILL.md
+│       └── swap-integration/
 │           └── SKILL.md
 ├── pancakeswap-infinity/       # Infinity (v4) hook security
 │   ├── .claude-plugin/
@@ -20,21 +24,30 @@ packages/plugins/
 │   └── skills/
 │       └── infinity-security-foundations/
 │           └── SKILL.md
-└── pancakeswap-farming/        # Yield farming & CAKE staking
+├── pancakeswap-farming/        # Yield farming & CAKE staking
+│   ├── .claude-plugin/
+│   │   └── plugin.json
+│   └── skills/
+│       └── farming-planner/
+│           └── SKILL.md
+└── pancakeswap-hub/            # Hub swap planning & API integration
     ├── .claude-plugin/
     │   └── plugin.json
     └── skills/
-        └── farming-planner/
+        ├── hub-swap-planner/
+        │   └── SKILL.md
+        └── hub-api-integration/
             └── SKILL.md
 ```
 
 ## At a Glance
 
-| Plugin                                                  | Skills                              | Description                                                       |
-| ------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
-| [`pancakeswap-driver`](/plugins/pancakeswap-driver)     | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
-| [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations`     | Security guide for Infinity hook development                      |
-| [`pancakeswap-farming`](/plugins/pancakeswap-farming)   | `farming-planner`                   | Plan yield farming, CAKE staking, and reward harvesting           |
+| Plugin                                                  | Skills                                                                  | Description                                                       |
+| ------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [`pancakeswap-driver`](/plugins/pancakeswap-driver)     | `swap-planner`, `liquidity-planner`, `collect-fees`, `swap-integration` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
+| [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations`                                         | Security guide for Infinity hook development                      |
+| [`pancakeswap-farming`](/plugins/pancakeswap-farming)   | `farming-planner`                                                       | Plan yield farming, CAKE staking, and reward harvesting           |
+| [`pancakeswap-hub`](/plugins/pancakeswap-hub)           | `hub-swap-planner`, `hub-api-integration`                               | Plan and integrate swaps through PCS Hub for partner channels     |
 
 ## Plugin Structure
 

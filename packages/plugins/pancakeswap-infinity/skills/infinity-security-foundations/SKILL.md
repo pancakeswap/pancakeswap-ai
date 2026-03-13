@@ -14,7 +14,7 @@ model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # PancakeSwap Infinity Security Foundations
@@ -60,6 +60,20 @@ your hook and ask for a security review.
 11. [Gas Budget Guidelines](#gas-budget-guidelines)
 12. [Risk Scoring System](#risk-scoring-system)
 13. [Bin Pool Considerations](#bin-pool-considerations)
+
+---
+
+## Reference Files
+
+This skill includes three reference files that contain complete, authoritative content. Read them on demand rather than relying on any inline snippets:
+
+| File                                    | Purpose                                                                                                    | When to Read                                                                  |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `references/base-hook-template.md`      | Production CL and Bin hook templates with correct imports, events, two-step admin, and router allowlisting | User requests a hook template or starting boilerplate                         |
+| `references/vulnerabilities-catalog.md` | 21 named vulnerability patterns with attack vectors and mitigations                                        | User asks for a vulnerability analysis, catalog, or specific attack pattern   |
+| `references/audit-checklist.md`         | 12-section pre-deployment audit framework                                                                  | User requests an audit checklist, pre-deployment review, or security sign-off |
+
+**Workflow**: When the user's request matches one of the above, use the `Read` tool to load the relevant file before responding.
 
 ---
 
@@ -637,342 +651,26 @@ function beforeSwap(...) external override returns (...) {
 
 ## Base Hook Template
 
-### Minimal Secure CL Hook
+The reference file `references/base-hook-template.md` contains production-ready templates for both CL and Bin pool hooks. Each template includes correct PancakeSwap Infinity imports, event declarations, two-step ownership transfer, router allowlisting, and safe `*ReturnDelta` implementations.
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import {CLBaseHook} from "infinity-hooks/src/pool-cl/CLBaseHook.sol";
-import {ICLPoolManager} from "infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol";
-import {IVault} from "infinity-core/src/interfaces/IVault.sol";
-import {PoolKey} from "infinity-core/src/types/PoolKey.sol";
-import {BalanceDelta} from "infinity-core/src/types/BalanceDelta.sol";
-import {BeforeSwapDelta} from "infinity-core/src/types/BeforeSwapDelta.sol";
-
-contract SecureHookTemplate is CLBaseHook {
-    // ===== State =====
-
-    // Track hook state
-    mapping(bytes32 => uint256) public poolStates;
-
-    // ===== Constructor =====
-
-    constructor(ICLPoolManager _poolManager, IVault _vault)
-        CLBaseHook(_poolManager, _vault)
-    {}
-
-    // ===== Hook Callbacks (14 CL permissions) =====
-
-    function beforeInitialize(
-        address sender,
-        PoolKey calldata key,
-        uint160 sqrtPriceX96,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        // Validate pool configuration
-        require(sqrtPriceX96 > 0, "Invalid price");
-        return this.beforeInitialize.selector;
-    }
-
-    function afterInitialize(
-        address sender,
-        PoolKey calldata key,
-        uint160 sqrtPriceX96,
-        int24 tick,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        // Record pool initialization
-        bytes32 poolId = keccak256(abi.encode(key));
-        poolStates[poolId] = uint256(sqrtPriceX96);
-        return this.afterInitialize.selector;
-    }
-
-    function beforeAddLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        // Validate liquidity additions
-        require(params.liquidityDelta > 0, "Invalid delta");
-        return this.beforeAddLiquidity.selector;
-    }
-
-    function afterAddLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        BalanceDelta calldata delta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        // Log LP additions
-        return this.afterAddLiquidity.selector;
-    }
-
-    function beforeRemoveLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        return this.beforeRemoveLiquidity.selector;
-    }
-
-    function afterRemoveLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        BalanceDelta calldata delta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        return this.afterRemoveLiquidity.selector;
-    }
-
-    function beforeSwap(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.SwapParams calldata params,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4, BeforeSwapDelta, uint24)
-    {
-        // Optional: fee override logic
-        uint24 feeOverride = 0; // Use default fee
-        return (this.beforeSwap.selector, BeforeSwapDelta.wrap(0), feeOverride);
-    }
-
-    function afterSwap(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.SwapParams calldata params,
-        BalanceDelta calldata swapDelta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        return this.afterSwap.selector;
-    }
-
-    function beforeDonate(
-        address sender,
-        PoolKey calldata key,
-        uint256 amount0,
-        uint256 amount1,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        return this.beforeDonate.selector;
-    }
-
-    function afterDonate(
-        address sender,
-        PoolKey calldata key,
-        uint256 amount0,
-        uint256 amount1,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (bytes4)
-    {
-        return this.afterDonate.selector;
-    }
-
-    // ===== Return Delta Hooks (CRITICAL SECURITY) =====
-
-    function beforeSwapReturnDelta(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.SwapParams calldata params,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (int128)
-    {
-        // Return 0 - no delta modification
-        return 0;
-    }
-
-    function afterSwapReturnDelta(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.SwapParams calldata params,
-        BalanceDelta calldata swapDelta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (int128)
-    {
-        // Returning swapDelta.amount0() passes through the full delta
-        // unmodified (hook takes nothing). Returning 0 is only valid when
-        // the hook has already settled any claimed amounts via the vault.
-        return swapDelta.amount0();
-    }
-
-    function afterAddLiquidityReturnDelta(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        BalanceDelta calldata delta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (int128, int128)
-    {
-        // Return unmodified deltas
-        return (delta.amount0(), delta.amount1());
-    }
-
-    function afterRemoveLiquidityReturnDelta(
-        address sender,
-        PoolKey calldata key,
-        ICLPoolManager.ModifyLiquidityParams calldata params,
-        BalanceDelta calldata delta,
-        bytes calldata data
-    )
-        external
-        override
-        onlyPoolManager
-        returns (int128, int128)
-    {
-        // Return unmodified deltas
-        return (delta.amount0(), delta.amount1());
-    }
-}
-```
+**When the user requests a hook template**, use the `Read` tool to load `references/base-hook-template.md` and provide the appropriate template (CL or Bin) from that file.
 
 ---
 
 ## Security Checklist
 
-Before deploying any Infinity hook, verify:
+The reference file `references/audit-checklist.md` contains a comprehensive 12-section pre-deployment audit framework covering: permissions, access control, delta accounting, token safety, state management, gas efficiency, testing, dual pool support, fee override logic, router verification, error handling, documentation, and audit readiness.
 
-1. **Hook Permissions**
+Key check categories to keep in mind:
 
-   - [ ] Only minimum required permissions are registered
-   - [ ] No unnecessary CRITICAL permissions (beforeSwap, \*ReturnDelta)
-   - [ ] Pool manager verifies permissions during initialization
+- **Permissions** — minimum required only; no unnecessary CRITICAL flags
+- **Access control** — `onlyPoolManager` on all callbacks; immutable vault/poolManager
+- **Delta accounting** — `*ReturnDelta` hooks return unmodified or audit-approved values
+- **Token safety** — FOT tokens, rebasing, ERC-777 reentrancy, blocklist tokens
+- **Testing** — unit, integration, fuzz (10k+ runs), `forge test --isolate`
+- **Gas** — within per-callback budgets; no unbounded loops in hot paths
 
-2. **Access Control**
-
-   - [ ] All callbacks use `onlyPoolManager` modifier
-   - [ ] No external functions that modify hook state
-   - [ ] Constructor stores poolManager and vault as immutable
-
-3. **Delta Accounting**
-
-   - [ ] All `*ReturnDelta` hooks return unmodified or audit-approved deltas
-   - [ ] No stealing from vault via delta manipulation
-   - [ ] Delta math is overflow/underflow safe
-
-4. **Token Safety**
-
-   - [ ] Handles fee-on-transfer tokens gracefully
-   - [ ] Uses vault.sync() before critical operations
-   - [ ] Checks actual balance changes, not assumed amounts
-   - [ ] No reentrancy vulnerabilities with ERC-777
-
-5. **State Management**
-
-   - [ ] No upgradeable patterns or admin keys
-   - [ ] State changes are idempotent where possible
-   - [ ] Events emitted for critical operations
-
-6. **Gas Efficiency**
-
-   - [ ] Callbacks execute within gas budgets
-   - [ ] No excessive state reads in hot paths
-   - [ ] Avoid loops in hooks unless bounded
-
-7. **Testing**
-
-   - [ ] Unit tests for all callbacks
-   - [ ] Integration tests with vault settlement
-   - [ ] Fuzz tests with 10k+ runs
-   - [ ] Run with `forge test --isolate`
-
-8. **Dual Pool Support** (if applicable)
-
-   - [ ] CLBaseHook used only for CL pools
-   - [ ] Validate pool type in beforeInitialize
-   - [ ] No assumptions about pool structure
-
-9. **Fee Override Logic** (if used)
-
-   - [ ] Fee override is deterministic
-   - [ ] Fee does not exceed MAX_FEE
-   - [ ] No reentrancy in fee calculation
-
-10. **Router Verification** (if applicable)
-
-    - [ ] Router/sender allowlisting is enforced
-    - [ ] Allowlist can't be modified post-deployment
-    - [ ] No logic bypasses on missing sender
-
-11. **Error Handling**
-
-    - [ ] Clear error messages for debugging
-    - [ ] Invalid input validation in callbacks
-    - [ ] No silent failures in state updates
-
-12. **Documentation**
-
-    - [ ] README explaining hook behavior
-    - [ ] NatSpec comments on all functions
-    - [ ] Security assumptions documented
-
-13. **Audits**
-    - [ ] Professional audit before mainnet
-    - [ ] Report issues fixed before deployment
-    - [ ] Gas optimization review
+**When the user requests a pre-deployment checklist or audit review**, use the `Read` tool to load `references/audit-checklist.md` and walk through the full framework.
 
 ---
 
@@ -1121,12 +819,20 @@ If bridging CL hooks to Bin:
 
 ---
 
-## Additional Resources
+## Resources
 
-- **PancakeSwap Infinity Documentation**: [infinity.pancakeswap.finance/docs](https://docs.pancakeswap.finance)
-- **Existing Audits**: Hexens, OtterSec, Zellic reports (in infinity-core repo)
-- **Hook Examples**: [infinity-hooks repository](https://github.com/pancakeswap/pancakeswap-infinity-hooks)
-- **Testing Framework**: Foundry (`forge test --isolate`)
+### Reference Files (Read when needed)
+
+- `references/base-hook-template.md` — CL and Bin hook templates
+- `references/audit-checklist.md` — Pre-deployment audit checklist
+- `references/vulnerabilities-catalog.md` — Vulnerability catalog (21 patterns)
+
+### External Docs
+
+- PancakeSwap Infinity Docs: <https://docs.pancakeswap.finance>
+- Existing Audits: Hexens, OtterSec, Zellic (in infinity-core repo)
+- Hook Examples: <https://github.com/pancakeswap/pancakeswap-infinity-hooks>
+- Testing: Foundry (`forge test --isolate`)
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "pancakeswap-infinity",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Security-first AI tools for developing PancakeSwap Infinity (v4) hooks. Covers threat models, vulnerability patterns, audit checklists, and base templates for CL and Bin pool hooks.",
   "author": {
     "name": "PancakeSwap",

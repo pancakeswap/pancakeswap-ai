@@ -1,0 +1,1 @@
+I'm building a Node.js backend script that needs to swap USDT for CAKE on BSC using PancakeSwap. I want to use the Smart Router SDK to find the best route and then execute the swap programmatically. Can you show me a complete working example?

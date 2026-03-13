@@ -1,0 +1,1 @@
+I want to interact directly with the PancakeSwap V2 Router contract (no SDK) to swap USDT for BNB on BSC. Show me how to call the router contract directly using viem, including how to get a price quote and execute the swap.

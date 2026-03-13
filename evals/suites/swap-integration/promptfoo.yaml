@@ -1,0 +1,136 @@
+description: 'swap-integration Skill Evaluation'
+
+prompts:
+  - |
+    You are an AI coding assistant. The user has loaded the following skill:
+
+    <skill>
+    {{skill_content}}
+    </skill>
+
+    Now answer the following user request:
+
+    <user_request>
+    {{case_content}}
+    </user_request>
+
+providers:
+  - id: anthropic:claude-sonnet-4-5-20250929
+    config:
+      temperature: 0
+      max_tokens: 8192
+
+# Run tests one at a time to avoid Anthropic rate limits on both the
+# eval calls and the llm-rubric grading calls.
+defaultTest:
+  options:
+    timeout: 180000
+  vars:
+    skill_content: file://../../../packages/plugins/pancakeswap-trading/skills/swap-integration/SKILL.md
+
+tests:
+  # Test 1: Basic swap — USDT → CAKE via Smart Router SDK
+  - vars:
+      case_content: file://cases/basic-swap.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/correctness.txt
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: llm-rubric
+        value: file://rubrics/completeness.txt
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains
+        value: '@pancakeswap/smart-router'
+      - type: contains
+        value: 'getBestTrade'
+      - type: contains
+        value: 'slippageTolerance'
+      - type: contains
+        value: 'SwapRouter'
+
+  # Test 2: BNB (native) → CAKE — must handle native currency correctly
+  - vars:
+      case_content: file://cases/bnb-to-token.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/correctness.txt
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      # Must use one of these patterns for native BNB input
+      - type: contains-any
+        value:
+          - 'Native.onChain'
+          - 'swapExactETHForTokens'
+          - 'WRAP_ETH'
+      # value: field must be set when sending native BNB
+      - type: contains-any
+        value:
+          - 'value: BigInt'
+          - 'value: bigint'
+          - 'value:'
+      # Must mention or use the Universal Router
+      - type: contains-any
+        value:
+          - 'UNIVERSAL_ROUTER_ADDRESS'
+          - 'SwapRouter'
+          - 'universal-router'
+
+  # Test 3: Security pitfalls — slippage, approvals, MEV, error handling
+  - vars:
+      case_content: file://cases/security-pitfalls.md
+    assert:
+      - type: llm-rubric
+        value: file://../../rubrics/security-checklist.txt
+        threshold: 0.7
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'slippage'
+          - 'INSUFFICIENT_OUTPUT_AMOUNT'
+          - 'slippageTolerance'
+      - type: contains-any
+        value:
+          - 'approve'
+          - 'Permit2'
+          - 'allowance'
+      - type: contains-any
+        value:
+          - 'deadline'
+          - 'EXPIRED'
+          - 'ttl'
+      - type: contains-any
+        value:
+          - 'MEV'
+          - 'sandwich'
+          - 'front-run'
+          - 'frontrun'
+
+  # Test 4: V2 direct contract — USDT → BNB, no SDK
+  - vars:
+      case_content: file://cases/v2-direct.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/correctness.txt
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      # Must include the correct V2 router address
+      - type: contains
+        value: '0x10ED43C718714eb63d5aA57B78B54704E256024E'
+      # For USDT→BNB, the correct function is swapExactTokensForETH.
+      # swapExactETHForTokens is BNB→Token (wrong direction).
+      # swapExactTokensForTokens is token→token (also valid but less efficient).
+      # getAmountsOut is the quote function used before swapping.
+      - type: contains-any
+        value:
+          - 'swapExactTokensForETH'
+          - 'swapExactTokensForTokens'
+          - 'swapTokensForExactETH'
+          - 'getAmountsOut'
+      # Must use viem (required by the case prompt)
+      - type: contains-any
+        value:
+          - 'writeContract'
+          - 'readContract'
+          - 'viem'

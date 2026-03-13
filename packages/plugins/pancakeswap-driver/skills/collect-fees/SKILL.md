@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '2.0.0'
+  version: '2.0.1'
 ---
 
 # PancakeSwap Collect Fees
@@ -187,7 +187,7 @@ const tokenIds = await Promise.all(
 const positions = await Promise.all(
   tokenIds.map(id =>
     client.readContract({ address: POSITION_MANAGER, abi: POSITIONS_ABI, functionName: 'positions', args: [id] })
-      .then(p => ({ tokenId: id.toString(), token0: p.token0, token1: p.token1, tokensOwed0: p.tokensOwed0.toString(), tokensOwed1: p.tokensOwed1.toString(), liquidity: p.liquidity.toString() }))
+      .then(p => ({ tokenId: id.toString(), token0: p[2], token1: p[3], tokensOwed0: p[10].toString(), tokensOwed1: p[11].toString(), liquidity: p[7].toString() }))
   )
 );
 

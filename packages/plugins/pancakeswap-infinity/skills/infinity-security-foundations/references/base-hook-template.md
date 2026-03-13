@@ -35,12 +35,6 @@ contract InfinityHook is CLBaseHook {
 
     // ============== STATE ==============
 
-    /// @notice The vault contract
-    IVault public vault;
-
-    /// @notice The pool manager contract
-    ICLPoolManager public poolManager;
-
     /// @notice Hook admin (two-step transfer pattern)
     address public admin;
     address public pendingAdmin;
@@ -77,39 +71,33 @@ contract InfinityHook is CLBaseHook {
     /// @notice Initialize the hook with PoolManager and Vault references
     /// @param _poolManager The Infinity CL pool manager
     /// @param _vault The Infinity vault
-    constructor(ICLPoolManager _poolManager, IVault _vault) {
-        require(address(_poolManager) != address(0), "Invalid PoolManager");
-        require(address(_vault) != address(0), "Invalid Vault");
-
-        poolManager = _poolManager;
-        vault = _vault;
+    constructor(ICLPoolManager _poolManager) CLBaseHook(_poolManager) {
         admin = msg.sender;
     }
 
     // ============== PERMISSION CONFIGURATION ==============
 
-    /// @notice Returns all hook permissions (disabled by default)
-    /// @dev Only enable permissions for callbacks this hook actually implements
-    function getHookPermissions()
-        public
-        pure
-        override
-        returns (Permissions memory)
-    {
-        return Permissions({
-            beforeInitialize: false,
-            afterInitialize: false,
-            beforeAddLiquidity: false,
-            afterAddLiquidity: false,
-            beforeRemoveLiquidity: false,
-            afterRemoveLiquidity: false,
-            beforeSwap: false,
-            afterSwap: false,
-            beforeDonate: false,
-            afterDonate: false,
-            noOp: false,
-            accessLocked: false
-        });
+    /// @notice Returns the registration bitmap encoding the minimal permission set.
+    /// @dev    Only `afterSwap` and `afterSwapReturnDelta` are enabled.
+    function getHooksRegistrationBitmap() external pure override returns (uint16) {
+        return _hooksRegistrationBitmapFrom(
+            Permissions({
+                beforeInitialize:               false,
+                afterInitialize:                false,
+                beforeAddLiquidity:             false,
+                afterAddLiquidity:              false,
+                beforeRemoveLiquidity:          false,
+                afterRemoveLiquidity:           false,
+                beforeSwap:                     false,
+                afterSwap:                      true,  // observe output delta
+                beforeDonate:                   false,
+                afterDonate:                    false,
+                beforeSwapReturnDelta:          false,
+                afterSwapReturnDelta:           true,  // claim fee from output
+                afterAddLiquidityReturnDelta:   false,
+                afterRemoveLiquidityReturnDelta: false
+            })
+        );
     }
 
     // ============== VAULT INTERACTION ==============
@@ -394,8 +382,6 @@ contract InfinityBinHook is BinBaseHook {
 
     // ============== STATE ==============
 
-    IVault public vault;
-    IBinPoolManager public poolManager;
     address public admin;
     address public pendingAdmin;
 
@@ -425,37 +411,33 @@ contract InfinityBinHook is BinBaseHook {
 
     // ============== CONSTRUCTOR ==============
 
-    constructor(IBinPoolManager _poolManager, IVault _vault) {
-        require(address(_poolManager) != address(0), "Invalid PoolManager");
-        require(address(_vault) != address(0), "Invalid Vault");
-
-        poolManager = _poolManager;
-        vault = _vault;
+    constructor(IBinPoolManager _poolManager) BinBaseHook(_poolManager) {
         admin = msg.sender;
     }
 
     // ============== PERMISSIONS ==============
 
-    function getHookPermissions()
-        public
-        pure
-        override
-        returns (Permissions memory)
-    {
-        return Permissions({
-            beforeInitialize: false,
-            afterInitialize: false,
-            beforeAddLiquidity: false,
-            afterAddLiquidity: false,
-            beforeRemoveLiquidity: false,
-            afterRemoveLiquidity: false,
-            beforeSwap: false,
-            afterSwap: false,
-            beforeDonate: false,
-            afterDonate: false,
-            noOp: false,
-            accessLocked: false
-        });
+    /// @notice Returns the registration bitmap encoding the minimal permission set.
+    /// @dev    Only `afterSwap` and `afterSwapReturnDelta` are enabled.
+    function getHooksRegistrationBitmap() external pure override returns (uint16) {
+        return _hooksRegistrationBitmapFrom(
+            Permissions({
+                beforeInitialize:      false,
+                afterInitialize:       false,
+                beforeMint:            false,
+                afterMint:             false,
+                beforeBurn:            false,
+                afterBurn:             false,
+                beforeSwap:            false,
+                afterSwap:             false,
+                beforeDonate:          false,
+                afterDonate:           false,
+                beforeSwapReturnDelta: false,
+                afterSwapReturnDelta:  false,
+                afterMintReturnDelta:  false,
+                afterBurnReturnDelta:  false,
+            })
+        );
     }
 
     // ============== VAULT INTERACTION ==============
@@ -560,29 +542,28 @@ contract InfinityBinHook is BinBaseHook {
 
 ### Step 2: Enable Needed Permissions
 
-In `getHookPermissions()`, set only required flags to `true`:
+In `getHooksRegistrationBitmap()`, set only required flags to `true`:
 
 ```solidity
-function getHookPermissions()
-    public
-    pure
-    override
-    returns (Permissions memory)
-{
-    return Permissions({
-        beforeInitialize: false,
-        afterInitialize: false,
-        beforeAddLiquidity: true,  // ← Enable only if needed
-        afterAddLiquidity: true,   // ← Enable only if needed
-        beforeRemoveLiquidity: false,
-        afterRemoveLiquidity: false,
-        beforeSwap: false,
-        afterSwap: false,
-        beforeDonate: false,
-        afterDonate: false,
-        noOp: false,
-        accessLocked: false
-    });
+function getHooksRegistrationBitmap() external pure override returns (uint16) {
+    return _hooksRegistrationBitmapFrom(
+        Permissions({
+            beforeInitialize:               false,
+            afterInitialize:                false,
+            beforeAddLiquidity:             false,
+            afterAddLiquidity:              false,
+            beforeRemoveLiquidity:          false,
+            afterRemoveLiquidity:           false,
+            beforeSwap:                     false,
+            afterSwap:                      true,  // enable only if needed
+            beforeDonate:                   false,
+            afterDonate:                    false,
+            beforeSwapReturnDelta:          false,
+            afterSwapReturnDelta:           true,  // enable only if needed
+            afterAddLiquidityReturnDelta:   false,
+            afterRemoveLiquidityReturnDelta: false
+        })
+    );
 }
 ```
 

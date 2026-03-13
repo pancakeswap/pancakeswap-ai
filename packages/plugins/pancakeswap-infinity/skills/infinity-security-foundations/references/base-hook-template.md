@@ -389,8 +389,11 @@ pragma solidity ^0.8.26;
 import {BinBaseHook} from "infinity-hooks/src/pool-bin/BinBaseHook.sol";
 import {IBinPoolManager} from "infinity-core/src/pool-bin/interfaces/IBinPoolManager.sol";
 import {PoolKey} from "infinity-core/src/types/PoolKey.sol";
+import {PoolId, PoolIdLibrary} from "infinity-core/src/types/PoolId.sol";
 import {BalanceDelta} from "infinity-core/src/types/BalanceDelta.sol";
 import {Currency} from "infinity-core/src/types/Currency.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /// @title InfinityBinHook
 /// @notice PancakeSwap Infinity Bin hook that charges a 0.1% protocol fee on every swap.
@@ -401,155 +404,101 @@ import {Currency} from "infinity-core/src/types/Currency.sol";
 ///      settlement. The hook simultaneously mints vault ERC-6909 claims to itself to
 ///      settle its own delta. Accrued claims are withdrawn by the owner at any time
 ///      via withdrawFees(), which burns the claims and calls vault.take().
-contract InfinityBinHook is BinBaseHook {
-    // ─────────────────────────────────────────────────── CONSTANTS ────────────
+contract InfinityBinHook is BinBaseHook, Ownable2Step {
+    using PoolIdLibrary for PoolKey;
 
-    /// @notice 0.1% fee = 10 / 10 000
-    uint256 public constant FEE_BPS         = 10;
-    uint256 public constant BPS_DENOMINATOR = 10_000;
+    // ── Constants ───────────────────────────────────────────────────────────
 
-    // ─────────────────────────────────────────────────── STATE ───────────────
+    /// @notice 0.1% fee — 10 bps (10 / 10_000)
+    uint256 private constant FEE_BIPS = 10;
+    uint256 private constant FEE_DENOMINATOR = 10_000;
 
-    /// @notice Fees owed to this hook per output currency
-    mapping(Currency => uint128) public accruedFees;
+    // ── State ────────────────────────────────────────────────────────────────
 
-    /// @notice Current hook admin
-    address public admin;
+    /// @notice Accumulated vault ERC-6909 credits per currency, claimable by owner
+    mapping(Currency currency => uint256 amount) public accruedFees;
 
-    /// @notice Pending admin during two-step transfer
-    address public pendingAdmin;
+    // ── Events ───────────────────────────────────────────────────────────────
 
-    /// @notice Router sender allowlist
-    mapping(address => bool) public whitelistedRouters;
+    event FeeAccrued(PoolId indexed poolId, Currency indexed currency, uint256 amount);
+    event FeesWithdrawn(Currency indexed currency, address indexed recipient, uint256 amount);
 
-    // ─────────────────────────────────────────────────── EVENTS ──────────────
+    // ── Errors ───────────────────────────────────────────────────────────────
 
-    event FeesWithdrawn(Currency indexed currency, uint128 amount, address indexed recipient);
-    event RouterAdded(address indexed router);
-    event RouterRemoved(address indexed router);
-    event AdminTransferInitiated(address indexed candidate);
-    event AdminTransferred(address indexed previous, address indexed next);
-
-    // ─────────────────────────────────────────────────── ERRORS ──────────────
-
-    error Unauthorized();
     error ZeroAddress();
-    error NothingToWithdraw();
+    error InsufficientAccruedFees();
 
-    // ─────────────────────────────────────────────────── CONSTRUCTOR ─────────
+    // ── Constructor ──────────────────────────────────────────────────────────
 
-    /// @param _poolManager   Infinity Bin pool manager (vault is derived from it)
-    /// @param _routers       Initial set of whitelisted router addresses
-    constructor(IBinPoolManager _poolManager, address[] memory _routers)
-        BinBaseHook(_poolManager)
-    {
-        admin = msg.sender;
+    constructor(IBinPoolManager _poolManager) BinBaseHook(_poolManager) Ownable(msg.sender) {}
 
-        for (uint256 i; i < _routers.length; ++i) {
-            if (_routers[i] == address(0)) revert ZeroAddress();
-            whitelistedRouters[_routers[i]] = true;
-            emit RouterAdded(_routers[i]);
-        }
-    }
+    // ── Permissions ───────────────────────────────────────────────────────────
 
-    // ─────────────────────────────────────────────────── PERMISSIONS ─────────
-
-    /// @notice Returns the registration bitmap encoding the minimal permission set.
-    /// @dev    Only `afterSwap` and `afterSwapReturnDelta` are enabled.
+    /// @notice Returns the hook's registration bitmap
     function getHooksRegistrationBitmap() external pure override returns (uint16) {
         return _hooksRegistrationBitmapFrom(
             Permissions({
-                beforeInitialize:      false,
-                afterInitialize:       false,
-                beforeMint:            false,
-                afterMint:             false,
-                beforeBurn:            false,
-                afterBurn:             false,
-                beforeSwap:            false,
-                afterSwap:             true,  // observe output delta
-                beforeDonate:          false,
-                afterDonate:           false,
+                beforeInitialize: false,
+                afterInitialize: false,
+                beforeMint: false,
+                afterMint: false,
+                beforeBurn: false,
+                afterBurn: false,
+                beforeSwap: false,
+                afterSwap: true,
+                beforeDonate: false,
+                afterDonate: false,
                 beforeSwapReturnDelta: false,
-                afterSwapReturnDelta:  true,  // claim fee from output
-                afterMintReturnDelta:  false,
-                afterBurnReturnDelta:  false
+                afterSwapReturnDelta: true,
+                afterMintReturnDelta: false,
+                afterBurnReturnDelta: false
             })
         );
     }
 
-    // ─────────────────────────────────────────────────── HOOK CALLBACK ────────
+    // ── Hook Callback ────────────────────────────────────────────────────────
 
-    /// @notice Post-swap internal hook. Returns 0.1% of the output amount as the hook's fee.
-    ///
-    /// @dev    Overrides the internal `_afterSwap` so the base class's public `afterSwap`
-    ///         wrapper (which carries `poolManagerOnly`) remains in the call chain.
-    ///         Overriding the public function directly would silently drop that modifier.
-    ///
-    ///         Delta sign convention (pool perspective):
-    ///           negative  →  tokens leaving the pool (output to swapper)
-    ///           positive  →  tokens entering the pool (input from swapper)
-    ///
-    ///         The int128 we return is the hook's delta on the *unspecified* (output) token.
-    ///         A positive return instructs the vault to deduct that amount from the swapper's
-    ///         receipt and credit it to this hook — that is the fee mechanism.
-    ///
-    /// @param sender          Router / caller that initiated vault.lock(). Must be whitelisted.
-    /// @param key             Pool key for this swap.
-    /// @param swapForY        true = tokenX→tokenY (output is currency1),
-    ///                        false = tokenY→tokenX (output is currency0).
-    /// @param delta           Net token deltas from the swap (pool perspective).
-    ///
-    /// @return selector       this.afterSwap.selector
-    /// @return hookDelta      Fee taken from swapper's output (positive = hook claims tokens)
+    /// @notice Deducts 0.1% from the unspecified token of every swap.
+    /// @param key             Pool key.
+    /// @param swapForY        If true, swap X for Y (token0 for token1); else Y for X.
+    /// @param amountSpecified Negative = exactInput, positive = exactOutput.
+    /// @param delta           Actual balance changes from the swap (from the pool's perspective).
+    /// @return                Function selector, and fee amount to deduct from unspecified token.
     function afterSwap(
-        address sender,
+        address,
         PoolKey calldata key,
         bool swapForY,
-        int128, /* amountSpecified — unused */
+        int128 amountSpecified,
         BalanceDelta delta,
         bytes calldata
-    )
-        internal
-        override
-        returns (bytes4, int128)
-    {
-        // ── Access control ────────────────────────────────────────────────────
-        if (!whitelistedRouters[sender]) revert Unauthorized();
-
-        // ── Identify the output (unspecified) token ───────────────────────────
+    ) external override poolManagerOnly returns (bytes4, int128) {
+        // ── 1. Identify the unspecified currency ───────────────────────────
         //
-        //   swapForY == true  : tokenX in, tokenY out → output is currency1
-        //   swapForY == false : tokenY in, tokenX out → output is currency0
-        //
-        //   delta.amountX() for the output token is negative (leaving the pool).
-        //   The swapper receives -delta.amountX() tokens.
-        int128   rawOutputDelta = swapForY ? delta.amount1() : delta.amount0();
-        Currency outputCurrency = swapForY ? key.currency1   : key.currency0;
+        // swapForY + exactInput  → unspecified = currency1 (output)
+        // swapForY + exactOutput → unspecified = currency0 (input)
+        // swapX for Y + exactInput  → unspecified = currency1
+        // Pattern: unspecified is currency1 when (swapForY == exactInput)
+        bool exactInput = amountSpecified < 0;
+        bool unspecifiedIsCurrency1 = (swapForY == exactInput);
 
-        // Guard: output delta must be negative; skip edge cases (zero-output swaps)
-        if (rawOutputDelta >= 0) {
-            return (this.afterSwap.selector, 0);
-        }
+        Currency feeCurrency = unspecifiedIsCurrency1 ? key.currency1 : key.currency0;
+        int128 unspecifiedDelta = unspecifiedIsCurrency1 ? delta.amount1() : delta.amount0();
 
-        // ── 0.1% fee, rounded down ────────────────────────────────────────────
-        // Safe: rawOutputDelta < 0 → -rawOutputDelta ∈ [1, int128.max] ⊆ uint128
-        // forge-lint: disable-next-line(unsafe-typecast)
-        uint128 grossOutput = uint128(-rawOutputDelta);
-        // Safe: fee ≤ grossOutput ≤ uint128.max (0.1% fraction rounds down)
-        // forge-lint: disable-next-line(unsafe-typecast)
-        uint128 fee = uint128((uint256(grossOutput) * FEE_BPS) / BPS_DENOMINATOR);
+        // ── 2. Compute absolute unspecified amount ──────────────────────────
+        uint256 unspecifiedAbs =
+            unspecifiedDelta < 0 ? uint256(uint128(-unspecifiedDelta)) : uint256(uint128(unspecifiedDelta));
 
-        if (fee == 0) {
-            return (this.afterSwap.selector, 0);
-        }
+        // ── 3. Calculate fee ────────────────────────────────────────────────
+        uint256 fee = (unspecifiedAbs * FEE_BIPS) / FEE_DENOMINATOR;
+        if (fee == 0) return (this.afterSwap.selector, 0);
 
-        // ── Accumulate ────────────────────────────────────────────────────────
-        accruedFees[outputCurrency] += fee;
+        // ── 4. Delta accounting ─────────────────────────────────────────────
+        accruedFees[feeCurrency] += fee;
+        vault.mint(address(this), feeCurrency, fee);
 
-        // Positive int128 = hook claims `fee` tokens from swapper's output.
-        // Safe: fee ≤ grossOutput ≤ int128.max because rawOutputDelta was int128
-        // forge-lint: disable-next-line(unsafe-typecast)
-        return (this.afterSwap.selector, int128(fee));
+        emit FeeAccrued(key.toId(), feeCurrency, fee);
+
+        return (this.afterSwap.selector, int128(uint128(fee)));
     }
 
     // ============== HOOK CALLBACKS (COMMENTED TEMPLATES) ==============
@@ -562,6 +511,7 @@ contract InfinityBinHook is BinBaseHook {
         poolManagerOnly
         returns (bytes4)
     {
+        return _beforeInitialize(sender, key, activeId);
     }*/
 
     /// @notice Example: AfterInitialize callback
@@ -572,6 +522,7 @@ contract InfinityBinHook is BinBaseHook {
         poolManagerOnly
         returns (bytes4)
     {
+        return _afterInitialize(sender, key, activeId);
     }*/
 
     /// @notice Example: BeforeMint callback
@@ -661,74 +612,45 @@ contract InfinityBinHook is BinBaseHook {
     ) external virtual poolManagerOnly returns (bytes4) {
     }*/
 
-    // ─────────────────────────────────────────────────── FEE WITHDRAWAL ──────
+    // ── Vault Lock Callback ──────────────────────────────────────────────────
 
-    /// @notice Admin withdraws all accrued fees for a given currency.
-    /// @dev    Checks-Effects-Interactions: storage cleared before vault.lock().
-    ///         BinBaseHook.lockAcquired() delegates via address(this).call(data),
-    ///         which invokes _withdrawCallback below.
-    function withdrawFees(Currency currency, address recipient) external {
-        if (msg.sender != admin)     revert Unauthorized();
+    /// @notice Executed by the vault during fee withdrawal (see withdrawFees).
+    /// @dev Burns the hook's ERC-6909 claims and forwards underlying tokens to recipient.
+    function lockAcquired(bytes calldata data) external override vaultOnly returns (bytes memory) {
+        (Currency currency, address recipient, uint256 amount) = abi.decode(data, (Currency, address, uint256));
+
+        vault.burn(address(this), currency, amount);
+        vault.take(currency, recipient, amount);
+
+        return abi.encode(true);
+    }
+
+    // ── Owner: Fee Withdrawal ────────────────────────────────────────────────
+
+    /// @notice Withdraw accumulated protocol fees to `recipient`.
+    /// @param currency  Token to withdraw.
+    /// @param recipient Destination address; must not be zero.
+    /// @param amount    How much to withdraw; pass 0 to withdraw entire balance.
+    function withdrawFees(Currency currency, address recipient, uint256 amount) external onlyOwner {
         if (recipient == address(0)) revert ZeroAddress();
 
-        uint128 amount = accruedFees[currency];
-        if (amount == 0) revert NothingToWithdraw();
+        uint256 available = accruedFees[currency];
+        if (amount == 0) amount = available;
+        if (amount > available) revert InsufficientAccruedFees();
 
-        // Effect: clear before external interaction
-        accruedFees[currency] = 0;
+        accruedFees[currency] = available - amount;
 
-        // Interaction: vault.lock → lockAcquired (base) → _withdrawCallback (self-call)
-        vault.lock(abi.encodeCall(this._withdrawCallback, (currency, amount, recipient)));
+        vault.lock(abi.encode(currency, recipient, amount));
 
-        emit FeesWithdrawn(currency, amount, recipient);
+        emit FeesWithdrawn(currency, recipient, amount);
     }
 
-    /// @notice Vault-lock callback that executes the token transfer.
-    /// @dev    Called by the base `lockAcquired` via `address(this).call(data)`.
-    ///         `selfOnly` prevents anyone from calling this directly.
-    function _withdrawCallback(Currency currency, uint128 amount, address recipient)
-        external
-        selfOnly
-    {
-        // vault.take() transfers tokens owed to this hook out to `recipient`
-        vault.take(currency, recipient, amount);
-    }
-
-    // ─────────────────────────────────────────────────── ADMIN ───────────────
-
-    /// @notice Initiate a two-step admin transfer.
-    function initiateAdminTransfer(address candidate) external {
-        if (msg.sender != admin)     revert Unauthorized();
-        if (candidate == address(0)) revert ZeroAddress();
-        pendingAdmin = candidate;
-        emit AdminTransferInitiated(candidate);
-    }
-
-    /// @notice Complete the transfer; callable only by the pending admin.
-    function acceptAdminTransfer() external {
-        if (msg.sender != pendingAdmin) revert Unauthorized();
-        address previous = admin;
-        admin        = pendingAdmin;
-        pendingAdmin = address(0);
-        emit AdminTransferred(previous, admin);
-    }
-
-    /// @notice Add a router to the sender allowlist.
-    function addRouter(address router) external {
-        if (msg.sender != admin)  revert Unauthorized();
-        if (router == address(0)) revert ZeroAddress();
-        whitelistedRouters[router] = true;
-        emit RouterAdded(router);
-    }
-
-    /// @notice Remove a router from the sender allowlist.
-    function removeRouter(address router) external {
-        if (msg.sender != admin) revert Unauthorized();
-        whitelistedRouters[router] = false;
-        emit RouterRemoved(router);
+    /// @notice Override to disallow transferring ownership to zero address.
+    function transferOwnership(address newOwner) public virtual override(Ownable2Step) {
+        if (newOwner == address(0)) revert ZeroAddress();
+        super.transferOwnership(newOwner);
     }
 }
-
 ```
 
 ---

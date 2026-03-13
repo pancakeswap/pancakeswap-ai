@@ -6,10 +6,14 @@ Skills are the core building blocks of PancakeSwap AI. Each skill is a Markdown 
 
 | Skill                                                                    | Plugin                 | Model  | Description                                              |
 | ------------------------------------------------------------------------ | ---------------------- | ------ | -------------------------------------------------------- |
-| [`swap-planner`](/skills/swap-planner)                                   | `pancakeswap-driver`   | Sonnet | Plan swaps with token discovery and deep link generation |
-| [`liquidity-planner`](/skills/liquidity-planner)                         | `pancakeswap-driver`   | Sonnet | Plan LP positions with pool assessment and APY analysis  |
-| [`infinity-security-foundations`](/skills/infinity-security-foundations) | `pancakeswap-infinity` | Opus   | Security guide for Infinity hook development             |
-| [`farming-planner`](/skills/farming-planner)                             | `pancakeswap-farming`  | Sonnet | Plan yield farming, CAKE staking, and deep links         |
+| [`swap-planner`](/skills/swap-planner)                                   | `pancakeswap-driver`   | Sonnet | Plan swaps with token discovery and deep link generation              |
+| [`liquidity-planner`](/skills/liquidity-planner)                         | `pancakeswap-driver`   | Sonnet | Plan LP positions with pool assessment and APY analysis               |
+| [`collect-fees`](/skills/collect-fees)                                   | `pancakeswap-driver`   | Sonnet | Check and collect pending LP fees across V3 and Infinity positions    |
+| [`swap-integration`](/skills/swap-integration)                           | `pancakeswap-driver`   | Opus   | Integrate PancakeSwap swaps into apps using Smart Router or V2 Router |
+| [`infinity-security-foundations`](/skills/infinity-security-foundations) | `pancakeswap-infinity` | Opus   | Security guide for Infinity hook development                          |
+| [`farming-planner`](/skills/farming-planner)                             | `pancakeswap-farming`  | Sonnet | Plan yield farming, CAKE staking, and deep links                      |
+| [`hub-swap-planner`](/skills/hub-swap-planner)                           | `pancakeswap-hub`      | Sonnet | Plan swaps through PCS Hub with channel-specific handoff links        |
+| [`hub-api-integration`](/skills/hub-api-integration)                     | `pancakeswap-hub`      | Sonnet | Integrate PCS Hub quote/swap API into wallets and partner frontends   |
 
 ## Skill Anatomy
 

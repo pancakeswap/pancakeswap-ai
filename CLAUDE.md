@@ -22,9 +22,10 @@ pancakeswap-ai/
 │       └── infinity-security-foundations/  # pancakeswap-infinity skill evals
 ├── packages/
 │   └── plugins/              # Claude Code plugins
-│       ├── pancakeswap-driver/    # Swap planner + liquidity planner skills
+│       ├── pancakeswap-driver/    # Swap planner + liquidity planner + swap integration skills
 │       ├── pancakeswap-infinity/  # Infinity (v4) hook security foundations
-│       └── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
+│       ├── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
+│       └── pancakeswap-hub/       # Hub swap planner + API integration skills
 ├── scripts/
 │   └── validate-plugin.cjs   # Plugin validation
 ├── CLAUDE.md                 # This file — developer + project instructions
@@ -45,6 +46,7 @@ pancakeswap-ai/
 - `swap-planner` — Discover tokens, verify contracts, fetch prices, and generate pancakeswap.finance deep links.
 - `liquidity-planner` — Plan LP positions (V2, V3, StableSwap), assess pool liquidity/APY, recommend fee tiers and price ranges, generate liquidity deep links.
 - `collect-fees` — Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions.
+- `swap-integration` — Integrate PancakeSwap swaps into applications using the Smart Router or Universal Router SDK. Use when building a swap frontend, writing swap scripts, or integrating swap functionality into a smart contract.
 
 **Install:**
 
@@ -64,6 +66,21 @@ claude plugin add @pancakeswap/pancakeswap-driver
 
 ```bash
 claude plugin add @pancakeswap/pancakeswap-infinity
+```
+
+### pancakeswap-hub
+
+**Purpose:** Plan and integrate swaps through PCS Hub, a distribution channel layer for partner wallets and apps.
+
+**Skills:**
+
+- `hub-swap-planner` — Plan swaps through PCS Hub and generate a channel-specific handoff link for partner integrations (e.g. Binance Wallet, Trust Wallet).
+- `hub-api-integration` — Help apps and distribution channels embed PCS Hub quote/swap functionality into their frontend.
+
+**Install:**
+
+```bash
+claude plugin add @pancakeswap/pancakeswap-hub
 ```
 
 ### pancakeswap-farming

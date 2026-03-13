@@ -92,7 +92,8 @@ tests:
           - Infinity uses a singleton PoolManager, not ERC-721 NFTs, so tokenId lookup is not applicable
           - CAKE farming rewards are auto-distributed every 8 hours via Merkle proofs (no manual harvest needed)
           - Positions are discovered via the PancakeSwap Explorer API (infinityCl and infinityBin endpoints)
-          - CL pending fees are computed on-chain using CLPositionManager + CLPoolManager
+          - CL pending fees are computed via TypeScript/node using @pancakeswap/infinity-sdk or equivalent
+            TypeScript fee math (not Python/cast)
           - Directs user to the positions overview URL
         threshold: 0.85
         provider: anthropic:claude-sonnet-4-5-20250929
@@ -114,3 +115,34 @@ tests:
           - '8 hours'
           - 'no manual'
           - 'no harvest'
+
+  # Test 4: Solana farm fee check
+  - vars:
+      case_content: file://cases/solana-fees.md
+    assert:
+      - type: llm-rubric
+        value: |
+          The response should correctly handle a Solana farm fee check:
+          - Recognises the wallet as a Solana base58 public key (not an EVM 0x address)
+          - Uses @pancakeswap/solana-core-sdk Farm.harvestAllRewards() to generate unsigned
+            transaction instructions
+          - Outputs the instructions as base64 or structured JSON for the user to sign
+          - Does NOT request a private key or attempt to sign the transaction
+          - Directs user to pancakeswap.finance/farms?chain=sol
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'solana-core-sdk'
+          - 'Farm.harvestAllRewards'
+          - 'harvestAllRewards'
+          - 'solana'
+          - 'Solana'
+      - type: contains-any
+        value:
+          - 'unsigned'
+          - 'sign'
+          - 'base64'
+          - 'instructions'
+      - type: contains
+        value: 'pancakeswap.finance/farms'

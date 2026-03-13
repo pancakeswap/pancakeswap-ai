@@ -1,0 +1,1 @@
+How do I swap BNB (native) for CAKE tokens on BSC using PancakeSwap? I have a private key and want to execute this in a Node.js script. Please show the complete code including how to handle the native BNB as input correctly.

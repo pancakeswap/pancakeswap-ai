@@ -1,0 +1,23 @@
+Evaluate whether the response is complete and production-ready:
+
+1. Code Completeness
+   - Are all imports included?
+   - Are all variables defined before use?
+   - Is the code runnable without significant additions?
+
+2. Error Handling
+   - Does it handle transaction failures?
+   - Does it handle insufficient liquidity?
+   - Does it handle token approval failures?
+
+3. Production Considerations
+   - Does it mention or handle slippage?
+   - Does it set a transaction deadline?
+   - Does it provide gas estimation or reasonable gas limit?
+
+4. User Guidance
+   - Does it explain what the code does?
+   - Does it highlight important configuration points (API keys, addresses, amounts)?
+   - Does it warn about common pitfalls?
+
+Score 1.0 if all 4 areas fully addressed, 0.85 if 3 fully addressed, 0.7 if 2 fully addressed.

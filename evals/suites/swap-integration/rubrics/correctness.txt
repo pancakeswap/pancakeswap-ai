@@ -1,0 +1,23 @@
+Evaluate whether the response correctly integrates PancakeSwap swaps:
+
+1. SDK Usage Correctness
+   - Does it use @pancakeswap/smart-router for route finding?
+   - Does it correctly call SmartRouter.getBestTrade() or SmartRouter.getV2/V3CandidatePools()?
+   - Are the function signatures correct?
+
+2. Transaction Construction
+   - Does it use SwapRouter.swapERC20CallParameters() from @pancakeswap/universal-router-sdk?
+   - Are the swap parameters correctly structured (slippageTolerance, recipient, deadline)?
+   - Is the value (native BNB) correctly set for native input?
+
+3. Chain Configuration
+   - Is the correct chain ID used (56 for BSC)?
+   - Is the correct Universal Router address used?
+   - Is the correct WBNB/WETH address used?
+
+4. Integration Completeness
+   - Does the code connect to BSC or target chain RPC?
+   - Does it wait for transaction confirmation?
+   - Is it a runnable, complete example?
+
+Score 1.0 for fully correct and complete, 0.8 for mostly correct with minor issues, 0.6 for partially correct, lower if major errors.

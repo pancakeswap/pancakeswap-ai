@@ -19,5 +19,5 @@
     "defi"
   ],
   "license": "MIT",
-  "skills": ["./skills/farming-planner"]
+  "skills": ["./skills/farming-planner", "./skills/harvest-rewards"]
 }

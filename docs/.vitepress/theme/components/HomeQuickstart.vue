@@ -7,6 +7,8 @@ const llmCopied = ref(false)
 const embedFrame = ref<HTMLIFrameElement | null>(null)
 const gameLoadTracked = ref(false)
 
+const isFauxFullscreen = ref(false)
+
 const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md and install the skills described there so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
 
 const llmCode = `https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md`
@@ -52,26 +54,78 @@ function trackGameLoad() {
   })
 }
 
+function getFullscreenElement(): Element | null {
+  return (
+    document.fullscreenElement ??
+    (document as any).webkitFullscreenElement ??
+    null
+  )
+}
+
+async function requestNativeFullscreen(el: HTMLElement): Promise<boolean> {
+  const rfs =
+    el.requestFullscreen ??
+    (el as any).webkitRequestFullscreen ??
+    (el as any).webkitEnterFullscreen
+  if (rfs) {
+    await rfs.call(el)
+    return true
+  }
+  return false
+}
+
+async function exitNativeFullscreen(): Promise<boolean> {
+  const efs =
+    document.exitFullscreen ?? (document as any).webkitExitFullscreen
+  if (efs) {
+    await efs.call(document)
+    return true
+  }
+  return false
+}
+
+function enterFauxFullscreen() {
+  isFauxFullscreen.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function exitFauxFullscreen() {
+  isFauxFullscreen.value = false
+  document.body.style.overflow = ''
+}
+
 async function toggleFullscreen() {
   if (typeof document === 'undefined' || !embedFrame.value) {
     return
   }
 
   try {
-    if (document.fullscreenElement === embedFrame.value) {
+    if (isFauxFullscreen.value) {
       trackEvent('pancake_town_fullscreen_exit', {
         game_name: 'Pancake Kitchen',
       })
-      await document.exitFullscreen()
+      exitFauxFullscreen()
+      return
+    }
+
+    if (getFullscreenElement() === embedFrame.value) {
+      trackEvent('pancake_town_fullscreen_exit', {
+        game_name: 'Pancake Kitchen',
+      })
+      await exitNativeFullscreen()
       return
     }
 
     trackEvent('pancake_town_fullscreen_enter', {
       game_name: 'Pancake Kitchen',
     })
-    await embedFrame.value.requestFullscreen()
-  } catch (error) {
-    console.error('Failed to toggle fullscreen:', error)
+
+    const ok = await requestNativeFullscreen(embedFrame.value)
+    if (!ok) {
+      enterFauxFullscreen()
+    }
+  } catch {
+    enterFauxFullscreen()
   }
 }
 </script>
@@ -146,7 +200,25 @@ async function toggleFullscreen() {
             </svg>
           </button>
         </div>
-        <div class="qs-embed-frame-wrap">
+        <div :class="['qs-embed-frame-wrap', { 'qs-faux-fullscreen': isFauxFullscreen }]">
+          <button
+            v-if="isFauxFullscreen"
+            class="qs-faux-close-btn"
+            type="button"
+            aria-label="Exit fullscreen"
+            @click="toggleFullscreen"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
           <iframe
             ref="embedFrame"
             class="qs-embed-frame"
@@ -369,5 +441,44 @@ async function toggleFullscreen() {
   .qs-embed-frame-wrap {
     aspect-ratio: 16 / 10;
   }
+}
+
+.qs-embed-frame-wrap.qs-faux-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: auto;
+  background: #000;
+}
+
+.qs-faux-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.15s ease;
+}
+
+.qs-faux-close-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.qs-faux-close-btn svg {
+  width: 20px;
+  height: 20px;
 }
 </style>

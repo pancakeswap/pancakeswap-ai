@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
+    "@pancakeswap/infinity-sdk": "^1.0.8",
+    "@pancakeswap/v3-sdk": "^3.10.0",
     "@vercel/firewall": "^1.1.2",
     "@vercel/node": "^3.0.0",
     "viem": "^2.46.3"

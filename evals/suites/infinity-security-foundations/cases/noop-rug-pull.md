@@ -1,1 +1,0 @@
-Explain the NoOp rug pull attack pattern in PancakeSwap Infinity hooks. How does beforeSwapReturnDelta enable this attack, how can I detect it when evaluating a hook, and what mitigations should be in place?

@@ -21,10 +21,6 @@ evals/
     │   ├── promptfoo.yaml
     │   ├── cases/
     │   └── rubrics/
-    └── infinity-security-foundations/
-        ├── promptfoo.yaml
-        ├── cases/
-        └── rubrics/
 ```
 
 ## How It Works
@@ -80,7 +76,6 @@ export ANTHROPIC_API_KEY=your-key
 # Run individual suites
 npm run test:evals:swap-planner
 npm run test:evals:liquidity-planner
-npm run test:evals:infinity-security
 npm run test:evals:farming-planner
 
 # Run all evals

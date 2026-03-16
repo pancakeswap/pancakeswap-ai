@@ -18,12 +18,6 @@ packages/plugins/
 │       │   └── SKILL.md
 │       └── swap-integration/
 │           └── SKILL.md
-├── pancakeswap-infinity/       # Infinity (v4) hook security
-│   ├── .claude-plugin/
-│   │   └── plugin.json
-│   └── skills/
-│       └── infinity-security-foundations/
-│           └── SKILL.md
 ├── pancakeswap-farming/        # Yield farming & CAKE staking
 │   ├── .claude-plugin/
 │   │   └── plugin.json
@@ -45,7 +39,6 @@ packages/plugins/
 | Plugin                                                  | Skills                                                                  | Description                                                       |
 | ------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | [`pancakeswap-driver`](/plugins/pancakeswap-driver)     | `swap-planner`, `liquidity-planner`, `collect-fees`, `swap-integration` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
-| [`pancakeswap-infinity`](/plugins/pancakeswap-infinity) | `infinity-security-foundations`                                         | Security guide for Infinity hook development                      |
 | [`pancakeswap-farming`](/plugins/pancakeswap-farming)   | `farming-planner`                                                       | Plan yield farming, CAKE staking, and reward harvesting           |
 | [`pancakeswap-hub`](/plugins/pancakeswap-hub)           | `hub-swap-planner`, `hub-api-integration`                               | Plan and integrate swaps through PCS Hub for partner channels     |
 

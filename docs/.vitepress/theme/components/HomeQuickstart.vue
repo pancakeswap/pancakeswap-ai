@@ -50,7 +50,7 @@ function trackGameLoad() {
   gameLoadTracked.value = true
   trackEvent('pancake_town_embed_loaded', {
     game_name: 'Pancake Kitchen',
-    embed_src: 'https://pancake-kitchen.pancake.run/',
+    embed_src: 'https://kitchen.pancakeswap.ai/',
   })
 }
 
@@ -222,7 +222,7 @@ async function toggleFullscreen() {
           <iframe
             ref="embedFrame"
             class="qs-embed-frame"
-            src="https://pancake-kitchen.pancake.run/"
+            src="https://kitchen.pancakeswap.ai/"
             title="Pancake Kitchen"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"

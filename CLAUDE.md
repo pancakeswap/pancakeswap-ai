@@ -19,11 +19,9 @@ pancakeswap-ai/
 │       ├── swap-planner/       # pancakeswap-driver skill evals
 │       ├── liquidity-planner/  # pancakeswap-driver skill evals
 │       ├── farming-planner/    # pancakeswap-farming skill evals
-│       └── infinity-security-foundations/  # pancakeswap-infinity skill evals
 ├── packages/
 │   └── plugins/              # Claude Code plugins
 │       ├── pancakeswap-driver/    # Swap planner + liquidity planner + swap integration skills
-│       ├── pancakeswap-infinity/  # Infinity (v4) hook security foundations
 │       ├── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
 │       └── pancakeswap-hub/       # Hub swap planner + API integration skills
 ├── scripts/
@@ -52,20 +50,6 @@ pancakeswap-ai/
 
 ```bash
 claude plugin add @pancakeswap/pancakeswap-driver
-```
-
-### pancakeswap-infinity
-
-**Purpose:** Security-first AI tools for developing PancakeSwap Infinity (v4) hooks.
-
-**Skills:**
-
-- `infinity-security-foundations` — Threat models, permission flags risk matrix, delta accounting, access control patterns, vulnerability catalog, audit checklists, and base hook templates for CL and Bin pool hooks.
-
-**Install:**
-
-```bash
-claude plugin add @pancakeswap/pancakeswap-infinity
 ```
 
 ### pancakeswap-hub

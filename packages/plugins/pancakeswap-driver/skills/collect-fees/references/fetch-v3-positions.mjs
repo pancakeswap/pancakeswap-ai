@@ -6,21 +6,9 @@
 //   WALLET            — 0x wallet address (required)
 //   RPC               — JSON-RPC endpoint URL (required)
 
-import {
-  NFT_POSITION_MANAGER_ADDRESSES,
-  nonfungiblePositionManagerABI,
-} from "@pancakeswap/v3-sdk";
-import { createPublicClient, http } from "viem";
-import {
-  arbitrum,
-  base,
-  bsc,
-  linea,
-  mainnet,
-  monad,
-  opBNB,
-  zksync,
-} from "viem/chains";
+import { NFT_POSITION_MANAGER_ADDRESSES, nonfungiblePositionManagerABI } from '@pancakeswap/v3-sdk'
+import { createPublicClient, http } from 'viem'
+import { arbitrum, base, bsc, linea, mainnet, monad, opBNB, zksync } from 'viem/chains'
 
 const CHAIN_MAP = {
   56: bsc,
@@ -31,61 +19,57 @@ const CHAIN_MAP = {
   59144: linea,
   204: opBNB,
   143: monad,
-};
-
-const chainId = Number(process.env.CHAIN_ID);
-const chain = CHAIN_MAP[chainId];
-if (!chain) {
-  const supported = Object.keys(CHAIN_MAP).join(", ");
-  throw new Error(
-    `Unsupported CHAIN_ID: ${chainId}. Supported chain IDs: ${supported}`,
-  );
 }
 
-const WALLET = process.env.WALLET;
-const POSITION_MANAGER = NFT_POSITION_MANAGER_ADDRESSES[chainId];
+const chainId = Number(process.env.CHAIN_ID)
+const chain = CHAIN_MAP[chainId]
+if (!chain) {
+  const supported = Object.keys(CHAIN_MAP).join(', ')
+  throw new Error(`Unsupported CHAIN_ID: ${chainId}. Supported chain IDs: ${supported}`)
+}
 
-const client = createPublicClient({ chain, transport: http(process.env.RPC) });
+const WALLET = process.env.WALLET
+const POSITION_MANAGER = NFT_POSITION_MANAGER_ADDRESSES[chainId]
+
+const client = createPublicClient({ chain, transport: http(process.env.RPC) })
 
 const balance = await client.readContract({
   address: POSITION_MANAGER,
   abi: nonfungiblePositionManagerABI,
-  functionName: "balanceOf",
+  functionName: 'balanceOf',
   args: [WALLET],
-});
+})
 
 const tokenIdResults = await client.multicall({
   contracts: Array.from({ length: Number(balance) }, (_, i) => ({
     address: POSITION_MANAGER,
     abi: nonfungiblePositionManagerABI,
-    functionName: "tokenOfOwnerByIndex",
+    functionName: 'tokenOfOwnerByIndex',
     args: [WALLET, BigInt(i)],
   })),
-});
-const tokenIds = tokenIdResults
-  .filter((r) => r.status === "success")
-  .map((r) => r.result);
+})
+const tokenIds = tokenIdResults.filter((r) => r.status === 'success').map((r) => r.result)
 
 const posResults = await client.multicall({
   contracts: tokenIds.map((id) => ({
     address: POSITION_MANAGER,
     abi: nonfungiblePositionManagerABI,
-    functionName: "positions",
+    functionName: 'positions',
     args: [id],
   })),
-});
+})
 
-const MAX_UINT128 = 2n ** 128n - 1n;
-const CONCURRENCY = Number(process.env.CONCURRENCY ?? 5);
+const MAX_UINT128 = 2n ** 128n - 1n
+const CONCURRENCY = Number(process.env.CONCURRENCY ?? 5)
 
 async function mapWithConcurrency(items, limit, fn) {
-  const results = [];
+  const results = []
   for (let i = 0; i < items.length; i += limit) {
-    results.push(...(await Promise.all(items.slice(i, i + limit).map(fn))));
+    results.push(...(await Promise.all(items.slice(i, i + limit).map(fn))))
     // Delay to avoid rate limits
     await new Promise((resolve) => setTimeout(resolve, 500))
   }
-  return results;
+  return results
 }
 
 const collectResults = await mapWithConcurrency(tokenIds, CONCURRENCY, (id) =>
@@ -93,7 +77,7 @@ const collectResults = await mapWithConcurrency(tokenIds, CONCURRENCY, (id) =>
     .simulateContract({
       address: POSITION_MANAGER,
       abi: nonfungiblePositionManagerABI,
-      functionName: "collect",
+      functionName: 'collect',
       args: [
         {
           tokenId: id,
@@ -105,15 +89,15 @@ const collectResults = await mapWithConcurrency(tokenIds, CONCURRENCY, (id) =>
       account: WALLET,
     })
     .then((r) => [r.result[0].toString(), r.result[1].toString()]),
-);
+)
 
 const positions = posResults
-  .filter((r) => r.status === "success")
+  .filter((r) => r.status === 'success')
   .map((r, i) => {
-    const p = r.result;
+    const p = r.result
 
     // Differs from tokensOwed via position result
-    const [tokensOwed0, tokensOwed1] = collectResults[i];
+    const [tokensOwed0, tokensOwed1] = collectResults[i]
 
     return {
       tokenId: tokenIds[i].toString(),
@@ -125,7 +109,7 @@ const positions = posResults
       tickLower: p[5],
       tickUpper: p[6],
       liquidity: p[7].toString(),
-    };
-  });
+    }
+  })
 
-console.log(JSON.stringify(positions));
+console.log(JSON.stringify(positions))

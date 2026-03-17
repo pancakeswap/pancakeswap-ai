@@ -458,14 +458,15 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 
 **Extra reward APRs (from Step 4b):** If Merkl or Incentra matches were found for a pool, append them to the pool metrics table and sum a Total APR:
 
-| Field             | Value               |
-| ----------------- | ------------------- |
-| Base APR          | 18.4%               |
-| Merkl Rewards     | +5.2% (LIVE)        |
-| Incentra Rewards  | +3.1% (ACTIVE)      |
-| **Total APR**     | **26.7%**           |
+| Field            | Value          |
+| ---------------- | -------------- |
+| Base APR         | 18.4%          |
+| Merkl Rewards    | +5.2% (LIVE)   |
+| Incentra Rewards | +3.1% (ACTIVE) |
+| **Total APR**    | **26.7%**      |
 
 Rules:
+
 - Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool.
 - Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
 - Always show the `status` value next to each extra APR.

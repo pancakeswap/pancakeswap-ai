@@ -24,7 +24,7 @@
     "test:evals": "npx promptfoo eval --config evals/suites/swap-planner/promptfoo.yaml && npx promptfoo eval --config evals/suites/liquidity-planner/promptfoo.yaml && npx promptfoo eval --config evals/suites/farming-planner/promptfoo.yaml",
     "test:evals:swap-planner": "npx promptfoo eval --config evals/suites/swap-planner/promptfoo.yaml",
     "test:evals:liquidity-planner": "npx promptfoo eval --config evals/suites/liquidity-planner/promptfoo.yaml",
-"test:evals:farming-planner": "npx promptfoo eval --config evals/suites/farming-planner/promptfoo.yaml",
+    "test:evals:farming-planner": "npx promptfoo eval --config evals/suites/farming-planner/promptfoo.yaml",
     "test:evals:view": "npx promptfoo view",
     "validate:plugins": "node scripts/validate-plugin.cjs",
     "docs:dev": "vitepress dev docs",

@@ -20,12 +20,12 @@ This skill **does not execute swaps** — it plans them. The output is a route s
 
 ## Supported Channels
 
-| Channel | Description |
-|---------|-------------|
-| PancakeSwap | Default pancakeswap.finance swap UI |
-| Trust Wallet | Deep link via `link.trustwallet.com` |
+| Channel        | Description                                        |
+| -------------- | -------------------------------------------------- |
+| PancakeSwap    | Default pancakeswap.finance swap UI                |
+| Trust Wallet   | Deep link via `link.trustwallet.com`               |
 | Binance Wallet | Deep link for the Binance Wallet browser extension |
-| Headless | Structured JSON payload for bots and backends |
+| Headless       | Structured JSON payload for bots and backends      |
 
 ## Supported Chain
 

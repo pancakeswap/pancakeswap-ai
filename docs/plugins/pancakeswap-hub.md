@@ -4,13 +4,13 @@ AI-powered assistance for planning and integrating swaps through PCS Hub.
 
 ## Metadata
 
-| Field        | Value                                                             |
-| ------------ | ----------------------------------------------------------------- |
-| **Name**     | `pancakeswap-hub`                                                 |
-| **Version**  | 1.8.0                                                             |
-| **Author**   | PancakeSwap                                                       |
-| **License**  | MIT                                                               |
-| **Keywords** | `pancakeswap`, `defi`, `hub`, `portfolio`, `bsc`, `bnb`, `cake`  |
+| Field        | Value                                                           |
+| ------------ | --------------------------------------------------------------- |
+| **Name**     | `pancakeswap-hub`                                               |
+| **Version**  | 1.8.0                                                           |
+| **Author**   | PancakeSwap                                                     |
+| **License**  | MIT                                                             |
+| **Keywords** | `pancakeswap`, `defi`, `hub`, `portfolio`, `bsc`, `bnb`, `cake` |
 
 ## Skills
 

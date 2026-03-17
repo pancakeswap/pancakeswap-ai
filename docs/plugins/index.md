@@ -36,11 +36,11 @@ packages/plugins/
 
 ## At a Glance
 
-| Plugin                                                  | Skills                                                                  | Description                                                       |
-| ------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| [`pancakeswap-driver`](/plugins/pancakeswap-driver)     | `swap-planner`, `liquidity-planner`, `collect-fees`, `swap-integration` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
-| [`pancakeswap-farming`](/plugins/pancakeswap-farming)   | `farming-planner`                                                       | Plan yield farming, CAKE staking, and reward harvesting           |
-| [`pancakeswap-hub`](/plugins/pancakeswap-hub)           | `hub-swap-planner`, `hub-api-integration`                               | Plan and integrate swaps through PCS Hub for partner channels     |
+| Plugin                                                | Skills                                                                  | Description                                                       |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [`pancakeswap-driver`](/plugins/pancakeswap-driver)   | `swap-planner`, `liquidity-planner`, `collect-fees`, `swap-integration` | Plan swaps and LP positions with deep links to the PancakeSwap UI |
+| [`pancakeswap-farming`](/plugins/pancakeswap-farming) | `farming-planner`                                                       | Plan yield farming, CAKE staking, and reward harvesting           |
+| [`pancakeswap-hub`](/plugins/pancakeswap-hub)         | `hub-swap-planner`, `hub-api-integration`                               | Plan and integrate swaps through PCS Hub for partner channels     |
 
 ## Plugin Structure
 

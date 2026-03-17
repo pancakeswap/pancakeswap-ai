@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.9.2'
+  version: '1.9.4'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -29,7 +29,7 @@ metadata:
         bins: [jq]
       - kind: brew
         formula: foundry
-        bins: [cast
+        bins: [cast]
 ---
 
 # PancakeSwap Liquidity Planner
@@ -312,7 +312,7 @@ CHAIN="bsc"
 [[ "$TOKEN0" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token0 address"; exit 1; }
 [[ "$TOKEN1" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token1 address"; exit 1; }
 
-curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD" | \
+curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD" | \
   jq '.rows[] | {
     id, protocol,
     feeTierBps: .feeTier,

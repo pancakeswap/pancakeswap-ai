@@ -138,16 +138,19 @@ Tokens are specified as `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC 
 
 ### Chain Identifiers
 
-| Chain      | `chains` value | Numeric Chain ID |
-| ---------- | -------------- | ---------------- |
-| BSC        | `bsc`          | `56`             |
-| Ethereum   | `eth`          | `1`              |
-| Arbitrum   | `arb`          | `42161`          |
-| Base       | `base`         | `8453`           |
-| zkSync Era | `zksync`       | `324`            |
-| Linea      | `linea`        | `59144`          |
-| opBNB      | `opbnb`        | `204`            |
-| Solana     | `sol`          | —                |
+| Chain          | `chains` value  | Numeric Chain ID |
+| -------------- | --------------- | ---------------- |
+| BSC            | `bsc`           | `56`             |
+| BSC Testnet    | `bsc-testnet`   | `97`             |
+| Ethereum       | `ethereum`      | `1`              |
+| Base           | `base`          | `8453`           |
+| opBNB          | `opbnb`         | `204`            |
+| zkSync Era     | `zksync`        | `324`            |
+| Polygon zkEVM  | `polygon-zkevm` | `1101`           |
+| Linea          | `linea`         | `59144`          |
+| Arbitrum       | `arbitrum`      | `42161`          |
+| Solana         | `sol`           | —                |
+| Monad          | `monad`         | `143`            |
 
 ### Protocol Values
 
@@ -158,6 +161,7 @@ Tokens are specified as `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC 
 | `infinityCl`      | Infinity Concentrated Liquidity |
 | `infinityBin`     | Infinity Bin pool               |
 | `infinityStable`  | Infinity StableSwap             |
+| `stable`          | StableSwap                      |
 
 ### Response Field Reference
 
@@ -165,7 +169,7 @@ Tokens are specified as `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC 
 | -------------- | ------ | ------------------------------------------------------------------------------- |
 | `id`           | string | Pool contract address                                                           |
 | `chainId`      | number | Numeric chain ID                                                                |
-| `protocol`     | string | Pool type (`v2`, `v3`, `infinityCl`, `infinityBin`, `infinityStable`)           |
+| `protocol`     | string | Pool type (`v2`, `v3`, `infinityCl`, `infinityBin`, `infinityStable`, `stable`) |
 | `feeTier`      | number | Fee tier in basis points (e.g., `2500` = 0.25%)                                 |
 | `tvlUSD`       | number | Total Value Locked in USD                                                       |
 | `volumeUSD24h` | number | 24-hour trading volume in USD                                                   |
@@ -315,11 +319,12 @@ Use the PancakeSwap Explorer API to find candidate pools — it returns TVL, vol
 
 ```bash
 # Both tokens known: pair endpoint
-curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/{token0}/{token1}?chains={chain}&protocols=v2&protocols=v3&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD"
+curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/{token0}/{token1}?chains={chain}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD"
 
 # One token known: list endpoint
 curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   --data-urlencode "chains={chain}" \
+  --data-urlencode "protocols=stable" \
   --data-urlencode "protocols=v2" \
   --data-urlencode "protocols=v3" \
   --data-urlencode "protocols=infinityCl" \

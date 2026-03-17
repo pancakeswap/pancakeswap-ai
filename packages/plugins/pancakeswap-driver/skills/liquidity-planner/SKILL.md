@@ -1,12 +1,12 @@
 ---
 name: liquidity-planner
 description: Plan liquidity provision on PancakeSwap. Use when user says "add liquidity on pancakeswap", "provide liquidity", "LP on pancakeswap", "farm pancakeswap", or describes wanting to deposit tokens into liquidity pools without writing code.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(node:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.8.2'
+  version: '1.9.2'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -283,7 +283,7 @@ curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/$
     feeTierPct: (.feeTier / 100 | tostring | . + "%"),
     tvlUSD,
     volumeUSD24h,
-    apr24hPct: (.apr24h * 100 | . * 100 | round / 100 | tostring | . + "%"),
+    apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
     token0: .token0.symbol,
     token1: .token1.symbol
   }'
@@ -312,7 +312,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
     feeTierPct: (.feeTier / 100 | tostring | . + "%"),
     tvlUSD,
     volumeUSD24h,
-    apr24hPct: (.apr24h * 100 | . * 100 | round / 100 | tostring | . + "%"),
+    apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
     token0: .token0.symbol,
     token1: .token1.symbol
   }'
@@ -365,11 +365,41 @@ curl -s "https://api.dexscreener.com/latest/dex/search" \
 
 ---
 
+## Step 4b: Fetch Extra Reward APRs (Merkl & Incentra)
+
+After discovering pools via the Explorer API, run the extra APR script in parallel to collect any active external incentive rewards:
+
+```bash
+node packages/plugins/pancakeswap-driver/skills/common/pool-apr.mjs
+```
+
+The script outputs JSON with the shape:
+
+```json
+{
+  "merklApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }],
+  "incentraApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }]
+}
+```
+
+**Matching rules:**
+
+- Filter by `chainId` matching the user's selected chain.
+- Match `poolId` to Explorer API pool `id` (pool address) using **case-insensitive** comparison:
+  ```js
+  poolId.toLowerCase() === explorerPool.id.toLowerCase()
+  ```
+- If the script fails or returns no data, skip silently — extra APR is optional supplemental data.
+
+Store matched Merkl and Incentra entries per pool for use in Step 5.
+
+---
+
 ## Step 5: Pool Assessment (Liquidity, Volume & APR)
 
 The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the pool discovery response — no separate API call needed. Use these values directly.
 
-**`apr24h` is a decimal** (e.g., `0.2166` = 21.66%). Multiply by 100 to display as a percentage.
+**`apr24h` is a string decimal** (e.g., `"0.2166"` = 21.66%). Parse with `tonumber` before multiplying by 100 to display as a percentage.
 
 **Liquidity assessment:**
 
@@ -389,6 +419,21 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 | < 1% APR    | Massive TVL       | Very Low   | Fee-based yield only (base APR) |
 
 > **Note**: `apr24h` is fee APR only (swap fees, 24h annualized). CAKE farming rewards are separate — always mention MasterChef/Infinity farming opportunities when relevant (see Farming & Rewards section).
+
+**Extra reward APRs (from Step 4b):** If Merkl or Incentra matches were found for a pool, append them to the pool metrics table and sum a Total APR:
+
+| Field             | Value               |
+| ----------------- | ------------------- |
+| Base APR          | 18.4%               |
+| Merkl Rewards     | +5.2% (LIVE)        |
+| Incentra Rewards  | +3.1% (ACTIVE)      |
+| **Total APR**     | **26.7%**           |
+
+Rules:
+- Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool.
+- Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
+- Always show the `status` value next to each extra APR.
+- Sum base APR + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards.
 
 **Optional supplemental data (DefiLlama):** If the user asks for a detailed farming APY breakdown including CAKE reward APY, fetch from DefiLlama:
 
@@ -752,8 +797,11 @@ Recommended Range: 2.0–3.0 CAKE/BNB (±25% from current 2.5)
 Pool Metrics:
   Total Liquidity:  $45.2M
   24h Volume:       $12.5M
-  Base APY:         6.2%
-  Recommended APY:  7–9% with concentrated position in range
+  Base APR:         6.2%
+  Merkl Rewards:    +5.2% (LIVE)
+  Incentra Rewards: +3.1% (ACTIVE)
+  Total APR:        14.5%
+  Recommended APR:  15–17% with concentrated position in range
 
 IL Assessment:
   Current Price:    2.5 CAKE/BNB
@@ -766,10 +814,15 @@ Deposit Recommendation:
   Token B (BNB):    4 BNB (~$1,000 USD)
   Total Value:      ~$1,250 USD
 
+Extra Rewards:
+  Merkl:    +5.2% APR (LIVE, campaign: 0xabc...)
+  Incentra: +3.1% APR (ACTIVE, campaign: 0xdef...)
+  Total:    14.5% APR
+
 Farm Options:
   V2/V3: After creating the position, stake it in MasterChef for CAKE rewards (separate step)
   Infinity: Farming is automatic — no separate staking needed!
-  Current farm APY: 12–15% (includes CAKE rewards)
+  Current farm APR: 12–15% (includes CAKE rewards)
 
 ⚠️  Warnings:
   • Monitor price within your range; if it moves > ±25%, rebalancing may be needed
@@ -779,6 +832,8 @@ Farm Options:
 🔗 Open in PancakeSwap:
 https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/BNB/2500?chain=bsc
 ```
+
+> **Extra Rewards section**: Include only if at least one Merkl or Incentra entry matched the pool. If no extra rewards exist, omit the entire "Extra Rewards" block — do not show it empty.
 
 ### Attempt to Open Browser
 

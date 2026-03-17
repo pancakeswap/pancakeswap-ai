@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.3.0'
+  version: '1.4.1'
 ---
 
 # PancakeSwap Farming Planner
@@ -330,6 +330,43 @@ curl -s "https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 ---
 
+## Farm Discovery: Extra Reward APRs (Merkl & Incentra)
+
+After running Method A to discover farms, run the extra APR script in parallel to collect any active external incentive rewards:
+
+```bash
+node packages/plugins/pancakeswap-driver/skills/common/pool-apr.mjs
+```
+
+The script outputs JSON with the shape:
+
+```json
+{
+  "merklApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }],
+  "incentraApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }]
+}
+```
+
+**Matching rules:**
+
+- Filter by `chainId` matching the user's selected chain.
+- Match `poolId` to Explorer API pool `id` (pool address) using **case-insensitive** comparison:
+  ```js
+  poolId.toLowerCase() === explorerPool.id.toLowerCase()
+  ```
+- If the script fails or returns no data, skip silently — extra APR is optional supplemental data.
+
+Store matched Merkl and Incentra entries per pool for display in the output tables.
+
+**Display rules:**
+
+- Only show the "Merkl Rewards" row if there is a matched Merkl entry for the pool.
+- Only show the "Incentra Rewards" row if there is a matched Incentra entry for the pool.
+- Always show the `status` value next to each extra APR.
+- Sum base APR + CAKE APR + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards.
+
+---
+
 ## Stake LP Tokens
 
 **Primary: Direct the user to the PancakeSwap UI via deep link.** Only provide `cast` examples when the user explicitly asks for CLI/programmatic staking.
@@ -624,15 +661,29 @@ https://pancakeswap.finance/liquidity/pools?chain=bsc
 
 ### Multi-farm comparison table
 
-Use this format when listing multiple farms. The **Deep Link** column is mandatory:
+Use this format when listing multiple farms. The **Deep Link** column is mandatory. Use **Total APR** as the primary sort column — it is the sum of LP Fee APR + CAKE APR + any Merkl/Incentra rewards:
 
 ```
-| Pair | APY | TVL | Type | Deep Link |
-|------|-----|-----|------|-----------|
-| MBOX / WBNB | 15.2% | $984K | V2 | https://pancakeswap.finance/v2/add/0x3203c9E46cA618C8C1cE5dC67e7e9D75f5da2377/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c?chain=bsc&persistChain=1 |
-| CAKE / USDT | 12.4% | $340K | V3 | https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/0x55d398326f99059fF775485246999027B3197955/2500?chain=bsc&persistChain=1 |
-| USDT / WBNB | 10.7% | $321K | V2 | https://pancakeswap.finance/v2/add/0x55d398326f99059fF775485246999027B3197955/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c?chain=bsc&persistChain=1 |
+| Pair | Total APR | TVL | Type | Deep Link |
+|------|-----------|-----|------|-----------|
+| CAKE / USDT | 26.8% | $340K | V3 | https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/0x55d398326f99059fF775485246999027B3197955/2500?chain=bsc&persistChain=1 |
+| MBOX / WBNB | 23.5% | $984K | V2 | https://pancakeswap.finance/v2/add/0x3203c9E46cA618C8C1cE5dC67e7e9D75f5da2377/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c?chain=bsc&persistChain=1 |
+| USDT / WBNB | 14.9% | $321K | V2 | https://pancakeswap.finance/v2/add/0x55d398326f99059fF775485246999027B3197955/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c?chain=bsc&persistChain=1 |
 ```
+
+For each farm that has Merkl or Incentra rewards, show the APR breakdown as a sub-table immediately below the farm row:
+
+```
+| Field            | Value          |
+| ---------------- | -------------- |
+| Base APR         | 18.4%          |
+| CAKE Rewards     | +6.1%          |
+| Merkl Rewards    | +5.2% (LIVE)   |
+| Incentra Rewards | +3.1% (ACTIVE) |
+| **Total APR**    | **26.8%**      |
+```
+
+Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool. Only show the "Incentra Rewards" row if there is a matched Incentra entry. Omit the breakdown sub-table entirely for farms with no extra rewards.
 
 ### Single farm recommendation (V2/V3 — two steps)
 
@@ -642,8 +693,19 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 **Strategy:** Stake WBNB-CAKE LP in V3 Farm
 **Chain:** BNB Smart Chain
 **Pool:** WBNB / CAKE (0.25% fee tier)
-**Farm APR:** ~45%
-**Reward:** CAKE
+**TVL:** $45.2M
+
+| Field            | Value          |
+| ---------------- | -------------- |
+| Base APR         | 18.4%          |
+| CAKE Rewards     | +12.3%         |
+| Merkl Rewards    | +5.2% (LIVE)   |
+| Incentra Rewards | +3.1% (ACTIVE) |
+| **Total APR**    | **39.0%**      |
+
+(Omit Merkl/Incentra rows if no match. Omit Total APR row if no extra rewards.)
+
+**Reward:** CAKE (+ any Merkl/Incentra tokens if applicable)
 
 ### Steps
 1. Add liquidity: https://pancakeswap.finance/add/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/2500?chain=bsc&persistChain=1
@@ -663,8 +725,19 @@ Use this format when listing multiple farms. The **Deep Link** column is mandato
 **Strategy:** Farm CAKE/BNB in Infinity Pool
 **Chain:** BNB Smart Chain
 **Pool:** CAKE / BNB (Infinity CL)
-**Farm APR:** ~XX% (fetched from API)
-**Reward:** CAKE (distributed every 8 hours)
+**TVL:** $45.2M
+
+| Field            | Value          |
+| ---------------- | -------------- |
+| Base APR         | 8.1%           |
+| CAKE Rewards     | +XX%           |
+| Merkl Rewards    | +5.2% (LIVE)   |
+| Incentra Rewards | +3.1% (ACTIVE) |
+| **Total APR**    | **~XX%**       |
+
+(Omit Merkl/Incentra rows if no match. Omit Total APR row if no extra rewards.)
+
+**Reward:** CAKE (distributed every 8 hours) + any Merkl/Incentra tokens if applicable
 
 ### Steps
 1. Add liquidity (automatically farms — no separate staking needed):

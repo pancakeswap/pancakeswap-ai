@@ -1,11 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { trackEvent } from '../lib/analytics'
 
 const humanCopied = ref(false)
 const llmCopied = ref(false)
 const embedFrame = ref<HTMLIFrameElement | null>(null)
 const gameLoadTracked = ref(false)
+const viewportTracked = ref(false)
+
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && !viewportTracked.value) {
+        viewportTracked.value = true
+        trackEvent('pancake_town_in_viewport', {
+          game_name: 'Pancake Kitchen',
+        })
+        observer.disconnect()
+      }
+    },
+    { threshold: 0.5 },
+  )
+
+  if (embedFrame.value) {
+    observer.observe(embedFrame.value)
+  }
+})
 
 const isFauxFullscreen = ref(false)
 

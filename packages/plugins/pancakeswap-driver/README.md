@@ -61,16 +61,16 @@ Integrate PancakeSwap swaps into applications using the Smart Router or Universa
 
 ## Supported Chains
 
-| Chain              | Chain ID | Deep Link Key |
-|--------------------|----------|---------------|
-| BNB Smart Chain    | 56       | `bsc`         |
-| Ethereum           | 1        | `eth`         |
-| Arbitrum One       | 42161    | `arb`         |
-| Base               | 8453     | `base`        |
-| Polygon            | 137      | `polygon`     |
-| zkSync Era         | 324      | `zksync`      |
-| Linea              | 59144    | `linea`       |
-| opBNB              | 204      | `opbnb`       |
+| Chain           | Chain ID | Deep Link Key |
+| --------------- | -------- | ------------- |
+| BNB Smart Chain | 56       | `bsc`         |
+| Ethereum        | 1        | `eth`         |
+| Arbitrum One    | 42161    | `arb`         |
+| Base            | 8453     | `base`        |
+| Polygon         | 137      | `polygon`     |
+| zkSync Era      | 324      | `zksync`      |
+| Linea           | 59144    | `linea`       |
+| opBNB           | 204      | `opbnb`       |
 
 ## License
 

@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.2.0'
+  version: '1.3.0'
 ---
 
 # PancakeSwap Farming Planner
@@ -222,244 +222,17 @@ Or use the farms page with search: `https://pancakeswap.finance/liquidity/pools?
 ::: danger MANDATORY — Do NOT write your own Python script
 Using `python3 -c "..."` causes SyntaxError (bash mangles `!` and `$`).
 Using `curl | python3 << 'EOF'` causes JSONDecodeError (heredoc steals stdin).
-You MUST follow the exact two-step process below. Do NOT improvise.
+You MUST follow the exact steps below. Do NOT improvise.
 :::
 
-**Step 1 — Create the script file (run this FIRST, exactly as-is):**
+**Step 1 — Locate script:**
 
 The script fetches LP fee APR from the Explorer API and calculates **CAKE Yield APR** on-chain by querying MasterChef v3 (`latestPeriodCakePerSecond`, `v3PoolAddressPid`, `poolInfo`) via batched JSON-RPC calls. For Infinity farms, it fetches campaign data from `https://infinity.pancakeswap.com/farms/campaigns/{chainId}/false` and calculates yield as `Σ (totalRewardAmount / 1e18 / duration * SECONDS_PER_YEAR)`. It requires the `requests` library (auto-installs if missing).
 
+Use the Glob tool to find `references/fetch-farms.py` (in the same directory as this skill file) and note its absolute path. Then set:
+
 ```bash
-PCS_FARMS_SCRIPT=$(mktemp /tmp/pcs_farms_XXXXXX)
-cat > "$PCS_FARMS_SCRIPT" << 'PYEOF'
-import json, sys, os, time, re
-try:
-    import requests
-except ImportError:
-    import subprocess
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-q', 'requests'])
-    import requests
-CHAIN_FILTER = os.environ.get('CHAIN_FILTER', '')
-PROTOCOL_FILTER = os.environ.get('PROTOCOL_FILTER', '')
-MIN_TVL = float(os.environ.get('MIN_TVL', '10000'))
-CHAIN_ID_TO_KEY = {56: 'bsc', 1: 'eth', 42161: 'arb', 8453: 'base', 324: 'zksync', 204: 'opbnb', 59144: 'linea'}
-NATIVE_TO_WRAPPED = {
-    56:    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    1:     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    42161: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    8453:  '0x4200000000000000000000000000000000000006',
-    324:   '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91',
-}
-MASTERCHEF_V3 = {
-    56:    '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
-    1:     '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
-    42161: '0x5e09ACf80C0296740eC5d6F643005a4ef8DaA694',
-    8453:  '0xC6A2Db661D5a5690172d8eB0a7DEA2d3008665A3',
-    324:   '0x4c615E78c5fCA1Ad31e4d66eb0D8688d84307463',
-}
-RPC_URLS = {
-    56:    'https://bsc-rpc.publicnode.com',
-    1:     'https://ethereum-rpc.publicnode.com',
-    42161: 'https://arbitrum-one-rpc.publicnode.com',
-    8453:  'https://base-rpc.publicnode.com',
-    324:   'https://zksync-era-rpc.publicnode.com',
-}
-ZERO_ADDR = '0x0000000000000000000000000000000000000000'
-BATCH_CHUNK = 8
-SIG_CAKE_PER_SEC  = '0xc4f6a8ce'
-SIG_TOTAL_ALLOC   = '0x17caf6f1'
-SIG_POOL_ADDR_PID = '0x0743384d'
-SIG_POOL_INFO     = '0x1526fe27'
-def _rpc_batch(rpc, batch, retries=2):
-    for attempt in range(retries + 1):
-        try:
-            resp = requests.post(rpc, json=batch, timeout=15)
-            raw = resp.json()
-            if isinstance(raw, dict):
-                if attempt < retries:
-                    time.sleep(1.0 * (attempt + 1))
-                    continue
-                return [{'result': '0x'}] * len(batch)
-            has_err = any(r.get('error', {}).get('code') in (-32016, -32014) for r in raw)
-            if has_err and attempt < retries:
-                time.sleep(1.0 * (attempt + 1))
-                continue
-            return raw
-        except Exception:
-            if attempt < retries:
-                time.sleep(1.0 * (attempt + 1))
-            else:
-                return [{'result': '0x'}] * len(batch)
-    return [{'result': '0x'}] * len(batch)
-def eth_call_batch(rpc, calls):
-    if not calls:
-        return []
-    all_results = [None] * len(calls)
-    for cs in range(0, len(calls), BATCH_CHUNK):
-        chunk = calls[cs:cs + BATCH_CHUNK]
-        batch = [{'jsonrpc': '2.0', 'id': i, 'method': 'eth_call',
-                  'params': [{'to': to, 'data': data}, 'latest']}
-                 for i, (to, data) in enumerate(chunk)]
-        raw = _rpc_batch(rpc, batch)
-        if isinstance(raw, list):
-            raw.sort(key=lambda r: r.get('id', 0))
-            for i, r in enumerate(raw):
-                all_results[cs + i] = r.get('result', '0x')
-        else:
-            for i in range(len(chunk)):
-                all_results[cs + i] = '0x'
-        if cs + BATCH_CHUNK < len(calls):
-            time.sleep(0.3)
-    return all_results
-def decode_uint(h):
-    if not h or h == '0x': return 0
-    return int(h, 16)
-def pad_address(addr):
-    return addr.lower().replace('0x', '').zfill(64)
-def pad_uint(val):
-    return hex(val).replace('0x', '').zfill(64)
-def get_cake_price():
-    try:
-        r = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_currencies=usd', timeout=5)
-        return r.json().get('pancakeswap-token', {}).get('usd', 0)
-    except Exception:
-        return 0
-def get_v3_cake_data(chain_id, pool_addresses):
-    mc = MASTERCHEF_V3.get(chain_id)
-    rpc = RPC_URLS.get(chain_id)
-    if not mc or not rpc or not pool_addresses:
-        return {}
-    try:
-        calls = [(mc, SIG_CAKE_PER_SEC), (mc, SIG_TOTAL_ALLOC)]
-        for a in pool_addresses:
-            calls.append((mc, SIG_POOL_ADDR_PID + pad_address(a)))
-        results = eth_call_batch(rpc, calls)
-        cake_per_sec_raw = decode_uint(results[0])
-        total_alloc = decode_uint(results[1])
-        if total_alloc == 0 or cake_per_sec_raw == 0:
-            return {}
-        cake_per_sec = cake_per_sec_raw / 1e12 / 1e18
-        pids = [decode_uint(results[2 + i]) for i in range(len(pool_addresses))]
-        time.sleep(0.5)
-        info_calls = [(mc, SIG_POOL_INFO + pad_uint(pid)) for pid in pids]
-        info_results = eth_call_batch(rpc, info_calls)
-        result = {}
-        for i, addr in enumerate(pool_addresses):
-            info_hex = info_results[i]
-            if not info_hex or info_hex == '0x' or len(info_hex) < 66:
-                result[addr.lower()] = 0
-                continue
-            alloc_point = int(info_hex[2:66], 16)
-            if len(info_hex) >= 130:
-                returned_pool = '0x' + info_hex[90:130].lower()
-                if returned_pool != addr.lower():
-                    result[addr.lower()] = 0
-                    continue
-            if alloc_point == 0:
-                result[addr.lower()] = 0
-                continue
-            pool_cake_per_sec = cake_per_sec * (alloc_point / total_alloc)
-            result[addr.lower()] = pool_cake_per_sec * 31_536_000
-        return result
-    except Exception:
-        return {}
-def token_addr(token, chain_id):
-    addr = token['id']
-    if addr == ZERO_ADDR:
-        return NATIVE_TO_WRAPPED.get(chain_id, addr)
-    return addr
-ADDR_RE = re.compile(r'^0x[0-9a-fA-F]{40}$')
-POOL_ID_RE = re.compile(r'^0x[0-9a-fA-F]{64}$')
-def _valid_addr(a):
-    return bool(ADDR_RE.match(a))
-def build_link(pool):
-    chain_id = pool['chainId']
-    chain_key = CHAIN_ID_TO_KEY.get(chain_id, 'bsc')
-    proto = pool['protocol']
-    t0 = token_addr(pool['token0'], chain_id)
-    t1 = token_addr(pool['token1'], chain_id)
-    fee = pool.get('feeTier', 2500)
-    if not _valid_addr(t0) or not _valid_addr(t1):
-        return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
-    if proto == 'v2':
-        return f'https://pancakeswap.finance/v2/add/{t0}/{t1}?chain={chain_key}&persistChain=1'
-    elif proto == 'v3':
-        return f'https://pancakeswap.finance/add/{t0}/{t1}/{fee}?chain={chain_key}&persistChain=1'
-    elif proto == 'stable':
-        return f'https://pancakeswap.finance/stable/add/{t0}/{t1}?chain={chain_key}&persistChain=1'
-    elif proto in ('infinityCl', 'infinityBin', 'infinityStable'):
-        pool_id = pool['id']
-        if not POOL_ID_RE.match(pool_id):
-            return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
-        return f'https://pancakeswap.finance/liquidity/add/{chain_key}/infinity/{pool_id}?chain={chain_key}&persistChain=1'
-    else:
-        return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
-data = json.load(sys.stdin)
-pools = data if isinstance(data, list) else data.get('rows', data.get('data', []))
-if CHAIN_FILTER:
-    chain_ids = {v: k for k, v in CHAIN_ID_TO_KEY.items()}
-    target_id = chain_ids.get(CHAIN_FILTER.lower())
-    if target_id:
-        pools = [p for p in pools if p['chainId'] == target_id]
-if PROTOCOL_FILTER:
-    protos = [x.strip().lower() for x in PROTOCOL_FILTER.split(',')]
-    pools = [p for p in pools if p['protocol'].lower() in protos]
-pools = [p for p in pools if float(p.get('tvlUSD', 0) or 0) >= MIN_TVL]
-pools.sort(key=lambda p: float(p.get('apr24h', 0) or 0), reverse=True)
-top_pools = pools[:20]
-cake_price = get_cake_price()
-v3_pools_by_chain = {}
-for p in top_pools:
-    if p['protocol'] == 'v3':
-        cid = p['chainId']
-        v3_pools_by_chain.setdefault(cid, []).append(p['id'])
-yearly_cake_map = {}
-for cid, addrs in v3_pools_by_chain.items():
-    yearly_cake_map.update(get_v3_cake_data(cid, addrs))
-SECONDS_PER_YEAR = 31_536_000
-inf_chains = set()
-for p in top_pools:
-    if p['protocol'] in ('infinityCl', 'infinityBin'):
-        inf_chains.add(p['chainId'])
-for cid in inf_chains:
-    try:
-        r = requests.get(
-            f'https://infinity.pancakeswap.com/farms/campaigns/{cid}/false?limit=100&page=1',
-            timeout=10)
-        campaigns = r.json().get('campaigns', [])
-        for c in campaigns:
-            pid = c['poolId'].lower()
-            reward_raw = int(c.get('totalRewardAmount', 0))
-            duration = int(c.get('duration', 0))
-            if duration <= 0 or reward_raw <= 0:
-                continue
-            yearly_reward = (reward_raw / 1e18) / duration * SECONDS_PER_YEAR
-            yearly_cake_map[pid] = yearly_cake_map.get(pid, 0) + yearly_reward
-    except Exception:
-        pass
-print('| Pair | LP Fee APR | CAKE APR | Total APR | TVL | Protocol | Chain | Deep Link |')
-print('|------|-----------|----------|-----------|-----|----------|-------|-----------|')
-for p in top_pools:
-    t0sym = p['token0']['symbol']
-    t1sym = p['token1']['symbol']
-    pair = f'{t0sym}/{t1sym}'
-    lp_fee_apr = float(p.get('apr24h', 0) or 0) * 100
-    tvl = float(p.get('tvlUSD', 0) or 0)
-    tvl_str = f"${int(tvl):,}"
-    proto = p['protocol']
-    chain_key = CHAIN_ID_TO_KEY.get(p['chainId'], '?')
-    cake_apr = 0.0
-    pool_addr = p['id'].lower()
-    is_farm = proto == 'v3' or proto in ('infinityCl', 'infinityBin')
-    if is_farm and pool_addr in yearly_cake_map and tvl > 0 and cake_price > 0:
-        cake_apr = (yearly_cake_map[pool_addr] * cake_price) / tvl * 100
-    total_apr = lp_fee_apr + cake_apr
-    lp_str = f'{lp_fee_apr:.1f}%'
-    cake_str = f'{cake_apr:.1f}%' if cake_apr > 0 else '-'
-    total_str = f'{total_apr:.1f}%'
-    link = build_link(p)
-    print(f'| {pair} | {lp_str} | {cake_str} | {total_str} | {tvl_str} | {proto} | {chain_key} | {link} |')
-PYEOF
+PCS_FARMS_SCRIPT=/absolute/path/to/references/fetch-farms.py
 ```
 
 **Step 2 — Run the query (pick ONE line based on the target chain):**
@@ -700,106 +473,14 @@ The user selects a pool in the UI, approves CAKE, and stakes. No contract addres
 When recommending Syrup Pools, ALWAYS run this script first to show the user current APR data. Never recommend Syrup Pools without live APR.
 :::
 
-**Step 1 — Create the script (run once):**
+**Step 1 — Locate script:**
 
 The script fetches active Syrup Pools from the PancakeSwap config API, reads total staked amounts on-chain, fetches token prices from CoinGecko/DexScreener, and calculates APR.
 
+Use the Glob tool to find `references/fetch-syrup-pools.py` (in the same directory as this skill file) and note its absolute path. Then set:
+
 ```bash
-PCS_SYRUP_SCRIPT=$(mktemp /tmp/pcs_syrup_XXXXXX)
-cat > "$PCS_SYRUP_SCRIPT" << 'PYEOF'
-import json, sys, os, time
-try:
-    import requests
-except ImportError:
-    os.system('pip install requests -q')
-    import requests
-RPC_URL = 'https://bsc-rpc.publicnode.com'
-SECONDS_PER_YEAR = 31_536_000
-BSC_BLOCKS_PER_YEAR = 10_512_000
-def get_cake_price():
-    try:
-        r = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_currencies=usd', timeout=10)
-        return r.json()['pancakeswap-token']['usd']
-    except Exception:
-        return 0
-def get_token_price(address):
-    try:
-        r = requests.get(f'https://api.dexscreener.com/latest/dex/tokens/{address}', timeout=10)
-        pairs = r.json().get('pairs', [])
-        if pairs:
-            return float(pairs[0].get('priceUsd', 0))
-    except Exception:
-        pass
-    return 0
-def eth_call_batch(calls):
-    batch = []
-    for i, (to, data) in enumerate(calls):
-        batch.append({"jsonrpc": "2.0", "id": i, "method": "eth_call", "params": [{"to": to, "data": data}, "latest"]})
-    try:
-        r = requests.post(RPC_URL, json=batch, timeout=15)
-        results = r.json()
-        if isinstance(results, list):
-            results.sort(key=lambda x: x.get('id', 0))
-            return [x.get('result', '0x0') for x in results]
-    except Exception:
-        pass
-    return ['0x0'] * len(calls)
-def pad_address(addr):
-    return addr.lower().replace('0x', '').zfill(64)
-BALANCE_OF = '0x70a08231'
-pools_data = requests.get('https://configs.pancakeswap.com/api/data/cached/syrup-pools?chainId=56&isFinished=false', timeout=10).json()
-pools = [p for p in pools_data if p['sousId'] != 0]
-if not pools:
-    print('No active Syrup Pools found.')
-    sys.exit(0)
-cake_price = get_cake_price()
-cake_addr = '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
-token_prices = {cake_addr: cake_price}
-all_addrs = set()
-for p in pools:
-    all_addrs.add(p['stakingToken']['address'].lower())
-    all_addrs.add(p['earningToken']['address'].lower())
-for addr in all_addrs:
-    if addr == cake_addr:
-        continue
-    token_prices[addr] = get_token_price(addr)
-    time.sleep(0.3)
-calls = []
-for p in pools:
-    calls.append((p['stakingToken']['address'], BALANCE_OF + pad_address(p['contractAddress'])))
-staked_results = eth_call_batch(calls)
-print('| Pool | Stake | Earn | APR | TVL | Deep Link |')
-print('|------|-------|------|-----|-----|-----------|')
-rows = []
-for i, p in enumerate(pools):
-    stk_sym = p['stakingToken']['symbol']
-    earn_sym = p['earningToken']['symbol']
-    stk_addr = p['stakingToken']['address'].lower()
-    earn_addr = p['earningToken']['address'].lower()
-    stk_dec = p['stakingToken']['decimals']
-    raw = staked_results[i] if staked_results[i] and staked_results[i] != '0x' else '0x0'
-    total_staked = int(raw, 16) / (10 ** stk_dec)
-    stk_price = token_prices.get(stk_addr, 0)
-    earn_price = token_prices.get(earn_addr, 0)
-    tps = p.get('tokenPerSecond')
-    tpb = p.get('tokenPerBlock')
-    if tps:
-        yearly_tokens = float(tps) * SECONDS_PER_YEAR
-    elif tpb:
-        yearly_tokens = float(tpb) * BSC_BLOCKS_PER_YEAR
-    else:
-        yearly_tokens = 0
-    staked_value = stk_price * total_staked
-    yearly_reward_usd = earn_price * yearly_tokens
-    apr = (yearly_reward_usd / staked_value * 100) if staked_value > 0 else 0
-    tvl_str = f'${int(staked_value):,}'
-    apr_str = f'{apr:.1f}%'
-    link = 'https://pancakeswap.finance/pools?chain=bsc'
-    rows.append((apr, f'| {stk_sym} → {earn_sym} | {stk_sym} | {earn_sym} | {apr_str} | {tvl_str} | {link} |'))
-rows.sort(key=lambda x: x[0], reverse=True)
-for _, row in rows:
-    print(row)
-PYEOF
+PCS_SYRUP_SCRIPT=/absolute/path/to/references/fetch-syrup-pools.py
 ```
 
 **Step 2 — Run the script:**

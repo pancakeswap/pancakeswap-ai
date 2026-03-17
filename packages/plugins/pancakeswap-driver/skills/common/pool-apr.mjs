@@ -1,8 +1,5 @@
-
-
-
-const INCENTRA_API = 'https://incentra-prd.brevis.network/sdk/v1';
-const INCENTRA_CAMPAIGN_TYPES = [3,4,8];
+const INCENTRA_API = 'https://incentra-prd.brevis.network/sdk/v1'
+const INCENTRA_CAMPAIGN_TYPES = [3, 4, 8]
 
 // Networks supported by PCS + Merkl
 const merklChainIds = [
@@ -13,10 +10,9 @@ const merklChainIds = [
   324, // Zksync Era
   59144, // Linea Mainnet
   143, // Monad Mainnet
-];
+]
 
-async function getIncentraApr()  {
-
+async function getIncentraApr() {
   const resp = await fetch(`${INCENTRA_API}/liquidityCampaigns`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -26,25 +22,23 @@ async function getIncentraApr()  {
     }),
   })
 
-  const data = await resp.json();
+  const data = await resp.json()
 
   if (data.err) {
-     throw new Error(`Incentra API error: ${json.err}`);
+    throw new Error(`Incentra API error: ${json.err}`)
   }
 
-
-  return data.campaigns.map(c => ({
+  return data.campaigns.map((c) => ({
     chainId: c.chainId,
     campaignId: c.campaignId,
     poolId: c.pools.poolId,
     poolName: c.pools.poolName,
     apr: c.rewardInfo.apr * 100, // convert to percentage
-    status: c.status
+    status: c.status,
   }))
 }
 
 async function getMerklApr() {
-
   const resp = await fetch(
     `https://api.merkl.xyz/v4/opportunities/?chainId=${merklChainIds.join(
       ',',
@@ -57,17 +51,17 @@ async function getMerklApr() {
       opportunity?.tokens?.[0]?.symbol?.toLowerCase().startsWith('cake-lp') ||
       opportunity?.protocol?.id?.toLowerCase().startsWith('pancake-swap') ||
       opportunity?.protocol?.id?.toLowerCase().startsWith('pancakeswap'),
-  );
+  )
 
-  return pancakeResult.map(c => ({
+  return pancakeResult.map((c) => ({
     chainId: c.chainId,
     campaignId: c.identifier,
     poolId: c.identifier,
     poolName: c.name,
     apr: c.apr / 100, // convert to percentage
-    status: c.status
+    status: c.status,
   }))
 }
 
-const [merklApr, incentraApr] = await Promise.all([getMerklApr(), getIncentraApr()]);
-console.log({ merklApr, incentraApr });
+const [merklApr, incentraApr] = await Promise.all([getMerklApr(), getIncentraApr()])
+console.log({ merklApr, incentraApr })

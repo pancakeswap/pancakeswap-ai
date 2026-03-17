@@ -20,5 +20,10 @@
     "cake"
   ],
   "license": "MIT",
-  "skills": ["./skills/swap-planner", "./skills/liquidity-planner", "./skills/collect-fees", "./skills/swap-integration"]
+  "skills": [
+    "./skills/swap-planner",
+    "./skills/liquidity-planner",
+    "./skills/collect-fees",
+    "./skills/swap-integration"
+  ]
 }

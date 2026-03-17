@@ -15,36 +15,36 @@ Integrate PancakeSwap swaps into frontends, backends, and smart contracts.
 
 ## Quick Decision Guide
 
-| Building...                       | Use This Method                           |
-| --------------------------------- | ----------------------------------------- |
-| Quick quote or prototype          | PancakeSwap Routing API (Method 1)        |
-| Frontend with React/Next.js       | Smart Router SDK + Universal Router (Method 2) |
-| Backend script or trading bot     | Smart Router SDK + Universal Router (Method 2) |
-| Simple V2 swap, smart contract    | Direct V2 Router contract calls (Method 3) |
-| Need exact Universal Router encoding | Universal Router SDK directly (Method 2) |
+| Building...                          | Use This Method                                |
+| ------------------------------------ | ---------------------------------------------- |
+| Quick quote or prototype             | PancakeSwap Routing API (Method 1)             |
+| Frontend with React/Next.js          | Smart Router SDK + Universal Router (Method 2) |
+| Backend script or trading bot        | Smart Router SDK + Universal Router (Method 2) |
+| Simple V2 swap, smart contract       | Direct V2 Router contract calls (Method 3)     |
+| Need exact Universal Router encoding | Universal Router SDK directly (Method 2)       |
 
 ### Protocol Types
 
-| Protocol   | Description                                    | Fee Tiers (bps)          | Chains        |
-| ---------- | ---------------------------------------------- | ------------------------ | ------------- |
-| V2         | Classic AMM (xy=k), constant product formula   | 25 (0.25%)               | BSC only      |
+| Protocol   | Description                                    | Fee Tiers (bps)         | Chains        |
+| ---------- | ---------------------------------------------- | ----------------------- | ------------- |
+| V2         | Classic AMM (xy=k), constant product formula   | 25 (0.25%)              | BSC only      |
 | V3         | Concentrated liquidity (Uniswap V3-compatible) | 1, 5, 25, 100 (0.01–1%) | All chains    |
-| StableSwap | Low-slippage for correlated/pegged assets      | 1, 4 (0.01–0.04%)        | BSC only      |
-| Mixed      | Split route across V2 + V3 + StableSwap        | N/A (composite)          | BSC primarily |
+| StableSwap | Low-slippage for correlated/pegged assets      | 1, 4 (0.01–0.04%)       | BSC only      |
+| Mixed      | Split route across V2 + V3 + StableSwap        | N/A (composite)         | BSC primarily |
 
 ## Supported Chains
 
-| Chain                    | Chain ID | V2 | V3 | StableSwap | RPC                                              |
-| ------------------------ | -------- | -- | -- | ---------- | ------------------------------------------------ |
-| BNB Smart Chain          | 56       | ✅ | ✅ | ✅         | `https://bsc-dataseed1.binance.org`              |
-| BNB Smart Chain Testnet  | 97       | ✅ | ❌ | ❌         | `https://bsc-testnet-rpc.publicnode.com or https://bsc-testnet.drpc.org` |
-| Ethereum                 | 1        | ❌ | ✅ | ❌         | `https://cloudflare-eth.com`                     |
-| Arbitrum One             | 42161    | ❌ | ✅ | ❌         | `https://arb1.arbitrum.io/rpc`                   |
-| Base                     | 8453     | ❌ | ✅ | ❌         | `https://mainnet.base.org`                       |
-| Polygon                  | 137      | ❌ | ✅ | ❌         | `https://polygon-rpc.com`                        |
-| zkSync Era               | 324      | ❌ | ✅ | ❌         | `https://mainnet.era.zksync.io`                  |
-| Linea                    | 59144    | ❌ | ✅ | ❌         | `https://rpc.linea.build`                        |
-| opBNB                    | 204      | ❌ | ✅ | ❌         | `https://opbnb-mainnet-rpc.bnbchain.org`         |
+| Chain                   | Chain ID | V2  | V3  | StableSwap | RPC                                                                      |
+| ----------------------- | -------- | --- | --- | ---------- | ------------------------------------------------------------------------ |
+| BNB Smart Chain         | 56       | ✅  | ✅  | ✅         | `https://bsc-dataseed1.binance.org`                                      |
+| BNB Smart Chain Testnet | 97       | ✅  | ❌  | ❌         | `https://bsc-testnet-rpc.publicnode.com or https://bsc-testnet.drpc.org` |
+| Ethereum                | 1        | ❌  | ✅  | ❌         | `https://cloudflare-eth.com`                                             |
+| Arbitrum One            | 42161    | ❌  | ✅  | ❌         | `https://arb1.arbitrum.io/rpc`                                           |
+| Base                    | 8453     | ❌  | ✅  | ❌         | `https://mainnet.base.org`                                               |
+| Polygon                 | 137      | ❌  | ✅  | ❌         | `https://polygon-rpc.com`                                                |
+| zkSync Era              | 324      | ❌  | ✅  | ❌         | `https://mainnet.era.zksync.io`                                          |
+| Linea                   | 59144    | ❌  | ✅  | ❌         | `https://rpc.linea.build`                                                |
+| opBNB                   | 204      | ❌  | ✅  | ❌         | `https://opbnb-mainnet-rpc.bnbchain.org`                                 |
 
 > **For testing**: Use **BSC Testnet (chain ID 97)**. Get free testnet BNB from https://testnet.bnbchain.org/faucet-smart.
 > The Smart Router SDK does not index testnet pools — use **Method 3 (Direct V2 Router)** on testnet.
@@ -65,12 +65,12 @@ Integrate PancakeSwap swaps into frontends, backends, and smart contracts.
 
 ### BSC Testnet (Chain ID: 97)
 
-| Token    | Address                                      | Notes                |
-| -------- | -------------------------------------------- | -------------------- |
-| WBNB     | `0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd` |                      |
-| CAKE     | `0xFa60D973f7642b748046464E165A65B7323b0C73` |                      |
-| BUSD     | `0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee` |                      |
-| V2Router | `0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3` | PancakeSwap testnet  |
+| Token    | Address                                      | Notes               |
+| -------- | -------------------------------------------- | ------------------- |
+| WBNB     | `0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd` |                     |
+| CAKE     | `0xFa60D973f7642b748046464E165A65B7323b0C73` |                     |
+| BUSD     | `0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee` |                     |
+| V2Router | `0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3` | PancakeSwap testnet |
 
 ### Universal Router Addresses
 
@@ -114,16 +114,16 @@ tokenInAddress=BNB\
 
 ### API Parameters
 
-| Parameter        | Type   | Description                                    |
-| ---------------- | ------ | ---------------------------------------------- |
-| `tokenInAddress` | string | Input token address or `"BNB"` / `"ETH"` for native |
-| `tokenInChainId` | number | Input chain ID                                 |
-| `tokenOutAddress`| string | Output token address                           |
-| `tokenOutChainId`| number | Output chain ID                                |
-| `amount`         | string | Amount in raw units (wei for 18-decimal tokens)|
-| `type`           | string | `"exactIn"` or `"exactOut"`                   |
-| `maxHops`        | number | Max hops per route (default: 3)               |
-| `maxSplits`      | number | Max route splits (default: 4)                 |
+| Parameter         | Type   | Description                                         |
+| ----------------- | ------ | --------------------------------------------------- |
+| `tokenInAddress`  | string | Input token address or `"BNB"` / `"ETH"` for native |
+| `tokenInChainId`  | number | Input chain ID                                      |
+| `tokenOutAddress` | string | Output token address                                |
+| `tokenOutChainId` | number | Output chain ID                                     |
+| `amount`          | string | Amount in raw units (wei for 18-decimal tokens)     |
+| `type`            | string | `"exactIn"` or `"exactOut"`                         |
+| `maxHops`         | number | Max hops per route (default: 3)                     |
+| `maxSplits`       | number | Max route splits (default: 4)                       |
 
 ### TypeScript Fetch Example
 
@@ -189,13 +189,13 @@ npm install @pancakeswap/smart-router @pancakeswap/sdk @pancakeswap/v3-sdk @panc
 
 ### Package Roles
 
-| Package                          | Role                                              |
-| -------------------------------- | ------------------------------------------------- |
-| `@pancakeswap/smart-router`      | Pool fetching + best route finding                |
-| `@pancakeswap/sdk`               | Core types: Token, CurrencyAmount, Percent, etc.  |
-| `@pancakeswap/v3-sdk`            | V3-specific types: FeeAmount, pool encoding       |
+| Package                             | Role                                              |
+| ----------------------------------- | ------------------------------------------------- |
+| `@pancakeswap/smart-router`         | Pool fetching + best route finding                |
+| `@pancakeswap/sdk`                  | Core types: Token, CurrencyAmount, Percent, etc.  |
+| `@pancakeswap/v3-sdk`               | V3-specific types: FeeAmount, pool encoding       |
 | `@pancakeswap/universal-router-sdk` | Encode calldata for the Universal Router contract |
-| `viem`                           | Ethereum client (reads, writes, signing)          |
+| `viem`                              | Ethereum client (reads, writes, signing)          |
 
 ### Step 1: Set Up Viem Clients
 
@@ -286,21 +286,16 @@ const pools = [...v2Pools, ...v3Pools, ...stablePools]
 ### Step 4: Find Best Trade
 
 ```typescript
-const trade = await SmartRouter.getBestTrade(
-  amountIn,
-  CAKE,
-  TradeType.EXACT_INPUT,
-  {
-    gasPriceWei: () => publicClient.getGasPrice(),
-    maxHops: 3,
-    maxSplits: 4,
-    poolProvider: SmartRouter.createStaticPoolProvider(pools),
-    quoteProvider: SmartRouter.createQuoteProvider({
-      onChainProvider: () => publicClient,
-    }),
-    allowedPoolTypes: [PoolType.V2, PoolType.V3, PoolType.STABLE],
-  },
-)
+const trade = await SmartRouter.getBestTrade(amountIn, CAKE, TradeType.EXACT_INPUT, {
+  gasPriceWei: () => publicClient.getGasPrice(),
+  maxHops: 3,
+  maxSplits: 4,
+  poolProvider: SmartRouter.createStaticPoolProvider(pools),
+  quoteProvider: SmartRouter.createQuoteProvider({
+    onChainProvider: () => publicClient,
+  }),
+  allowedPoolTypes: [PoolType.V2, PoolType.V3, PoolType.STABLE],
+})
 
 // Always check price impact before proceeding
 if (parseFloat(trade.priceImpact.toSignificant(4)) > 2) {
@@ -308,7 +303,7 @@ if (parseFloat(trade.priceImpact.toSignificant(4)) > 2) {
 }
 
 console.log('Output:', trade.outputAmount.toSignificant(6), CAKE.symbol)
-console.log('Route:', trade.routes.map(r => r.type).join(' + '))
+console.log('Route:', trade.routes.map((r) => r.type).join(' + '))
 ```
 
 ### Step 5: Approve Tokens
@@ -376,8 +371,8 @@ async function ensureTokenApproved(
 import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS } from '@pancakeswap/universal-router-sdk'
 import { Percent } from '@pancakeswap/sdk'
 
-const slippage = new Percent(50, 10000)  // 0.5%
-const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20)  // 20 min
+const slippage = new Percent(50, 10000) // 0.5%
+const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20) // 20 min
 
 // Encode the swap calldata
 const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
@@ -390,8 +385,8 @@ const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
 const hash = await walletClient.sendTransaction({
   to: UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`,
   data: calldata as `0x${string}`,
-  value: BigInt(value),   // Non-zero only when input is native BNB/ETH
-  gas: 400000n,           // Overestimate — unspent gas is refunded
+  value: BigInt(value), // Non-zero only when input is native BNB/ETH
+  gas: 400000n, // Overestimate — unspent gas is refunded
 })
 
 const receipt = await publicClient.waitForTransactionReceipt({ hash })
@@ -413,7 +408,7 @@ const amountOut = CurrencyAmount.fromRawAmount(
 
 const trade = await SmartRouter.getBestTrade(
   amountOut,
-  BNB,              // currencyIn — note: swapped argument order for EXACT_OUTPUT
+  BNB, // currencyIn — note: swapped argument order for EXACT_OUTPUT
   TradeType.EXACT_OUTPUT,
   {
     gasPriceWei: () => publicClient.getGasPrice(),
@@ -524,7 +519,7 @@ const CAKE = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82' as const
 ```typescript
 import { parseEther } from 'viem'
 
-const slippageBps = 50n  // 0.5%
+const slippageBps = 50n // 0.5%
 const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20)
 
 // 1. Get quote
@@ -565,12 +560,12 @@ const amounts = await publicClient.readContract({
 
 ## Token Approval Reference
 
-| Scenario                            | What to Approve          | Where             |
-| ----------------------------------- | ------------------------ | ----------------- |
-| Smart Router / Universal Router     | Token → Permit2          | One-time per token |
-| Smart Router / Universal Router     | Permit2 → Universal Router | Per session (or use sig) |
-| Direct V2 Router                    | Token → V2 Router        | One-time per token |
-| Native BNB/ETH input                | No approval needed       | —                 |
+| Scenario                        | What to Approve            | Where                    |
+| ------------------------------- | -------------------------- | ------------------------ |
+| Smart Router / Universal Router | Token → Permit2            | One-time per token       |
+| Smart Router / Universal Router | Permit2 → Universal Router | Per session (or use sig) |
+| Direct V2 Router                | Token → V2 Router          | One-time per token       |
+| Native BNB/ETH input            | No approval needed         | —                        |
 
 ---
 
@@ -579,10 +574,10 @@ const amounts = await publicClient.readContract({
 ```typescript
 import { FeeAmount } from '@pancakeswap/v3-sdk'
 
-FeeAmount.LOWEST  // 100   bps = 0.01%  — stablecoin pairs (USDT/USDC)
-FeeAmount.LOW     // 500   bps = 0.05%  — stable-ish pairs
-FeeAmount.MEDIUM  // 2500  bps = 0.25%  — most standard pairs (default)
-FeeAmount.HIGH    // 10000 bps = 1%     — exotic or highly volatile pairs
+FeeAmount.LOWEST // 100   bps = 0.01%  — stablecoin pairs (USDT/USDC)
+FeeAmount.LOW // 500   bps = 0.05%  — stable-ish pairs
+FeeAmount.MEDIUM // 2500  bps = 0.25%  — most standard pairs (default)
+FeeAmount.HIGH // 10000 bps = 1%     — exotic or highly volatile pairs
 ```
 
 ---
@@ -593,7 +588,7 @@ FeeAmount.HIGH    // 10000 bps = 1%     — exotic or highly volatile pairs
 
 | Token Type                          | Recommended Slippage |
 | ----------------------------------- | -------------------- |
-| Stablecoins (USDT/USDC/BUSD pairs) | 0.01–0.1%            |
+| Stablecoins (USDT/USDC/BUSD pairs)  | 0.01–0.1%            |
 | Large caps (CAKE, BNB, ETH)         | 0.3–0.5%             |
 | Mid/small caps                      | 0.5–2%               |
 | Fee-on-transfer / reflection tokens | 5–12%                |
@@ -621,13 +616,13 @@ FeeAmount.HIGH    // 10000 bps = 1%     — exotic or highly volatile pairs
 
 ### Gas Estimates
 
-| Swap Type                | Approx. Gas      |
-| ------------------------ | ---------------- |
-| V2 single-hop            | ~150,000         |
-| V3 single-hop            | ~180,000         |
-| V2+V3 two-hop            | ~300,000         |
-| Mixed 3-hop              | ~400,000–600,000 |
-| With Permit2 signature   | +~40,000         |
+| Swap Type              | Approx. Gas      |
+| ---------------------- | ---------------- |
+| V2 single-hop          | ~150,000         |
+| V3 single-hop          | ~180,000         |
+| V2+V3 two-hop          | ~300,000         |
+| Mixed 3-hop            | ~400,000–600,000 |
+| With Permit2 signature | +~40,000         |
 
 Always use `publicClient.estimateGas()` in production; hard-coded values can under-estimate on complex routes.
 
@@ -637,14 +632,14 @@ Always use `publicClient.estimateGas()` in production; hard-coded values can und
 
 ### Common Revert Reasons
 
-| Error String                    | Cause                                      | Fix                                        |
-| ------------------------------- | ------------------------------------------ | ------------------------------------------ |
-| `INSUFFICIENT_OUTPUT_AMOUNT`    | Slippage exceeded (price moved)            | Increase `slippageTolerance` or re-quote   |
-| `EXCESSIVE_INPUT_AMOUNT`        | Slippage exceeded for exact-output swap    | Increase `slippageTolerance` or re-quote   |
-| `EXPIRED`                       | `deadline` timestamp is in the past        | Re-fetch quote with a fresh deadline       |
-| `TRANSFER_FAILED`               | Fee-on-transfer token, incorrect method    | Use `SupportingFeeOnTransferTokens` variant |
-| `STF` (SafeTransferFrom failed) | Token not approved to router or Permit2    | Run `ensureTokenApproved()` first          |
-| `TransactionExecutionError`     | General on-chain failure                   | Decode with `publicClient.call()` below    |
+| Error String                    | Cause                                   | Fix                                         |
+| ------------------------------- | --------------------------------------- | ------------------------------------------- |
+| `INSUFFICIENT_OUTPUT_AMOUNT`    | Slippage exceeded (price moved)         | Increase `slippageTolerance` or re-quote    |
+| `EXCESSIVE_INPUT_AMOUNT`        | Slippage exceeded for exact-output swap | Increase `slippageTolerance` or re-quote    |
+| `EXPIRED`                       | `deadline` timestamp is in the past     | Re-fetch quote with a fresh deadline        |
+| `TRANSFER_FAILED`               | Fee-on-transfer token, incorrect method | Use `SupportingFeeOnTransferTokens` variant |
+| `STF` (SafeTransferFrom failed) | Token not approved to router or Permit2 | Run `ensureTokenApproved()` first           |
+| `TransactionExecutionError`     | General on-chain failure                | Decode with `publicClient.call()` below     |
 
 ### Debugging a Revert
 
@@ -759,33 +754,39 @@ async function swapBNBforCAKE(bnbAmountWei: bigint) {
 
   // 1. Fetch candidate pools (V2 + V3; stable not relevant for BNB/CAKE)
   const [v2Pools, v3Pools] = await Promise.all([
-    SmartRouter.getV2CandidatePools({ onChainProvider: () => publicClient, currencyA: BNB, currencyB: CAKE }),
-    SmartRouter.getV3CandidatePools({ onChainProvider: () => publicClient, subgraphProvider: undefined, currencyA: BNB, currencyB: CAKE }),
+    SmartRouter.getV2CandidatePools({
+      onChainProvider: () => publicClient,
+      currencyA: BNB,
+      currencyB: CAKE,
+    }),
+    SmartRouter.getV3CandidatePools({
+      onChainProvider: () => publicClient,
+      subgraphProvider: undefined,
+      currencyA: BNB,
+      currencyB: CAKE,
+    }),
   ])
 
   // 2. Find best route
-  const trade = await SmartRouter.getBestTrade(
-    amountIn,
-    CAKE,
-    TradeType.EXACT_INPUT,
-    {
-      gasPriceWei: () => publicClient.getGasPrice(),
-      maxHops: 3,
-      maxSplits: 4,
-      poolProvider: SmartRouter.createStaticPoolProvider([...v2Pools, ...v3Pools]),
-      quoteProvider: SmartRouter.createQuoteProvider({ onChainProvider: () => publicClient }),
-      allowedPoolTypes: [PoolType.V2, PoolType.V3],
-    },
-  )
+  const trade = await SmartRouter.getBestTrade(amountIn, CAKE, TradeType.EXACT_INPUT, {
+    gasPriceWei: () => publicClient.getGasPrice(),
+    maxHops: 3,
+    maxSplits: 4,
+    poolProvider: SmartRouter.createStaticPoolProvider([...v2Pools, ...v3Pools]),
+    quoteProvider: SmartRouter.createQuoteProvider({ onChainProvider: () => publicClient }),
+    allowedPoolTypes: [PoolType.V2, PoolType.V3],
+  })
 
   const impact = parseFloat(trade.priceImpact.toSignificant(4))
   if (impact > 2) console.warn(`⚠️  High price impact: ${impact}%`)
 
-  console.log(`Swapping ${amountIn.toSignificant(4)} BNB → ~${trade.outputAmount.toSignificant(4)} CAKE`)
+  console.log(
+    `Swapping ${amountIn.toSignificant(4)} BNB → ~${trade.outputAmount.toSignificant(4)} CAKE`,
+  )
 
   // 3. Encode calldata
   const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
-    slippageTolerance: new Percent(50, 10000),  // 0.5%
+    slippageTolerance: new Percent(50, 10000), // 0.5%
     recipient: account.address,
     deadlineOrPreviousBlockhash: BigInt(Math.floor(Date.now() / 1000) + 1200),
   })
@@ -805,5 +806,5 @@ async function swapBNBforCAKE(bnbAmountWei: bigint) {
   return receipt
 }
 
-await swapBNBforCAKE(BigInt('100000000000000000'))  // 0.1 BNB
+await swapBNBforCAKE(BigInt('100000000000000000')) // 0.1 BNB
 ```

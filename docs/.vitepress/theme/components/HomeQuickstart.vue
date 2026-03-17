@@ -9,6 +9,16 @@ const gameLoadTracked = ref(false)
 const viewportTracked = ref(false)
 
 onMounted(() => {
+  if (typeof IntersectionObserver === 'undefined') {
+    if (!viewportTracked.value) {
+      viewportTracked.value = true
+      trackEvent('pancake_town_in_viewport', {
+        game_name: 'Pancake Kitchen',
+      })
+    }
+    return
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       if (entries[0].isIntersecting && !viewportTracked.value) {

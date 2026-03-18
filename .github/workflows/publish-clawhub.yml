@@ -1,4 +1,4 @@
-name: Publish to ClaWHub
+name: Publish to ClawHub
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   publish:
-    name: Publish skills to ClaWHub
+    name: Publish skills to ClawHub
     runs-on: ubuntu-latest
 
     steps:

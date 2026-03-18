@@ -12,7 +12,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.3.1'
+  version: '1.3.3'
 ---
 
 # PancakeSwap Harvest Rewards
@@ -57,7 +57,7 @@ Route to the correct step based on what the user wants:
 | BNB Smart Chain | `bsc`    | 56       | No       | Yes      | Yes            | Yes         |
 | Ethereum        | `eth`    | 1        | No       | Yes      | No             | No          |
 | Arbitrum One    | `arb`    | 42161    | No       | Yes      | No             | No          |
-| Base            | `base`   | 8453     | No       | Yes      | No             | No          |
+| Base            | `base`   | 8453     | No       | Yes      | Yes            | No          |
 | zkSync Era      | `zksync` | 324      | No       | Yes      | No             | No          |
 | zkEVM           | `zkevm`  | 1101     | No       | Yes      | No             | No          |
 | Linea           | `linea`  | 59144    | No       | Yes      | No             | No          |
@@ -172,23 +172,24 @@ YOUR_ADDRESS='0xYourWalletAddress' CHAIN='bsc' python3 "$PCS_V3_HARVEST_SCRIPT"
 
 Infinity farms distribute CAKE every **8 hours** (epochs at 00:00, 08:00, 16:00 UTC).
 
-```bash
-[[ "$YOUR_ADDRESS" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid address"; exit 1; }
+::: danger MANDATORY — Do NOT write your own Python script
+Using `python3 -c "..."` causes SyntaxError (bash mangles `!` and `$`).
+Using `curl | python3 << 'EOF'` causes JSONDecodeError (heredoc steals stdin).
+You MUST follow the exact two-step process below. Do NOT improvise.
+:::
 
-CURRENT_TS=$(date +%s)
-curl -s "https://infinity.pancakeswap.com/farms/users/56/${YOUR_ADDRESS}/${CURRENT_TS}" | \
-  python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-claims = data.get('claimable', [])
-if not claims:
-    print('No claimable Infinity rewards found.')
-else:
-    print('| Reward Token | Amount (wei) | Merkle Proof Available |')
-    print('|-------------|--------------|------------------------|')
-    for c in claims:
-        print(f'| {c.get(\"rewardToken\",\"?\")} | {c.get(\"amount\",0)} | Yes |')
-"
+**Step 1 — Locate script:**
+
+Use the Glob tool to find `references/fetch-infinity-pending.py` (in the same directory as this skill file) and note its absolute path. Then set:
+
+```bash
+PCS_INFINITY_HARVEST_SCRIPT=/absolute/path/to/references/fetch-infinity-pending.py
+```
+
+**Step 2 — Run the script:**
+
+```bash
+YOUR_ADDRESS='0xYourWalletAddress' CHAIN='bsc' python3 "$PCS_INFINITY_HARVEST_SCRIPT"
 ```
 
 ### 1d. Syrup Pool — Check Pending Rewards

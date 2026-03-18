@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.1'
+  version: '1.4.2'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -278,10 +278,10 @@ PCS_FARMS_SCRIPT=/absolute/path/to/references/fetch-farms.py
 
 Two API endpoints are available:
 
-- **`/list`** (default, recommended) — returns ALL pools (farm + non-farm LPs), sorted by volume. Best for "top APR" queries since it covers the full pool universe.
+- **`/list`** (default, recommended) — returns ALL pools (farm + non-farm LPs). Best for "top APR" queries since it covers the full pool universe.
 - **`/farming`** — returns only pools registered in active farms. Use when the user specifically asks about farmed pools.
 
-Both endpoints support: `protocols` (v2, v3, stable, infinityBin, infinityCl, infinityStable) and `chains` (bsc, ethereum, base, arbitrum, zksync, opbnb, linea, monad).
+Both endpoints support: `protocols` (v2, v3, stable, infinityBin, infinityCl, infinityStable) and `chains` (bsc, ethereum, base, arbitrum, zksync, opbnb, linea, monad). `/list` also supports `orderBy` (`tvlUSD` (default), `volumeUSD24h`, `apr24h`).
 
 The script calculates CAKE Yield APR on-chain for V3 farms and via the Infinity campaigns API for infinityCl/infinityBin pools. For other pools, only LP Fee APR is shown (CAKE column shows `-`).
 

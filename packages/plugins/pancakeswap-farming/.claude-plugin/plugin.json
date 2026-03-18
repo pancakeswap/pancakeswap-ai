@@ -1,6 +1,6 @@
 {
   "name": "pancakeswap-farming",
-  "version": "1.3.0",
+  "version": "1.6.1",
   "description": "AI-powered assistance for discovering PancakeSwap farms, staking CAKE, and managing yield farming positions with deep links to the PancakeSwap interface",
   "author": {
     "name": "PancakeSwap",
@@ -19,5 +19,5 @@
     "defi"
   ],
   "license": "MIT",
-  "skills": ["./skills/farming-planner"]
+  "skills": ["./skills/farming-planner", "./skills/harvest-rewards"]
 }

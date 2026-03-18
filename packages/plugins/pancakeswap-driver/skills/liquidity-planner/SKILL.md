@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.5'
+  version: '1.10.6'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -160,6 +160,13 @@ curl -s -G "https://api.dexscreener.com/latest/dex/search" --data-urlencode "q=$
 | Solana   | SOL    | `SOL`     |
 | Others   | ETH    | `ETH`     |
 
+> **BNB on BSC/opBNB only:** When the user specifies BNB, pools may exist with either native BNB
+> (`0x0000000000000000000000000000000000000000`) **or** WBNB
+> (`0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC,
+> `0x4200000000000000000000000000000000000006` on opBNB) as the pair token.
+> Always query for **both** during pool discovery and merge results.
+> In deep links, always use the native URL value `BNB`, never the WBNB address.
+
 ### E. Common Solana Token Addresses
 
 | Token | Mint Address                                   | Decimals |
@@ -290,6 +297,8 @@ curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/$
   }'
 ```
 
+> **BNB/TOKEN pair on BSC**: Run the pair query twice — substituting `0x0000000000000000000000000000000000000000` and `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` in place of the BNB token position — then merge `.rows[]` arrays and deduplicate by `id`.
+
 ### When zero or one token is known → use the list endpoint
 
 ```bash
@@ -319,6 +328,11 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   }'
 ```
 
+> **BNB filter on BSC**: Pass both addresses as separate `tokens` params:
+> `--data-urlencode "tokens=56:0x0000000000000000000000000000000000000000"` and
+> `--data-urlencode "tokens=56:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"`.
+> Make two requests (one per address) and merge results.
+
 ### Explorer API chain and token format
 
 | Chain      | `chains` value | Numeric Chain ID |
@@ -333,7 +347,11 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | Monad      | `monad`        | `143`            |
 | Solana     | `sol`          | `8000001001`     |
 
-**Token format**: `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC). For native tokens (BNB, ETH), omit from the tokens filter and identify pools by symbol in results.
+**Token format**: `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC).
+
+**For ETH and other native tokens**: omit from the tokens filter and identify pools by symbol in results.
+
+**For BNB on BSC/opBNB**: make **two** queries — once using the zero address (`0x0000000000000000000000000000000000000000`, native BNB) and once using the WBNB address (`0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC). Merge and deduplicate results by pool `id` before presenting to the user.
 
 **`feeTier` mapping** (returned in basis points):
 

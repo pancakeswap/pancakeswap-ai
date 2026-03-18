@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '2.2.2'
+  version: '2.2.3'
 ---
 
 # PancakeSwap Collect Fees
@@ -155,7 +155,7 @@ Read `references/fetch-v3-positions.mjs` for the complete script. Copy it into t
 WALLET="$WALLET" POSITION_MANAGER="$POSITION_MANAGER" RPC="$RPC" CHAIN_ID="$CHAIN_ID" node fetch-v3-positions.mjs
 ```
 
-Parse the JSON output: each entry contains `tokenId`, `token0`, `token1`, `fee`, `tokensOwed0`, `tokensOwed1`, `tickLower`, `tickUpper`, `liquidity`.
+Parse the JSON output: each entry contains `tokenId`, `token0`, `token1`, `fee`, `tokensOwed0`, `tokensOwed1`, `tickLower`, `tickUpper`, `liquidity`, `farming`.
 
 **Do not skip positions solely because `liquidity = 0`.** V3 NFTs can still have collectable fees even after liquidity is fully removed.
 

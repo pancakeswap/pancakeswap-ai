@@ -77,6 +77,8 @@ for token_id in token_ids:
     result = eth_call(MASTERCHEF_V3, '0xce5f39c6' + pad_uint(token_id))
     pending_wei = int(result, 16) if result else 0
     pending_cake = pending_wei / 1e18
+    if pending_cake <= 0:
+        continue
     usd = pending_cake * cake_price if cake_price else 0
     usd_str = f'${usd:.2f}' if cake_price else 'N/A'
     print(f'| {token_id} | {pending_wei} | {pending_cake:.6f} CAKE | {usd_str} |')

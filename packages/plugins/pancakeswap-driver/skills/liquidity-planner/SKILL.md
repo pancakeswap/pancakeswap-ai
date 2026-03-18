@@ -1,12 +1,12 @@
 ---
 name: liquidity-planner
-description: Plan liquidity provision on PancakeSwap. Use when user says "add liquidity on pancakeswap", "provide liquidity", "LP on pancakeswap", "farm pancakeswap", or describes wanting to deposit tokens into liquidity pools without writing code.
+description: Plan liquidity provision on PancakeSwap. Use when user says "add liquidity on pancakeswap", "provide liquidity", "LP on pancakeswap", or describes wanting to deposit tokens into liquidity pools without writing code. Also use when a user holds two tokens and asks how to earn yield, get best profit, or put tokens to work — especially on Solana or any chain where farming is unavailable.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(node:*), Bash(python3:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.1'
+  version: '1.10.2'
 ---
 
 # PancakeSwap Liquidity Planner

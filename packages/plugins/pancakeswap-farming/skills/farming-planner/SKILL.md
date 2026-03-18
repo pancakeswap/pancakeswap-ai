@@ -1,12 +1,12 @@
 ---
 name: farming-planner
-description: Plan yield farming and CAKE staking on PancakeSwap. Use when user says "farm on pancakeswap", "stake CAKE", "unstake CAKE", "stake LP", "unstake LP", "yield farming", "syrup pool", "pancakeswap farm", "earn CAKE", "farm APR", "harvest rewards", "deposit LP", "withdraw LP", or describes wanting to stake, unstake, or earn yield on PancakeSwap.
+description: Plan yield farming and CAKE staking on PancakeSwap. Use when user says "farm on pancakeswap", "stake CAKE", "unstake CAKE", "stake LP", "unstake LP", "yield farming", "syrup pool", "pancakeswap farm", "earn CAKE", "farm APR", "harvest rewards", "deposit LP", "withdraw LP", or describes wanting to stake, unstake, or earn yield on PancakeSwap. Do NOT use this skill when the user has a token pair and asks how to earn yield or best profit with those tokens (prefer liquidity-planner instead), or when the user specifies Solana chain (farming is not supported on Solana).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(python3:*), Bash(node:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.4'
+  version: '1.4.5'
 ---
 
 # PancakeSwap Farming Planner

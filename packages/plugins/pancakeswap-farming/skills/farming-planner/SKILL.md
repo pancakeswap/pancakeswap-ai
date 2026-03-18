@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.2'
+  version: '1.4.3'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -108,7 +108,6 @@ Route to the correct section based on what the user wants:
 | ------------------------------ | ------------------------------------------- |
 | Passive CAKE yield, no IL      | Syrup Pool (run APR script first)           |
 | Highest APR, willing to manage | V3 Farm with tight range                    |
-| Set-and-forget farming         | V2 Farm (full range, no rebalancing needed) |
 | Simplest farming UX (1 step)   | Infinity Farm (add liquidity = auto-staked) |
 | Earn partner tokens            | Syrup Pool (run APR script first)           |
 | Stablecoin yield, minimal risk | USDT-USDC StableSwap LP farm                |
@@ -180,9 +179,6 @@ Use these to construct deep links. Always use the wrapped native token address i
 ### URL Formulas
 
 ```
-# V2 — add liquidity
-https://pancakeswap.finance/v2/add/{token0}/{token1}?chain={chainKey}&persistChain=1
-
 # V3 — add liquidity (fee tier: 100=0.01%, 500=0.05%, 2500=0.25%, 10000=1%)
 https://pancakeswap.finance/add/{token0}/{token1}/{feeTier}?chain={chainKey}&persistChain=1
 
@@ -193,7 +189,7 @@ https://pancakeswap.finance/stable/add/{token0}/{token1}?chain={chainKey}&persis
 https://pancakeswap.finance/liquidity/add/{chainKey}/infinity/{poolId}?chain={chainKey}&persistChain=1
 ```
 
-For V2/V3, use the wrapped token address (WBNB `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC).
+For V3, use the wrapped token address (WBNB `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC).
 For V3, common fee tiers: `2500` (most pairs), `500` (major pairs), `100` (stablecoins).
 For Infinity, you need the `poolId` (bytes32 hash) from the CampaignManager contract — see "Method B" in Farm Discovery.
 
@@ -817,10 +813,10 @@ That's it! Your position starts earning CAKE rewards immediately after adding li
 
 ## Supported Chains
 
-| Chain           | Chain ID | Farms Support    | Native Token |
-| --------------- | -------- | ---------------- | ------------ |
-| BNB Smart Chain | 56       | V2, V3, Infinity | BNB          |
-| Ethereum        | 1        | V3               | ETH          |
-| Arbitrum One    | 42161    | V3               | ETH          |
-| Base            | 8453     | V3               | ETH          |
-| zkSync Era      | 324      | V3               | ETH          |
+| Chain           | Chain ID | Farms Support | Native Token |
+| --------------- | -------- | ------------- | ------------ |
+| BNB Smart Chain | 56       | V3, Infinity  | BNB          |
+| Ethereum        | 1        | V3            | ETH          |
+| Arbitrum One    | 42161    | V3            | ETH          |
+| Base            | 8453     | V3            | ETH          |
+| zkSync Era      | 324      | V3            | ETH          |

@@ -12,7 +12,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.3.0'
+  version: '1.3.1'
 ---
 
 # PancakeSwap Harvest Rewards
@@ -54,15 +54,15 @@ Route to the correct step based on what the user wants:
 
 | Chain           | Key      | Chain ID | V2 Farms | V3 Farms | Infinity Farms | Syrup Pools |
 | --------------- | -------- | -------- | -------- | -------- | -------------- | ----------- |
-| BNB Smart Chain | `bsc`    | 56       | Yes      | Yes      | Yes            | Yes         |
-| Ethereum        | `eth`    | 1        | No       | Yes      | Yes            | No          |
-| Arbitrum One    | `arb`    | 42161    | No       | Yes      | Yes            | No          |
-| Base            | `base`   | 8453     | No       | Yes      | Yes            | No          |
-| zkSync Era      | `zksync` | 324      | No       | Yes      | Yes            | No          |
+| BNB Smart Chain | `bsc`    | 56       | No       | Yes      | Yes            | Yes         |
+| Ethereum        | `eth`    | 1        | No       | Yes      | No             | No          |
+| Arbitrum One    | `arb`    | 42161    | No       | Yes      | No             | No          |
+| Base            | `base`   | 8453     | No       | Yes      | No             | No          |
+| zkSync Era      | `zksync` | 324      | No       | Yes      | No             | No          |
 | zkEVM           | `zkevm`  | 1101     | No       | Yes      | No             | No          |
 | Linea           | `linea`  | 59144    | No       | Yes      | No             | No          |
 
-**BSC is the primary chain** — V2 farms and Syrup Pools only exist on BSC.
+**BSC is the primary chain** — Syrup Pools only exist on BSC.
 
 ### RPC Endpoints
 
@@ -237,7 +237,7 @@ curl -s 'https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 | Farm/Pool             | Type        | Reward Token | Pending Amount     | USD Value | Harvest Link |
 | --------------------- | ----------- | ------------ | ------------------ | --------- | ------------ |
-| CAKE/WBNB (PID 2)     | V2 Farm     | CAKE         | 12.345678 CAKE     | $4.32     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
+| CAKE/WBNB (PID 2)     | V3 Farm     | CAKE         | 12.345678 CAKE     | $4.32     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
 | WBNB/USDT (ID 12345)  | V3 Farm     | CAKE         | 3.210000 CAKE      | $1.12     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
 | CAKE/BNB Infinity     | Infinity    | CAKE         | 1.500000 CAKE      | $0.53     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
 | CAKE → TOKEN (Pool 3) | Syrup Pool  | PARTNER      | 500.000000 TOKEN   | $2.10     | https://pancakeswap.finance/pools?chain=bsc |
@@ -253,7 +253,6 @@ The PancakeSwap UI shows "Harvest" buttons on all farm and pool cards. Direct th
 
 | Position Type  | UI Harvest Link                                         |
 | -------------- | ------------------------------------------------------- |
-| V2 Farms       | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
 | V3 Farms       | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
 | Infinity Farms | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
 | Syrup Pools    | `https://pancakeswap.finance/pools?chain=bsc`           |

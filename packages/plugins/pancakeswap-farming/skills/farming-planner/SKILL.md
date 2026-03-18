@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.3'
+  version: '1.4.4'
 ---
 
 # PancakeSwap Farming Planner
@@ -779,5 +779,5 @@ That's it! Your position starts earning CAKE rewards immediately after adding li
 | BNB Smart Chain | 56       | V3, Infinity  | BNB          |
 | Ethereum        | 1        | V3            | ETH          |
 | Arbitrum One    | 42161    | V3            | ETH          |
-| Base            | 8453     | V3            | ETH          |
+| Base            | 8453     | V3, Infinity  | ETH          |
 | zkSync Era      | 324      | V3            | ETH          |

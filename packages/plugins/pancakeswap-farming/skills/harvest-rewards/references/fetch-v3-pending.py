@@ -73,8 +73,8 @@ print()
 print('| Token ID | Pending CAKE (wei) | Pending CAKE | USD Value |')
 print('|----------|-------------------|--------------|-----------|')
 for token_id in token_ids:
-    data = '0xbbe0a5c3' + pad_uint(token_id)
-    result = eth_call(MASTERCHEF_V3, data)
+    # pendingCake
+    result = eth_call(MASTERCHEF_V3, '0xce5f39c6' + pad_uint(token_id))
     pending_wei = int(result, 16) if result else 0
     pending_cake = pending_wei / 1e18
     usd = pending_cake * cake_price if cake_price else 0

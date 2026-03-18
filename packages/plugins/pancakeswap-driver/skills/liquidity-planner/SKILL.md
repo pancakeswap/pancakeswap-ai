@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.2'
+  version: '1.10.3'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -403,7 +403,7 @@ curl -s "https://api.dexscreener.com/latest/dex/search" \
 
 ## Step 4b: Fetch Extra Reward APRs (Merkl & Incentra)
 
-After discovering pools via the Explorer API, run the extra APR script in parallel to collect any active external incentive rewards:
+**Always run this step** after discovering pools. Fetch extra incentive rewards in parallel with Step 4c:
 
 ```bash
 node packages/plugins/pancakeswap-driver/skills/common/pool-apr.mjs
@@ -435,9 +435,11 @@ Store matched Merkl and Incentra entries per pool for use in Step 5.
 
 ## Step 4c: Fetch CAKE Farm APR
 
-> **Applies to V3 and Infinity pools only.** Skip for V2 and StableSwap.
+> **Always run this step** when V3 or Infinity pools appear in results. V2 and StableSwap
+> pools have no CAKE farm rewards — pass only V3 pool addresses (40-char hex) and Infinity
+> pool IDs (64-char hex) as arguments.
 
-After Step 4 returns pool IDs, run for V3 and Infinity pools:
+After Step 4 returns pool IDs, run for any V3 and Infinity pools found:
 
 ```bash
 CHAIN_ID="56"  # numeric chain ID
@@ -494,6 +496,7 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 Rules:
 
 - Always show the "CAKE Farm APR" row for V3 and Infinity pools. Show the computed value if Step 4c returned non-zero data; show `—` if the pool has no active farm.
+  Never omit this row or skip Step 4c to save time — the farm APR is critical context for LP decisions.
 - Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool.
 - Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
 - Always show the `status` value next to each extra APR.

@@ -46,7 +46,7 @@ Integrate PancakeSwap swaps into frontends, backends, and smart contracts.
 | Linea                   | 59144    | ❌  | ✅  | ❌         | `https://rpc.linea.build`                                                |
 | opBNB                   | 204      | ❌  | ✅  | ❌         | `https://opbnb-mainnet-rpc.bnbchain.org`                                 |
 
-> **For testing**: Use **BSC Testnet (chain ID 97)**. Get free testnet BNB from https://testnet.bnbchain.org/faucet-smart.
+> **For testing**: Use **BSC Testnet (chain ID 97)**. Get free testnet BNB from <https://testnet.bnbchain.org/faucet-smart>.
 > The Smart Router SDK does not index testnet pools — use **Method 3 (Direct V2 Router)** on testnet.
 
 ## Key Token Addresses

@@ -74,6 +74,7 @@ claude plugin add @pancakeswap/pancakeswap-hub
 **Skills:**
 
 - `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.
+- `harvest-rewards` — Check pending CAKE and partner-token rewards across V2 farms, V3 farms, Infinity farms, and Syrup Pools. Generates harvest deep links.
 
 **Install:**
 

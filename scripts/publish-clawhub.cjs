@@ -17,6 +17,7 @@ const changelogIdx = args.indexOf('--changelog')
 const changelog = changelogIdx !== -1 ? args[changelogIdx + 1] : 'Published via CI'
 
 const VERSION_REGEX = /version:\s*['"]?(\d+\.\d+\.\d+)/
+const NAME_REGEX = /^name:\s*(.+)$/m
 
 function parseVersion(skillMdPath) {
   const content = fs.readFileSync(skillMdPath, 'utf8')
@@ -25,6 +26,16 @@ function parseVersion(skillMdPath) {
     throw new Error(`No version found in frontmatter: ${skillMdPath}`)
   }
   return match[1]
+}
+
+function parseName(skillMdPath) {
+  const content = fs.readFileSync(skillMdPath, 'utf8')
+  const match = content.match(NAME_REGEX)
+  if (!match) {
+    throw new Error(`No name found in frontmatter: ${skillMdPath}`)
+  }
+  // "pancakeswap/swap-planner" → "pancakeswap-swap-planner"
+  return match[1].trim().replace(/\//g, '-')
 }
 
 function findSkills(pluginsDir) {
@@ -56,25 +67,26 @@ console.log(`Found ${skills.length} skill(s) to publish${dryRun ? ' (dry run)' :
 let hasErrors = false
 
 for (const { pluginName, skillName, skillDir, skillMd } of skills) {
-  let version
+  let version, slug
   try {
     version = parseVersion(skillMd)
+    slug = parseName(skillMd)
   } catch (e) {
     console.error(`  ❌ ${pluginName}/${skillName}: ${e.message}`)
     hasErrors = true
     continue
   }
 
-  console.log(`  Publishing ${pluginName}/${skillName} v${version}...`)
+  console.log(`  Publishing ${pluginName}/${skillName} v${version} (slug: ${slug})...`)
 
   if (dryRun) {
-    console.log(`    [dry-run] clawhub publish "${skillDir}" --version ${version} --changelog "${changelog}" --tags latest`)
+    console.log(`    [dry-run] clawhub publish "${skillDir}" --slug ${slug} --version ${version} --changelog "${changelog}" --tags latest`)
     continue
   }
 
   try {
     execSync(
-      `clawhub publish "${skillDir}" --version ${version} --changelog "${changelog}" --tags latest`,
+      `clawhub publish "${skillDir}" --slug ${slug} --version ${version} --changelog "${changelog}" --tags latest`,
       { stdio: 'inherit', cwd: rootDir },
     )
     console.log(`  ✅ Published ${pluginName}/${skillName} v${version}`)

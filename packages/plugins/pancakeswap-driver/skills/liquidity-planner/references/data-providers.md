@@ -138,19 +138,19 @@ Tokens are specified as `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC 
 
 ### Chain Identifiers
 
-| Chain          | `chains` value  | Numeric Chain ID |
-| -------------- | --------------- | ---------------- |
-| BSC            | `bsc`           | `56`             |
-| BSC Testnet    | `bsc-testnet`   | `97`             |
-| Ethereum       | `ethereum`      | `1`              |
-| Base           | `base`          | `8453`           |
-| opBNB          | `opbnb`         | `204`            |
-| zkSync Era     | `zksync`        | `324`            |
-| Polygon zkEVM  | `polygon-zkevm` | `1101`           |
-| Linea          | `linea`         | `59144`          |
-| Arbitrum       | `arbitrum`      | `42161`          |
-| Solana         | `sol`           | —                |
-| Monad          | `monad`         | `143`            |
+| Chain         | `chains` value  | Numeric Chain ID |
+| ------------- | --------------- | ---------------- |
+| BSC           | `bsc`           | `56`             |
+| BSC Testnet   | `bsc-testnet`   | `97`             |
+| Ethereum      | `ethereum`      | `1`              |
+| Base          | `base`          | `8453`           |
+| opBNB         | `opbnb`         | `204`            |
+| zkSync Era    | `zksync`        | `324`            |
+| Polygon zkEVM | `polygon-zkevm` | `1101`           |
+| Linea         | `linea`         | `59144`          |
+| Arbitrum      | `arbitrum`      | `42161`          |
+| Solana        | `sol`           | —                |
+| Monad         | `monad`         | `143`            |
 
 ### Protocol Values
 

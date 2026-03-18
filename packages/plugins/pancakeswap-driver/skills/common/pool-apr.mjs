@@ -13,54 +13,63 @@ const merklChainIds = [
 ]
 
 async function getIncentraApr() {
-  const resp = await fetch(`${INCENTRA_API}/liquidityCampaigns`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      campaign_type: INCENTRA_CAMPAIGN_TYPES,
-      status: [4], // ACTIVE
-    }),
-  })
+  try {
+    const resp = await fetch(`${INCENTRA_API}/liquidityCampaigns`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaign_type: INCENTRA_CAMPAIGN_TYPES,
+        status: [4], // ACTIVE
+      }),
+    })
 
-  const data = await resp.json()
+    const data = await resp.json()
 
-  if (data.err) {
-    throw new Error(`Incentra API error: ${json.err}`)
+    if (data.err) {
+      return []
+    }
+
+    return data.campaigns.map((c) => ({
+      chainId: c.chainId,
+      campaignId: c.campaignId,
+      poolId: c.pools.poolId,
+      poolName: c.pools.poolName,
+      apr: c.rewardInfo.apr * 100, // convert to percentage
+      status: c.status,
+    }))
+  } catch (e) {
+    return []
   }
-
-  return data.campaigns.map((c) => ({
-    chainId: c.chainId,
-    campaignId: c.campaignId,
-    poolId: c.pools.poolId,
-    poolName: c.pools.poolName,
-    apr: c.rewardInfo.apr * 100, // convert to percentage
-    status: c.status,
-  }))
 }
 
 async function getMerklApr() {
-  const resp = await fetch(
-    `https://api.merkl.xyz/v4/opportunities/?chainId=${merklChainIds.join(
-      ',',
-    )}&test=false&mainProtocolId=pancake-swap&action=POOL,HOLD&status=LIVE&items=100`,
-  )
+  try {
+    const resp = await fetch(
+      `https://api.merkl.xyz/v4/opportunities/?chainId=${merklChainIds.join(
+        ',',
+      )}&test=false&mainProtocolId=pancake-swap&action=POOL,HOLD&status=LIVE&items=100`,
+    )
 
-  const result = await resp.json()
-  const pancakeResult = result?.filter(
-    (opportunity) =>
-      opportunity?.tokens?.[0]?.symbol?.toLowerCase().startsWith('cake-lp') ||
-      opportunity?.protocol?.id?.toLowerCase().startsWith('pancake-swap') ||
-      opportunity?.protocol?.id?.toLowerCase().startsWith('pancakeswap'),
-  )
+    const result = await resp.json()
+    const pancakeResult = result?.filter(
+      (opportunity) =>
+        opportunity?.tokens?.[0]?.symbol?.toLowerCase().startsWith('cake-lp') ||
+        opportunity?.protocol?.id?.toLowerCase().startsWith('pancake-swap') ||
+        opportunity?.protocol?.id?.toLowerCase().startsWith('pancakeswap'),
+    );
 
-  return pancakeResult.map((c) => ({
-    chainId: c.chainId,
-    campaignId: c.identifier,
-    poolId: c.identifier,
-    poolName: c.name,
-    apr: c.apr / 100, // convert to percentage
-    status: c.status,
-  }))
+    return pancakeResult.map((c) => ({
+      chainId: c.chainId,
+      campaignId: c.identifier,
+      poolId: c.identifier,
+      poolName: c.name,
+      apr: c.apr / 100, // convert to percentage
+      status: c.status,
+    }))
+
+  } catch (e) {
+    return [];
+  }
 }
 
 const [merklApr, incentraApr] = await Promise.all([getMerklApr(), getIncentraApr()])

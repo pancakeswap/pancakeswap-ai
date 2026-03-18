@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.4'
+  version: '1.10.5'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -315,8 +315,8 @@ CHAIN="bsc"
 curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD" | \
   jq '.rows[] | {
     id, protocol,
-    feeTierBps: .feeTier,
-    feeTierPct: (.feeTier / 100 | tostring | . + "%"),
+    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 100 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
@@ -344,8 +344,8 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   --data-urlencode "tokens=${CHAIN_ID}:0x55d398326f99059fF775485246999027B3197955" | \
   jq '.rows[] | {
     id, protocol,
-    feeTierBps: .feeTier,
-    feeTierPct: (.feeTier / 100 | tostring | . + "%"),
+    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 100 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
@@ -378,6 +378,8 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | `500`           | `0.05%`        |
 | `2500`          | `0.25%`        |
 | `10000`         | `1.0%`         |
+
+**Note for `infinityStable` pools:** The `feeTier` value is on a different scale — divide by `100000000` for percent and `1000000` for bps.
 
 **`protocols` (required for the list endpoint)**: Must include at least one of `stable`, `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap). Always pass all relevant protocols unless filtering intentionally — omitting `protocols` will return no results.
 

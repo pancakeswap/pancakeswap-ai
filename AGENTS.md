@@ -99,6 +99,36 @@ Harvest my pending CAKE rewards
 
 ---
 
+### harvest-rewards
+
+**Plugin:** `@pancakeswap/pancakeswap-farming`
+**Version:** 1.3.3
+
+**What it does:** Checks pending CAKE and partner-token rewards across all PancakeSwap farming positions (V2 farms, V3 farms, Infinity farms, Syrup Pools) and generates harvest deep links. Does not execute transactions.
+
+**Invoke when the user says:**
+
+- "harvest my rewards" / "claim my CAKE"
+- "how much can I harvest" / "pending farming rewards"
+- "collect CAKE rewards" / "claim Syrup Pool rewards"
+- "check my pending rewards across farms"
+- anything asking about unclaimed or claimable farming rewards on PancakeSwap
+
+**Example prompts:**
+
+```
+How much CAKE do I have pending across all my farms?
+Harvest all my PancakeSwap farming rewards
+Check my pending rewards for wallet 0xabc...
+Claim my Syrup Pool partner token rewards
+```
+
+**Output:** A pending rewards summary table (farm type, token, amount, USD value) and `https://pancakeswap.finance/farms` or `https://pancakeswap.finance/pools` deep links for each position.
+
+**Supported chains:** BNB Smart Chain (56), Ethereum (1), Arbitrum One (42161), Base (8453), zkSync Era (324), Linea (59144)
+
+---
+
 ## Installation
 
 ```bash

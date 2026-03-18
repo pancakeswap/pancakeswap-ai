@@ -347,9 +347,11 @@ The script outputs JSON with the shape:
 
 - Filter by `chainId` matching the user's selected chain.
 - Match `poolId` to Explorer API pool `id` (pool address) using **case-insensitive** comparison:
+
   ```js
   poolId.toLowerCase() === explorerPool.id.toLowerCase()
   ```
+
 - If the script fails or returns no data, skip silently — extra APR is optional supplemental data.
 
 Store matched Merkl and Incentra entries per pool for display in the output tables.

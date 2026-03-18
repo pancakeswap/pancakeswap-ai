@@ -27,6 +27,18 @@ Plan yield farming strategies on PancakeSwap — from discovering active farms t
 - Deep link generation to PancakeSwap farming UI
 - Multi-chain support (BSC, Ethereum, Arbitrum, Base, zkSync)
 
+### [harvest-rewards](/skills/harvest-rewards)
+
+Check and display pending CAKE and partner-token rewards across all farming positions, then generate harvest deep links to claim them.
+
+**Capabilities:**
+
+- Pending reward detection across V2, V3, Infinity, and Syrup Pool positions
+- USD value estimation via CoinGecko / DexScreener prices
+- Infinity epoch cadence awareness (8-hour Merkle distribution)
+- Deep link generation to PancakeSwap Farms and Pools UIs
+- Multi-chain support (BSC, Ethereum, Arbitrum, Base, zkSync, Linea)
+
 ## Installation
 
 ::: code-group

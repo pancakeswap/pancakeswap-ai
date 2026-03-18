@@ -21,6 +21,17 @@ Plan yield farming strategies on PancakeSwap by discovering active farms, compar
 - "How do I add liquidity and farm the BNB/CAKE pool?"
 - "What's the APR on the CAKE Syrup Pool?"
 
+### harvest-rewards
+
+Check pending CAKE and partner-token rewards across all PancakeSwap farming positions (V2, V3, Infinity, Syrup Pools) and generate harvest deep links.
+
+**Usage examples:**
+
+- "How much CAKE can I harvest from my farms?"
+- "Check my pending rewards across all PancakeSwap positions"
+- "Harvest all my V3 farming rewards"
+- "Claim my Syrup Pool partner token rewards"
+
 ## License
 
 MIT

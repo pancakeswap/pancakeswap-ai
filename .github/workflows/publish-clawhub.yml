@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/claw-hub
+  workflow_dispatch:
 
 jobs:
   publish:

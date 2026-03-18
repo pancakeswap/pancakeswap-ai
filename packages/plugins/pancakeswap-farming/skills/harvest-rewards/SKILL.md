@@ -238,9 +238,9 @@ curl -s 'https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 | Farm/Pool             | Type        | Reward Token | Pending Amount     | USD Value | Harvest Link |
 | --------------------- | ----------- | ------------ | ------------------ | --------- | ------------ |
-| CAKE/WBNB (PID 2)     | V3 Farm     | CAKE         | 12.345678 CAKE     | $4.32     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
-| WBNB/USDT (ID 12345)  | V3 Farm     | CAKE         | 3.210000 CAKE      | $1.12     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
-| CAKE/BNB Infinity     | Infinity    | CAKE         | 1.500000 CAKE      | $0.53     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
+| CAKE/WBNB (PID 2)     | V3 Farm     | CAKE         | 12.345678 CAKE     | $4.32     | https://pancakeswap.finance/liquidity/positions?chain=bsc |
+| WBNB/USDT (ID 12345)  | V3 Farm     | CAKE         | 3.210000 CAKE      | $1.12     | https://pancakeswap.finance/liquidity/positions?chain=bsc |
+| CAKE/BNB Infinity     | Infinity    | CAKE         | 1.500000 CAKE      | $0.53     | https://pancakeswap.finance/liquidity/positions?chain=bsc |
 | CAKE → TOKEN (Pool 3) | Syrup Pool  | PARTNER      | 500.000000 TOKEN   | $2.10     | https://pancakeswap.finance/pools?chain=bsc |
 
 **Total estimated value: ~$8.07**
@@ -252,12 +252,12 @@ curl -s 'https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 The PancakeSwap UI shows "Harvest" buttons on all farm and pool cards. Direct the user to the appropriate page for their position type:
 
-| Position Type  | UI Harvest Link                                         |
-| -------------- | ------------------------------------------------------- |
-| V3 Farms       | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
-| Infinity Farms | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
-| Syrup Pools    | `https://pancakeswap.finance/pools?chain=bsc`           |
-| CAKE Staking   | `https://pancakeswap.finance/cake-staking`              |
+| Position Type  | UI Harvest Link                                             |
+| -------------- | ----------------------------------------------------------- |
+| V3 Farms       | `https://pancakeswap.finance/liquidity/positions?chain=bsc` |
+| Infinity Farms | `https://pancakeswap.finance/liquidity/positions?chain=bsc` |
+| Syrup Pools    | `https://pancakeswap.finance/pools?chain=bsc`               |
+| CAKE Staking   | `https://pancakeswap.finance/cake-staking`                  |
 
 Always include the relevant link(s) in your response so the user can navigate directly to harvest their rewards.
 
@@ -278,8 +278,8 @@ Always include the relevant link(s) in your response so the user can navigate di
 
 | Farm/Pool            | Type       | Reward Token | Pending Amount  | USD Value | Harvest Link |
 | -------------------- | ---------- | ------------ | --------------- | --------- | ------------ |
-| CAKE/WBNB (PID 2)    | V2 Farm    | CAKE         | 12.345678 CAKE  | $4.32     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
-| WBNB/USDT (ID 9999)  | V3 Farm    | CAKE         | 3.210000 CAKE   | $1.12     | https://pancakeswap.finance/liquidity/pools?chain=bsc |
+| CAKE/WBNB (PID 2)    | V2 Farm    | CAKE         | 12.345678 CAKE  | $4.32     | https://pancakeswap.finance/liquidity/positions?chain=bsc |
+| WBNB/USDT (ID 9999)  | V3 Farm    | CAKE         | 3.210000 CAKE   | $1.12     | https://pancakeswap.finance/liquidity/positions?chain=bsc |
 | CAKE → TOKEN (Syrup) | Syrup Pool | PARTNER      | 500.00 TOKEN    | $2.10     | https://pancakeswap.finance/pools?chain=bsc |
 
 **Total pending CAKE:** 15.555678 CAKE (~$5.44)
@@ -304,7 +304,7 @@ Either:
 - All rewards were recently harvested
 - Check if your positions are on a different chain
 
-To see your farms: https://pancakeswap.finance/liquidity/pools?chain=bsc
+To see your farms: https://pancakeswap.finance/liquidity/positions?chain=bsc
 ```
 
 ---

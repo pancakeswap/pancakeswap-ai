@@ -331,7 +331,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | Linea      | `linea`        | `59144`          |
 | opBNB      | `opbnb`        | `204`            |
 | Monad      | `monad`        | `143`            |
-| Solana     | `sol`          | —                |
+| Solana     | `sol`          | `8000001001`     |
 
 **Token format**: `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC). For native tokens (BNB, ETH), omit from the tokens filter and identify pools by symbol in results.
 

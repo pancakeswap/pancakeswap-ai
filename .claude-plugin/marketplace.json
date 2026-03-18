@@ -19,6 +19,11 @@
       "name": "pancakeswap-farming",
       "source": "./packages/plugins/pancakeswap-farming",
       "description": "Plan yield farming, CAKE staking, and reward harvesting with deep links to the PancakeSwap farming UI"
+    },
+    {
+      "name": "pancakeswap-hub",
+      "source": "./packages/plugins/pancakeswap-hub",
+      "description": "Integrate and plan swaps through PanckaeSwap Hub"
     }
   ]
 }

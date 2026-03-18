@@ -16,6 +16,7 @@ For developer and project instructions, see `CLAUDE.md` or the full repository a
 **What it does:** Plans token swaps on PancakeSwap. Discovers tokens, verifies contracts, fetches live prices, and generates a deep link to the PancakeSwap UI pre-filled with swap parameters. Does not execute transactions.
 
 **Invoke when the user says:**
+
 - "swap on PancakeSwap"
 - "buy [token] with BNB"
 - "exchange USDT for CAKE"
@@ -23,6 +24,7 @@ For developer and project instructions, see `CLAUDE.md` or the full repository a
 - anything describing exchanging one token for another on PancakeSwap
 
 **Example prompts:**
+
 ```
 Swap 0.5 BNB for USDT on PancakeSwap
 Buy 100 CAKE with my USDT on BSC
@@ -43,6 +45,7 @@ Swap ETH for USDC on Arbitrum via PancakeSwap
 **What it does:** Plans liquidity provision on PancakeSwap. Resolves tokens, discovers pools, assesses APY and impermanent loss risk, recommends fee tiers and price ranges, and generates a deep link to the position creation UI. Does not execute transactions.
 
 **Invoke when the user says:**
+
 - "add liquidity on PancakeSwap"
 - "provide liquidity"
 - "LP on PancakeSwap"
@@ -50,6 +53,7 @@ Swap ETH for USDC on Arbitrum via PancakeSwap
 - anything describing depositing tokens into a PancakeSwap pool
 
 **Example prompts:**
+
 ```
 Add liquidity to the BNB/USDT pool on PancakeSwap
 Provide liquidity for ETH/USDC on Arbitrum
@@ -71,6 +75,7 @@ Create a V3 LP position for CAKE/BNB with a tight range
 **What it does:** Plans yield farming and CAKE staking on PancakeSwap. Discovers active farms, compares APR/APY across farm types, plans CAKE staking in Syrup Pools, and generates deep links to the farming UI. Does not execute transactions.
 
 **Invoke when the user says:**
+
 - "farm on PancakeSwap"
 - "stake CAKE" / "unstake CAKE"
 - "stake LP" / "unstake LP" / "deposit LP" / "withdraw LP"
@@ -80,6 +85,7 @@ Create a V3 LP position for CAKE/BNB with a tight range
 - anything describing staking, farming, or earning yield on PancakeSwap
 
 **Example prompts:**
+
 ```
 Show me the best farms on PancakeSwap by APR
 Stake my CAKE in the highest APY syrup pool
@@ -90,6 +96,36 @@ Harvest my pending CAKE rewards
 **Output:** APR/APY comparison tables and `https://pancakeswap.finance/farms` or `https://pancakeswap.finance/pools` deep links.
 
 **Farm types:** V2 farms, V3 farms, Infinity farms, Syrup Pools (CAKE staking)
+
+---
+
+### harvest-rewards
+
+**Plugin:** `@pancakeswap/pancakeswap-farming`
+**Version:** 1.3.3
+
+**What it does:** Checks pending CAKE and partner-token rewards across all PancakeSwap farming positions (V2 farms, V3 farms, Infinity farms, Syrup Pools) and generates harvest deep links. Does not execute transactions.
+
+**Invoke when the user says:**
+
+- "harvest my rewards" / "claim my CAKE"
+- "how much can I harvest" / "pending farming rewards"
+- "collect CAKE rewards" / "claim Syrup Pool rewards"
+- "check my pending rewards across farms"
+- anything asking about unclaimed or claimable farming rewards on PancakeSwap
+
+**Example prompts:**
+
+```
+How much CAKE do I have pending across all my farms?
+Harvest all my PancakeSwap farming rewards
+Check my pending rewards for wallet 0xabc...
+Claim my Syrup Pool partner token rewards
+```
+
+**Output:** A pending rewards summary table (farm type, token, amount, USD value) and `https://pancakeswap.finance/farms` or `https://pancakeswap.finance/pools` deep links for each position.
+
+**Supported chains:** BNB Smart Chain (56), Ethereum (1), Arbitrum One (42161), Base (8453), zkSync Era (324), Linea (59144)
 
 ---
 

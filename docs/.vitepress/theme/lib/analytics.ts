@@ -12,7 +12,9 @@ declare global {
 }
 
 function canTrack() {
-  return typeof window !== 'undefined' && Boolean(measurementId) && typeof window.gtag === 'function'
+  return (
+    typeof window !== 'undefined' && Boolean(measurementId) && typeof window.gtag === 'function'
+  )
 }
 
 export function trackPageView(path: string) {

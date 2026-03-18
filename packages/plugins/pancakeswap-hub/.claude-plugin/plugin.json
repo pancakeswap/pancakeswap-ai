@@ -1,0 +1,13 @@
+{
+  "name": "pancakeswap-hub",
+  "version": "1.8.0",
+  "description": "Tools for integrating and interacting with PancakeSwap Hub",
+  "author": {
+    "name": "PancakeSwap",
+    "email": "chef.sanji@pancakeswap.com"
+  },
+  "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
+  "keywords": ["pancakeswap", "defi", "hub", "portfolio", "bsc", "bnb", "cake"],
+  "license": "MIT",
+  "skills": ["./skills/hub-swap-planner", "./skills/hub-api-integration"]
+}

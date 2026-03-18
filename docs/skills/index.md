@@ -4,11 +4,16 @@ Skills are the core building blocks of PancakeSwap AI. Each skill is a Markdown 
 
 ## All Skills
 
-| Skill | Plugin | Model | Description |
-|-------|--------|-------|-------------|
-| [`swap-planner`](/skills/swap-planner) | `pancakeswap-driver` | Sonnet | Plan swaps with token discovery and deep link generation |
-| [`liquidity-planner`](/skills/liquidity-planner) | `pancakeswap-driver` | Sonnet | Plan LP positions with pool assessment and APY analysis |
-| [`farming-planner`](/skills/farming-planner) | `pancakeswap-farming` | Sonnet | Plan yield farming, CAKE staking, and deep links |
+| Skill                                                | Plugin                | Model  | Description                                                           |
+| ---------------------------------------------------- | --------------------- | ------ | --------------------------------------------------------------------- |
+| [`swap-planner`](/skills/swap-planner)               | `pancakeswap-driver`  | Sonnet | Plan swaps with token discovery and deep link generation              |
+| [`liquidity-planner`](/skills/liquidity-planner)     | `pancakeswap-driver`  | Sonnet | Plan LP positions with pool assessment and APY analysis               |
+| [`collect-fees`](/skills/collect-fees)               | `pancakeswap-driver`  | Sonnet | Check and collect pending LP fees across V3 and Infinity positions    |
+| [`swap-integration`](/skills/swap-integration)       | `pancakeswap-driver`  | Opus   | Integrate PancakeSwap swaps into apps using Smart Router or V2 Router |
+| [`farming-planner`](/skills/farming-planner)         | `pancakeswap-farming` | Sonnet | Plan yield farming, CAKE staking, and deep links                      |
+| [`harvest-rewards`](/skills/harvest-rewards)         | `pancakeswap-farming` | Sonnet | Check pending farming rewards and generate harvest deep links         |
+| [`hub-swap-planner`](/skills/hub-swap-planner)       | `pancakeswap-hub`     | Sonnet | Plan swaps through PCS Hub with channel-specific handoff links        |
+| [`hub-api-integration`](/skills/hub-api-integration) | `pancakeswap-hub`     | Sonnet | Integrate PCS Hub quote/swap API into wallets and partner frontends   |
 
 ## Skill Anatomy
 
@@ -34,15 +39,15 @@ validation rules, anti-patterns, and more.
 
 ### Frontmatter Fields
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | Yes | Unique skill identifier |
-| `description` | Yes | Trigger phrases — when the agent should load this skill |
-| `allowed-tools` | Yes | Tools the agent may use while executing this skill |
-| `model` | No | Recommended LLM model (opus, sonnet) |
-| `license` | No | License for the skill content |
-| `metadata.author` | No | Author name |
-| `metadata.version` | No | Semantic version |
+| Field              | Required | Description                                             |
+| ------------------ | -------- | ------------------------------------------------------- |
+| `name`             | Yes      | Unique skill identifier                                 |
+| `description`      | Yes      | Trigger phrases — when the agent should load this skill |
+| `allowed-tools`    | Yes      | Tools the agent may use while executing this skill      |
+| `model`            | No       | Recommended LLM model (opus, sonnet)                    |
+| `license`          | No       | License for the skill content                           |
+| `metadata.author`  | No       | Author name                                             |
+| `metadata.version` | No       | Semantic version                                        |
 
 ## Design Principles
 

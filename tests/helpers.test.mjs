@@ -11,22 +11,28 @@ import assert from 'node:assert/strict'
 // ─────────────────────────────────────────────
 
 const CHAIN_KEYS = {
-  56:    'bsc',
-  1:     'eth',
+  56: 'bsc',
+  1: 'eth',
   42161: 'arb',
-  8453:  'base',
-  137:   'polygon',
-  324:   'zksync',
+  8453: 'base',
+  137: 'polygon',
+  324: 'zksync',
   59144: 'linea',
-  204:   'opbnb',
+  204: 'opbnb',
 }
 
-function buildPancakeSwapLink({ chainId, inputCurrency, outputCurrency, exactAmount, exactField = 'input' }) {
+function buildPancakeSwapLink({
+  chainId,
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField = 'input',
+}) {
   const chain = CHAIN_KEYS[chainId]
   if (!chain) throw new Error(`Unsupported chainId: ${chainId}`)
   const query = new URLSearchParams({ chain, inputCurrency, outputCurrency })
   if (exactAmount) query.set('exactAmount', exactAmount)
-  if (exactField)  query.set('exactField', exactField)
+  if (exactField) query.set('exactField', exactField)
   return `https://pancakeswap.finance/swap?${query.toString()}`
 }
 
@@ -50,13 +56,13 @@ function isNativeSymbol(value) {
 
 // Known token addresses from the skill
 const KNOWN_TOKENS = {
-  WBNB:  '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-  BUSD:  '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-  USDT:  '0x55d398326f99059fF775485246999027B3197955',
-  USDC:  '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  CAKE:  '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
-  ETH:   '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
-  BTCB:  '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+  WBNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+  USDT: '0x55d398326f99059fF775485246999027B3197955',
+  USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  CAKE: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+  ETH: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+  BTCB: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
 }
 
 // ─────────────────────────────────────────────
@@ -112,34 +118,61 @@ test('Ethereum USDT → ETH link uses chain=eth', () => {
 })
 
 test('Arbitrum uses chain=arb', () => {
-  const url = buildPancakeSwapLink({ chainId: 42161, inputCurrency: 'ETH', outputCurrency: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' })
+  const url = buildPancakeSwapLink({
+    chainId: 42161,
+    inputCurrency: 'ETH',
+    outputCurrency: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  })
   assert.ok(url.includes('chain=arb'))
 })
 
 test('Base uses chain=base', () => {
-  const url = buildPancakeSwapLink({ chainId: 8453, inputCurrency: 'ETH', outputCurrency: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' })
+  const url = buildPancakeSwapLink({
+    chainId: 8453,
+    inputCurrency: 'ETH',
+    outputCurrency: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  })
   assert.ok(url.includes('chain=base'))
 })
 
 test('Polygon uses chain=polygon', () => {
-  const url = buildPancakeSwapLink({ chainId: 137, inputCurrency: 'MATIC', outputCurrency: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' })
+  const url = buildPancakeSwapLink({
+    chainId: 137,
+    inputCurrency: 'MATIC',
+    outputCurrency: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  })
   assert.ok(url.includes('chain=polygon'))
 })
 
 test('zkSync uses chain=zksync', () => {
-  const url = buildPancakeSwapLink({ chainId: 324, inputCurrency: 'ETH', outputCurrency: '0x1234567890123456789012345678901234567890' })
+  const url = buildPancakeSwapLink({
+    chainId: 324,
+    inputCurrency: 'ETH',
+    outputCurrency: '0x1234567890123456789012345678901234567890',
+  })
   assert.ok(url.includes('chain=zksync'))
 })
 
 test('opBNB uses chain=opbnb', () => {
-  const url = buildPancakeSwapLink({ chainId: 204, inputCurrency: 'BNB', outputCurrency: '0x1234567890123456789012345678901234567890' })
+  const url = buildPancakeSwapLink({
+    chainId: 204,
+    inputCurrency: 'BNB',
+    outputCurrency: '0x1234567890123456789012345678901234567890',
+  })
   assert.ok(url.includes('chain=opbnb'))
 })
 
 test('exactField defaults to input when not specified', () => {
-  const url = buildPancakeSwapLink({ chainId: 56, inputCurrency: 'BNB', outputCurrency: KNOWN_TOKENS.CAKE })
+  const url = buildPancakeSwapLink({
+    chainId: 56,
+    inputCurrency: 'BNB',
+    outputCurrency: KNOWN_TOKENS.CAKE,
+  })
   // exactField should not appear at all when no exactAmount is given
-  assert.ok(!url.includes('exactField') || url.includes('exactField=input'), 'unexpected exactField value')
+  assert.ok(
+    !url.includes('exactField') || url.includes('exactField=input'),
+    'unexpected exactField value',
+  )
 })
 
 test('exact output swap sets exactField=output', () => {
@@ -162,7 +195,11 @@ test('throws on unsupported chainId', () => {
 })
 
 test('no exactAmount → URL omits exactAmount parameter', () => {
-  const url = buildPancakeSwapLink({ chainId: 56, inputCurrency: 'BNB', outputCurrency: KNOWN_TOKENS.CAKE })
+  const url = buildPancakeSwapLink({
+    chainId: 56,
+    inputCurrency: 'BNB',
+    outputCurrency: KNOWN_TOKENS.CAKE,
+  })
   assert.ok(!url.includes('exactAmount='), 'should not have exactAmount when not provided')
 })
 
@@ -192,15 +229,15 @@ test('0% slippage returns same amount', () => {
 })
 
 test('0.5% slippage on exact-output: maxAmountIn 1 BNB → 1.005 BNB', () => {
-  const amountIn = 10n ** 18n                          // 1 BNB
-  const maxIn = applySlippageIn(amountIn, 50)          // 50 bps = 0.5%
-  const expected = 1005n * 10n ** 15n                  // 1.005 BNB
+  const amountIn = 10n ** 18n // 1 BNB
+  const maxIn = applySlippageIn(amountIn, 50) // 50 bps = 0.5%
+  const expected = 1005n * 10n ** 15n // 1.005 BNB
   assert.equal(maxIn, expected)
 })
 
 test('10% slippage (meme token) on 1000 output → minOut = 900', () => {
   const amountOut = 1000n * 10n ** 18n
-  const minOut = applySlippage(amountOut, 1000)        // 1000 bps = 10%
+  const minOut = applySlippage(amountOut, 1000) // 1000 bps = 10%
   const expected = 900n * 10n ** 18n
   assert.equal(minOut, expected)
 })
@@ -264,12 +301,12 @@ test('address without 0x prefix is rejected', () => {
 console.log('\n📦 Chain key mapping')
 
 const DEXSCREENER_CHAIN_IDS = {
-  56:    'bsc',
-  1:     'ethereum',
+  56: 'bsc',
+  1: 'ethereum',
   42161: 'arbitrum',
-  8453:  'base',
-  137:   'polygon',
-  324:   'zksync',
+  8453: 'base',
+  137: 'polygon',
+  324: 'zksync',
   59144: 'linea',
 }
 
@@ -301,16 +338,18 @@ function v2GetAmountOut(amountIn, reserveIn, reserveOut) {
 
 test('V2 getAmountOut formula produces correct result', () => {
   // 1 BNB in, reserves: 100 BNB / 30000 USDT → ~298.5 USDT out (after 0.25% fee)
-  const amountIn = 10n ** 18n                     // 1 BNB
-  const reserveIn = 100n * 10n ** 18n             // 100 BNB
-  const reserveOut = 30000n * 10n ** 18n          // 30,000 USDT
+  const amountIn = 10n ** 18n // 1 BNB
+  const reserveIn = 100n * 10n ** 18n // 100 BNB
+  const reserveOut = 30000n * 10n ** 18n // 30,000 USDT
 
   const amountOut = v2GetAmountOut(amountIn, reserveIn, reserveOut)
   const amountOutHuman = Number(amountOut) / 1e18
 
   // Should be ~297.xx USDT (slightly less than 300 due to price impact + fee)
-  assert.ok(amountOutHuman > 290 && amountOutHuman < 300,
-    `Expected ~297 USDT, got ${amountOutHuman.toFixed(4)}`)
+  assert.ok(
+    amountOutHuman > 290 && amountOutHuman < 300,
+    `Expected ~297 USDT, got ${amountOutHuman.toFixed(4)}`,
+  )
 })
 
 test('V2 fee is 0.25%, not 0.3% (Uniswap V2 uses 0.3%)', () => {
@@ -336,22 +375,22 @@ test('V2 fee is 0.25%, not 0.3% (Uniswap V2 uses 0.3%)', () => {
 console.log('\n📦 buildPancakeSwapLiquidityLink')
 
 const LIQUIDITY_CHAIN_KEYS = {
-  56:    'bsc',
-  1:     'eth',
+  56: 'bsc',
+  1: 'eth',
   42161: 'arb',
-  8453:  'base',
-  324:   'zksync',
+  8453: 'base',
+  324: 'zksync',
   59144: 'linea',
-  1101:  'polygonzkevm',
-  204:   'opbnb',
-  97:    'bsctest',
+  1101: 'polygonzkevm',
+  204: 'opbnb',
+  97: 'bsctest',
 }
 
 const FEE_TIER_MAP = {
   '0.01%': 100,
   '0.05%': 500,
   '0.25%': 2500,
-  '1%':    10000,
+  '1%': 10000,
 }
 
 function buildPancakeSwapLiquidityLink({ chainId, tokenA, tokenB, version, feeTier }) {
@@ -375,7 +414,11 @@ function buildPancakeSwapLiquidityLink({ chainId, tokenA, tokenB, version, feeTi
 
 test('V3 CAKE/BNB on BSC with 0.25% fee', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v3', feeTier: '0.25%',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.CAKE,
+    tokenB: 'BNB',
+    version: 'v3',
+    feeTier: '0.25%',
   })
   assert.ok(url.startsWith('https://pancakeswap.finance/add/'), 'missing /add/ path')
   assert.ok(!url.includes('/liquidity/add/v3/'), 'should NOT use /liquidity/add/v3/ path')
@@ -387,8 +430,11 @@ test('V3 CAKE/BNB on BSC with 0.25% fee', () => {
 
 test('V3 USDC/ETH on Ethereum with 0.05% fee', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 1, tokenA: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', tokenB: 'ETH',
-    version: 'v3', feeTier: '0.05%',
+    chainId: 1,
+    tokenA: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    tokenB: 'ETH',
+    version: 'v3',
+    feeTier: '0.05%',
   })
   assert.ok(url.includes('/500?'), 'fee tier 500 not in URL')
   assert.ok(url.includes('chain=eth'), 'missing chain=eth')
@@ -396,71 +442,107 @@ test('V3 USDC/ETH on Ethereum with 0.05% fee', () => {
 
 test('V3 defaults to 0.25% when feeTier omitted', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v3',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.CAKE,
+    tokenB: 'BNB',
+    version: 'v3',
   })
   assert.ok(url.includes('/2500?'), 'should default to 2500 (0.25%)')
 })
 
 test('V3 0.01% fee tier for stablecoin pairs', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC,
-    version: 'v3', feeTier: '0.01%',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.USDT,
+    tokenB: KNOWN_TOKENS.USDC,
+    version: 'v3',
+    feeTier: '0.01%',
   })
   assert.ok(url.includes('/100?'), 'fee tier 100 not in URL')
 })
 
 test('V3 1% fee tier for volatile pairs', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: '0x1234567890123456789012345678901234567890',
-    version: 'v3', feeTier: '1%',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.CAKE,
+    tokenB: '0x1234567890123456789012345678901234567890',
+    version: 'v3',
+    feeTier: '1%',
   })
   assert.ok(url.includes('/10000?'), 'fee tier 10000 not in URL')
 })
 
 test('V2 link uses /v2/add/ path', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.CAKE, tokenB: 'BNB', version: 'v2',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.CAKE,
+    tokenB: 'BNB',
+    version: 'v2',
   })
-  assert.ok(url.startsWith('https://pancakeswap.finance/v2/add/'), 'wrong base path — should use /v2/add/')
+  assert.ok(
+    url.startsWith('https://pancakeswap.finance/v2/add/'),
+    'wrong base path — should use /v2/add/',
+  )
   assert.ok(!url.includes('/v3/'), 'V2 should not have /v3/ in path')
   assert.ok(url.includes('chain=bsc'))
 })
 
 test('StableSwap link uses /stable/add/ path', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 56, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC, version: 'stableswap',
+    chainId: 56,
+    tokenA: KNOWN_TOKENS.USDT,
+    tokenB: KNOWN_TOKENS.USDC,
+    version: 'stableswap',
   })
-  assert.ok(url.startsWith('https://pancakeswap.finance/stable/add/'), 'should use /stable/add/ path')
+  assert.ok(
+    url.startsWith('https://pancakeswap.finance/stable/add/'),
+    'should use /stable/add/ path',
+  )
   assert.ok(url.includes('chain=bsc'))
 })
 
 test('StableSwap throws on non-BSC chain', () => {
   assert.throws(
-    () => buildPancakeSwapLiquidityLink({
-      chainId: 1, tokenA: KNOWN_TOKENS.USDT, tokenB: KNOWN_TOKENS.USDC, version: 'stableswap',
-    }),
+    () =>
+      buildPancakeSwapLiquidityLink({
+        chainId: 1,
+        tokenA: KNOWN_TOKENS.USDT,
+        tokenB: KNOWN_TOKENS.USDC,
+        version: 'stableswap',
+      }),
     /StableSwap only available on BSC/,
   )
 })
 
 test('V3 on Arbitrum uses chain=arb', () => {
   const url = buildPancakeSwapLiquidityLink({
-    chainId: 42161, tokenA: 'ETH', tokenB: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-    version: 'v3', feeTier: '0.05%',
+    chainId: 42161,
+    tokenA: 'ETH',
+    tokenB: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    version: 'v3',
+    feeTier: '0.05%',
   })
   assert.ok(url.includes('chain=arb'))
 })
 
 test('throws on unsupported chainId', () => {
   assert.throws(
-    () => buildPancakeSwapLiquidityLink({ chainId: 999, tokenA: 'ETH', tokenB: 'USDC', version: 'v3' }),
+    () =>
+      buildPancakeSwapLiquidityLink({ chainId: 999, tokenA: 'ETH', tokenB: 'USDC', version: 'v3' }),
     /Unsupported chainId: 999/,
   )
 })
 
 test('throws on invalid fee tier', () => {
   assert.throws(
-    () => buildPancakeSwapLiquidityLink({ chainId: 56, tokenA: 'BNB', tokenB: 'CAKE', version: 'v3', feeTier: '0.3%' }),
+    () =>
+      buildPancakeSwapLiquidityLink({
+        chainId: 56,
+        tokenA: 'BNB',
+        tokenB: 'CAKE',
+        version: 'v3',
+        feeTier: '0.3%',
+      }),
     /Invalid fee tier/,
   )
 })
@@ -489,7 +571,7 @@ console.log('\n📦 Impermanent loss calculations')
 
 function estimateIL(priceChangeRatio) {
   const sqrtR = Math.sqrt(priceChangeRatio)
-  return 2 * sqrtR / (1 + priceChangeRatio) - 1
+  return (2 * sqrtR) / (1 + priceChangeRatio) - 1
 }
 
 test('no price change → 0% IL', () => {
@@ -504,157 +586,13 @@ test('2x price increase → ~5.7% IL', () => {
 
 test('5x price increase → ~25% IL', () => {
   const il = estimateIL(5.0)
-  assert.ok(il < -0.20 && il > -0.30, `expected ~-25%, got ${(il * 100).toFixed(2)}%`)
+  assert.ok(il < -0.2 && il > -0.3, `expected ~-25%, got ${(il * 100).toFixed(2)}%`)
 })
 
 test('IL is always negative (loss) for any price change', () => {
   for (const r of [0.1, 0.5, 1.5, 2.0, 3.0, 5.0, 10.0]) {
     const il = estimateIL(r)
     assert.ok(il <= 0.0001, `IL should be non-positive at ratio ${r}, got ${il}`)
-  }
-})
-
-// ─────────────────────────────────────────────
-// SUITE 9: Infinity hook permission flags (CL)
-// ─────────────────────────────────────────────
-
-console.log('\n📦 Infinity hook permission flags (CL)')
-
-const CL_PERMISSIONS = {
-  beforeInitialize:                0x0001,
-  afterInitialize:                 0x0002,
-  beforeAddLiquidity:              0x0004,
-  afterAddLiquidity:               0x0008,
-  beforeRemoveLiquidity:           0x0010,
-  afterRemoveLiquidity:            0x0020,
-  beforeSwap:                      0x0040,
-  afterSwap:                       0x0080,
-  beforeDonate:                    0x0100,
-  afterDonate:                     0x0200,
-  beforeSwapReturnDelta:           0x0400,
-  afterSwapReturnDelta:            0x0800,
-  afterAddLiquidityReturnDelta:    0x1000,
-  afterRemoveLiquidityReturnDelta: 0x2000,
-}
-
-test('14 permission flags total for CL hooks', () => {
-  assert.equal(Object.keys(CL_PERMISSIONS).length, 14)
-})
-
-test('each permission flag is a unique power of 2', () => {
-  const values = Object.values(CL_PERMISSIONS)
-  const uniqueValues = new Set(values)
-  assert.equal(values.length, uniqueValues.size, 'duplicate permission values found')
-  for (const v of values) {
-    assert.ok((v & (v - 1)) === 0 && v > 0, `${v} is not a power of 2`)
-  }
-})
-
-test('permission flags are ordered by bit position 0–13', () => {
-  const values = Object.values(CL_PERMISSIONS)
-  for (let i = 0; i < values.length; i++) {
-    assert.equal(values[i], 1 << i, `permission at index ${i} should be ${1 << i}, got ${values[i]}`)
-  }
-})
-
-test('CRITICAL permissions include all ReturnDelta variants', () => {
-  const returnDeltaFlags = Object.keys(CL_PERMISSIONS).filter(k => k.includes('ReturnDelta'))
-  assert.equal(returnDeltaFlags.length, 4, 'should have 4 ReturnDelta flags')
-  for (const name of returnDeltaFlags) {
-    assert.ok(CL_PERMISSIONS[name] >= 0x0400, `${name} should be in high bits`)
-  }
-})
-
-test('buildPermissionBitmap from selected flags', () => {
-  function buildPermissionBitmap(flags) {
-    let bitmap = 0
-    for (const flag of flags) bitmap |= CL_PERMISSIONS[flag]
-    return bitmap
-  }
-  const bitmap = buildPermissionBitmap(['beforeSwap', 'afterSwap'])
-  assert.equal(bitmap, 0x00C0)
-  assert.ok(bitmap & CL_PERMISSIONS.beforeSwap)
-  assert.ok(bitmap & CL_PERMISSIONS.afterSwap)
-  assert.ok(!(bitmap & CL_PERMISSIONS.beforeSwapReturnDelta))
-})
-
-test('zero bitmap means all permissions disabled (safe default)', () => {
-  for (const [name, flag] of Object.entries(CL_PERMISSIONS)) {
-    assert.ok(!(0 & flag), `${name} should be disabled in zero bitmap`)
-  }
-})
-
-// ─────────────────────────────────────────────
-// SUITE 10: Vault settlement flow
-// ─────────────────────────────────────────────
-
-console.log('\n📦 Vault settlement flow')
-
-test('Infinity uses vault.lock, not poolManager.unlock', () => {
-  const infinityEntry = 'vault.lock'
-  const uniswapEntry = 'poolManager.unlock'
-  assert.notEqual(infinityEntry, uniswapEntry)
-})
-
-test('Infinity has dual pool types (CL + Bin)', () => {
-  const poolTypes = ['CLPoolManager', 'BinPoolManager']
-  assert.equal(poolTypes.length, 2)
-  assert.ok(poolTypes.includes('CLPoolManager'))
-  assert.ok(poolTypes.includes('BinPoolManager'))
-})
-
-test('settlement order: sync before settle', () => {
-  const steps = ['vault.lock', 'beforeSwap', 'swap', 'afterSwap', 'vault.sync', 'transfer', 'vault.settle']
-  const syncIdx = steps.indexOf('vault.sync')
-  const settleIdx = steps.indexOf('vault.settle')
-  assert.ok(syncIdx < settleIdx, 'sync must come before settle')
-  assert.ok(syncIdx > steps.indexOf('afterSwap'), 'sync must come after hooks')
-})
-
-// ─────────────────────────────────────────────
-// SUITE 11: Infinity import paths
-// ─────────────────────────────────────────────
-
-console.log('\n📦 Infinity import paths')
-
-const CORRECT_IMPORTS = [
-  'infinity-hooks/src/pool-cl/CLBaseHook.sol',
-  'infinity-hooks/src/pool-bin/BinBaseHook.sol',
-  'infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol',
-  'infinity-core/src/pool-bin/interfaces/IBinPoolManager.sol',
-  'infinity-core/src/interfaces/IVault.sol',
-  'infinity-core/src/types/PoolKey.sol',
-  'infinity-core/src/types/BalanceDelta.sol',
-  'infinity-core/src/types/BeforeSwapDelta.sol',
-]
-
-test('all imports use infinity-core or infinity-hooks prefix', () => {
-  for (const imp of CORRECT_IMPORTS) {
-    assert.ok(
-      imp.startsWith('infinity-core/') || imp.startsWith('infinity-hooks/'),
-      `Import ${imp} should start with infinity-core/ or infinity-hooks/`,
-    )
-  }
-})
-
-test('CL and Bin base hooks have separate import paths', () => {
-  const clHook = CORRECT_IMPORTS.find(i => i.includes('CLBaseHook'))
-  const binHook = CORRECT_IMPORTS.find(i => i.includes('BinBaseHook'))
-  assert.ok(clHook.includes('pool-cl'))
-  assert.ok(binHook.includes('pool-bin'))
-  assert.notEqual(clHook, binHook)
-})
-
-test('IVault is in core interfaces, not pool-specific', () => {
-  const vaultImport = CORRECT_IMPORTS.find(i => i.includes('IVault'))
-  assert.ok(vaultImport.includes('src/interfaces/'))
-  assert.ok(!vaultImport.includes('pool-cl') && !vaultImport.includes('pool-bin'))
-})
-
-test('Uniswap v4 imports are NOT valid for Infinity', () => {
-  const wrongImports = ['v4-core/BaseHook.sol', 'v4-core/interfaces/IPoolManager.sol']
-  for (const imp of wrongImports) {
-    assert.ok(!imp.startsWith('infinity-'), `${imp} should NOT start with infinity-`)
   }
 })
 

@@ -1,0 +1,97 @@
+description: 'Harvest Rewards Skill Evaluation'
+
+prompts:
+  - |
+    You are an AI assistant. The user has loaded the following skill:
+
+    <skill>
+    {{skill_content}}
+    </skill>
+
+    Now answer the following user request:
+
+    <user_request>
+    {{case_content}}
+    </user_request>
+
+providers:
+  - id: anthropic:claude-sonnet-4-5-20250929
+    config:
+      temperature: 0
+      max_tokens: 4096
+
+defaultTest:
+  options:
+    timeout: 180000
+  vars:
+    skill_content: file://../../../packages/plugins/pancakeswap-farming/skills/harvest-rewards/SKILL.md
+
+tests:
+  # Test 1: Basic pending rewards check
+  - vars:
+      case_content: file://cases/basic-harvest.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/harvest-correctness.txt
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'pancakeswap.finance/liquidity/pools'
+          - 'pancakeswap.finance/pools'
+      - type: contains-any
+        value:
+          - '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652'
+          - '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
+          - 'MasterChef'
+          - 'pendingCake'
+      - type: contains
+        value: 'pancakeswap.finance'
+
+  # Test 2: Multi-position harvest (V2 + V3 + Infinity)
+  - vars:
+      case_content: file://cases/multi-position-harvest.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/harvest-correctness.txt
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'pancakeswap.finance/liquidity/pools'
+          - 'pancakeswap.finance/pools'
+      - type: contains-any
+        value:
+          - '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652'
+          - '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
+          - '0xEA8620aAb2F07a0ae710442590D649ADE8440877'
+          - 'MasterChef'
+          - 'Distributor'
+      - type: contains-any
+        value:
+          - 'pendingCake'
+          - 'harvest'
+          - 'claim'
+      - type: contains
+        value: 'pancakeswap.finance'
+
+  # Test 3: Syrup Pool harvest
+  - vars:
+      case_content: file://cases/syrup-pool-harvest.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/harvest-correctness.txt
+        threshold: 0.85
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains-any
+        value:
+          - 'pancakeswap.finance/pools'
+          - 'pancakeswap.finance/cake-staking'
+      - type: contains-any
+        value:
+          - 'pendingReward'
+          - 'deposit(0)'
+          - 'harvest'
+          - 'claim'
+      - type: contains
+        value: 'pancakeswap.finance'

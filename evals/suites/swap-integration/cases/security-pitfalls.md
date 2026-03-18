@@ -1,0 +1,1 @@
+What are the most important security considerations when integrating PancakeSwap swaps? What can go wrong and how do I protect against it? Please cover slippage, approvals, MEV, and transaction failures.

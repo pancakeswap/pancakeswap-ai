@@ -4,12 +4,12 @@ AI-powered assistance for yield farming, CAKE staking, and reward management on 
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| **Name** | `pancakeswap-farming` |
-| **Version** | 1.0.0 |
-| **Author** | PancakeSwap |
-| **License** | MIT |
+| Field        | Value                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| **Name**     | `pancakeswap-farming`                                                                     |
+| **Version**  | 1.0.0                                                                                     |
+| **Author**   | PancakeSwap                                                                               |
+| **License**  | MIT                                                                                       |
 | **Keywords** | `pancakeswap`, `farming`, `yield`, `cake`, `staking`, `syrup-pools`, `bsc`, `bnb`, `defi` |
 
 ## Skills
@@ -19,12 +19,25 @@ AI-powered assistance for yield farming, CAKE staking, and reward management on 
 Plan yield farming strategies on PancakeSwap — from discovering active farms to harvesting CAKE rewards.
 
 **Capabilities:**
+
 - Farm discovery via CampaignManager contract and DefiLlama API
 - APR/APY comparison across V2, V3, and Infinity farms
 - CAKE staking options (Syrup Pools)
 - Merkle-proof reward claiming for Infinity farms
 - Deep link generation to PancakeSwap farming UI
 - Multi-chain support (BSC, Ethereum, Arbitrum, Base, zkSync)
+
+### [harvest-rewards](/skills/harvest-rewards)
+
+Check and display pending CAKE and partner-token rewards across all farming positions, then generate harvest deep links to claim them.
+
+**Capabilities:**
+
+- Pending reward detection across V2, V3, Infinity, and Syrup Pool positions
+- USD value estimation via CoinGecko / DexScreener prices
+- Infinity epoch cadence awareness (8-hour Merkle distribution)
+- Deep link generation to PancakeSwap Farms and Pools UIs
+- Multi-chain support (BSC, Ethereum, Arbitrum, Base, zkSync, Linea)
 
 ## Installation
 
@@ -67,9 +80,9 @@ Link: https://pancakeswap.finance/pools
 
 ## Key Contracts
 
-| Contract | Address | Purpose |
-|----------|---------|---------|
-| MasterChef v3 | `0x556B9306...04c2Cd59e` | V3 position farming |
-| CampaignManager | `0x26Bde0AC...9c9115` | Infinity farm registry |
-| Distributor | `0xEA8620aA...40877` | Infinity CAKE reward claims |
-| CAKE | `0x0E09FaBB...cE82` | CAKE token |
+| Contract        | Address                  | Purpose                     |
+| --------------- | ------------------------ | --------------------------- |
+| MasterChef v3   | `0x556B9306...04c2Cd59e` | V3 position farming         |
+| CampaignManager | `0x26Bde0AC...9c9115`    | Infinity farm registry      |
+| Distributor     | `0xEA8620aA...40877`     | Infinity CAKE reward claims |
+| CAKE            | `0x0E09FaBB...cE82`      | CAKE token                  |

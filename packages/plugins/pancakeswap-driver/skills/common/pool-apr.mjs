@@ -64,4 +64,4 @@ async function getMerklApr() {
 }
 
 const [merklApr, incentraApr] = await Promise.all([getMerklApr(), getIncentraApr()])
-console.log({ merklApr, incentraApr })
+console.log(JSON.stringify({ merklApr, incentraApr }))

@@ -1,12 +1,12 @@
 ---
 name: liquidity-planner
 description: Plan liquidity provision on PancakeSwap. Use when user says "add liquidity on pancakeswap", "provide liquidity", "LP on pancakeswap", "farm pancakeswap", or describes wanting to deposit tokens into liquidity pools without writing code.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(node:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(node:*), Bash(python3:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.9.4'
+  version: '1.10.1'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -396,6 +396,29 @@ Store matched Merkl and Incentra entries per pool for use in Step 5.
 
 ---
 
+## Step 4c: Fetch CAKE Farm APR
+
+> **Applies to V3 and Infinity pools only.** Skip for V2 and StableSwap.
+
+After Step 4 returns pool IDs, run for V3 and Infinity pools:
+
+```bash
+CHAIN_ID="56"  # numeric chain ID
+[[ "$CHAIN_ID" =~ ^[0-9]+$ ]] || { echo "Invalid chain ID"; exit 1; }
+
+# Pass pool IDs (Explorer API `id` field) for V3 and Infinity pools only
+python3 packages/plugins/pancakeswap-driver/skills/common/farm-apr.py "$CHAIN_ID" \
+  "0xv3pool1" "0xv3pool2" "0x64charinfpool1"
+```
+
+Output: `{ "chainId": N, "cakePrice": N, "cakePerYear": { "poolId": cakePerYear } }`
+
+Compute CAKE APR per pool: `cakeApr = (cakePerYear[poolId] * cakePrice) / tvlUSD * 100`
+
+If the script fails or `cakePrice == 0` or `tvlUSD == 0` or the pool is not in the output, show `—` for CAKE Farm APR rather than omitting the row.
+
+---
+
 ## Step 5: Pool Assessment (Liquidity, Volume & APR)
 
 The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the pool discovery response — no separate API call needed. Use these values directly.
@@ -419,23 +442,25 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 | 1%–5% APR   | Excellent/deep    | Low        | Stablecoin pairs, large caps    |
 | < 1% APR    | Massive TVL       | Very Low   | Fee-based yield only (base APR) |
 
-> **Note**: `apr24h` is fee APR only (swap fees, 24h annualized). CAKE farming rewards are separate — always mention MasterChef/Infinity farming opportunities when relevant (see Farming & Rewards section).
+> **Note**: `apr24h` is fee APR only (swap fees, 24h annualized). CAKE farming rewards are added from Step 4c data when available.
 
-**Extra reward APRs (from Step 4b):** If Merkl or Incentra matches were found for a pool, append them to the pool metrics table and sum a Total APR:
+**Extra reward APRs (from Steps 4b and 4c):** If CAKE farm APR, Merkl, or Incentra data was found for a pool, append them to the pool metrics table and sum a Total APR:
 
-| Field            | Value          |
-| ---------------- | -------------- |
-| Base APR         | 18.4%          |
-| Merkl Rewards    | +5.2% (LIVE)   |
-| Incentra Rewards | +3.1% (ACTIVE) |
-| **Total APR**    | **26.7%**      |
+| Field            | Value              |
+| ---------------- | ------------------ |
+| Base APR         | 18.4%              |
+| CAKE Farm APR    | +8.3% (V3 farm)    |
+| Merkl Rewards    | +5.2% (LIVE)       |
+| Incentra Rewards | +3.1% (ACTIVE)     |
+| **Total APR**    | **35.0%**          |
 
 Rules:
 
+- Always show the "CAKE Farm APR" row for V3 and Infinity pools. Show the computed value if Step 4c returned non-zero data; show `—` if the pool has no active farm.
 - Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool.
 - Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
 - Always show the `status` value next to each extra APR.
-- Sum base APR + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards.
+- Sum base APR + CAKE Farm APR (if any) + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards at all.
 
 **Optional supplemental data (DefiLlama):** If the user asks for a detailed farming APY breakdown including CAKE reward APY, fetch from DefiLlama:
 
@@ -815,10 +840,11 @@ Pool Metrics:
   Total Liquidity:  $45.2M
   24h Volume:       $12.5M
   Base APR:         6.2%
+  CAKE Farm APR:    +8.3% (V3 MasterChef)
   Merkl Rewards:    +5.2% (LIVE)
   Incentra Rewards: +3.1% (ACTIVE)
-  Total APR:        14.5%
-  Recommended APR:  15–17% with concentrated position in range
+  Total APR:        26.0%
+  Recommended APR:  27–29% with concentrated position in range
 
 IL Assessment:
   Current Price:    2.5 CAKE/BNB
@@ -837,9 +863,9 @@ Extra Rewards:
   Total:    14.5% APR
 
 Farm Options:
-  V2/V3: After creating the position, stake it in MasterChef for CAKE rewards (separate step)
+  V3: After creating the position, stake it in MasterChef for CAKE rewards (separate step)
   Infinity: Farming is automatic — no separate staking needed!
-  Current farm APR: 12–15% (includes CAKE rewards)
+  CAKE Farm APR: 8.3% (from on-chain MasterChef data)
 
 ⚠️  Warnings:
   • Monitor price within your range; if it moves > ±25%, rebalancing may be needed
@@ -851,6 +877,8 @@ https://pancakeswap.finance/add/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82/BNB/2
 ```
 
 > **Extra Rewards section**: Include only if at least one Merkl or Incentra entry matched the pool. If no extra rewards exist, omit the entire "Extra Rewards" block — do not show it empty.
+>
+> **CAKE Farm APR rows**: Always show "CAKE Farm APR" in Pool Metrics for V3 and Infinity pools. Use the computed value from Step 4c when non-zero; show `—` when the pool has no active farm or `cakePrice == 0`. Omit the row only for V2 and StableSwap pools.
 
 ### Attempt to Open Browser
 

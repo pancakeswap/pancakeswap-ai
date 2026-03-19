@@ -70,12 +70,12 @@ This skill **does not execute transactions** — it reads on-chain state and gen
 
 The routing decision is made after Step 1 based on the user's pool type preference and chain:
 
-| Pool Type         | Discovery Method                               | Chains                                           | Position Model                 | Fee Query Method                                                        |
-| ----------------- | ---------------------------------------------- | ------------------------------------------------ | ------------------------------ | ----------------------------------------------------------------------- |
-| **V3**            | On-chain: NonfungiblePositionManager NFT       | BSC, ETH, ARB, Base, zkSync, Linea, opBNB, Monad | ERC-721 NFT (tokenId)          | TypeScript/node via `viem` (readContract on NonfungiblePositionManager) |
-| **Infinity (v4)** | **Explorer API only** (no NFT, no `balanceOf`) | BSC, Base only                                   | Singleton PoolManager (no NFT) | TypeScript/node via `@pancakeswap/infinity-sdk` (CL fee math)           |
+| Pool Type         | Discovery Method                               | Chains                                           | Position Model                 | Fee Query Method                                                                                                                  |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------ | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| **V3**            | On-chain: NonfungiblePositionManager NFT       | BSC, ETH, ARB, Base, zkSync, Linea, opBNB, Monad | ERC-721 NFT (tokenId)          | TypeScript/node via `viem` (readContract on NonfungiblePositionManager)                                                           |
+| **Infinity (v4)** | **Explorer API only** (no NFT, no `balanceOf`) | BSC, Base only                                   | Singleton PoolManager (no NFT) | TypeScript/node via `@pancakeswap/infinity-sdk` (CL fee math)                                                                     |
 | **Solana**        | `@pancakeswap/solana-core-sdk` CLMM + Farm API | Solana mainnet                                   | CLMM positions + Farm accounts | `Raydium.load()` + `getOwnerPositionInfo()` + `fetchMultipleFarmInfoAndUpdate()` — outputs `clmmPositions` + `farmPositions` JSON |
-| **V2**            | Out of scope                                   | BSC only                                         | ERC-20 LP token                | Out of scope — fees embedded in LP value                                |
+| **V2**            | Out of scope                                   | BSC only                                         | ERC-20 LP token                | Out of scope — fees embedded in LP value                                                                                          |
 
 ---
 

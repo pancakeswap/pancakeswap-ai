@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.6'
+  version: '1.10.7'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -738,7 +738,7 @@ https://pancakeswap.finance/add/0x55d398326f99059fF775485246999027B3197955/0xe9e
 **SOL/USDC V3 (0.25% fee tier) on Solana:**
 
 ```text
-https://pancakeswap.finance/add/SOL/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/2500?chain=sol
+https://pancakeswap.finance/add/11111111111111111111111111111111/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/2500?chain=sol
 ```
 
 **USDT/USDC V3 (0.01% fee tier) on Solana:**
@@ -841,7 +841,7 @@ const solLink = buildPancakeSwapLiquidityLink({
   feeTier: '0.25%',
 })
 console.log(solLink)
-// https://pancakeswap.finance/add/SOL/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/2500?chain=sol
+// https://pancakeswap.finance/add/11111111111111111111111111111111/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/2500?chain=sol
 ```
 
 ---

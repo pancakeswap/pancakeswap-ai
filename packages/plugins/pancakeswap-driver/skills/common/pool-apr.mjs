@@ -56,7 +56,7 @@ async function getMerklApr() {
         opportunity?.tokens?.[0]?.symbol?.toLowerCase().startsWith('cake-lp') ||
         opportunity?.protocol?.id?.toLowerCase().startsWith('pancake-swap') ||
         opportunity?.protocol?.id?.toLowerCase().startsWith('pancakeswap'),
-    );
+    )
 
     return pancakeResult.map((c) => ({
       chainId: c.chainId,
@@ -66,9 +66,8 @@ async function getMerklApr() {
       apr: c.apr / 100, // convert to percentage
       status: c.status,
     }))
-
   } catch (e) {
-    return [];
+    return []
   }
 }
 

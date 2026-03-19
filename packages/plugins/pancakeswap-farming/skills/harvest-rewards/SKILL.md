@@ -12,7 +12,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.1'
+  version: '1.4.2'
 ---
 
 # PancakeSwap Harvest Rewards
@@ -52,16 +52,16 @@ Route to the correct step based on what the user wants:
 
 ## Supported Chains
 
-| Chain           | Key      | Chain ID | V2 Farms | V3 Farms | Infinity Farms | Syrup Pools |
-| --------------- | -------- | -------- | -------- | -------- | -------------- | ----------- |
-| BNB Smart Chain | `bsc`    | 56       | No       | Yes      | Yes            | Yes         |
-| Ethereum        | `eth`    | 1        | No       | Yes      | No             | No          |
-| Arbitrum One    | `arb`    | 42161    | No       | Yes      | No             | No          |
-| Base            | `base`   | 8453     | No       | Yes      | Yes            | No          |
-| zkSync Era      | `zksync` | 324      | No       | Yes      | No             | No          |
-| zkEVM           | `zkevm`  | 1101     | No       | Yes      | No             | No          |
-| Linea           | `linea`  | 59144    | No       | Yes      | No             | No          |
-| Solana          | `sol`    | —        | No       | Yes (CLMM) | No           | No          |
+| Chain           | Key      | Chain ID | V2 Farms | V3 Farms   | Infinity Farms | Syrup Pools |
+| --------------- | -------- | -------- | -------- | ---------- | -------------- | ----------- |
+| BNB Smart Chain | `bsc`    | 56       | No       | Yes        | Yes            | Yes         |
+| Ethereum        | `eth`    | 1        | No       | Yes        | No             | No          |
+| Arbitrum One    | `arb`    | 42161    | No       | Yes        | No             | No          |
+| Base            | `base`   | 8453     | No       | Yes        | Yes            | No          |
+| zkSync Era      | `zksync` | 324      | No       | Yes        | No             | No          |
+| zkEVM           | `zkevm`  | 1101     | No       | Yes        | No             | No          |
+| Linea           | `linea`  | 59144    | No       | Yes        | No             | No          |
+| Solana          | `sol`    | —        | No       | Yes (CLMM) | No             | No          |
 
 **BSC is the primary chain** — Syrup Pools only exist on BSC.
 
@@ -274,14 +274,14 @@ curl -s 'https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 The PancakeSwap UI shows "Harvest" buttons on all farm and pool cards. Direct the user to the appropriate page for their position type:
 
-| Position Type      | UI Harvest Link                                         |
-| ------------------ | ------------------------------------------------------- |
-| V3 Farms           | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
-| Infinity Farms     | `https://pancakeswap.finance/liquidity/pools?chain=bsc` |
-| Syrup Pools        | `https://pancakeswap.finance/pools?chain=bsc`           |
-| CAKE Staking       | `https://pancakeswap.finance/cake-staking`              |
-| Solana CLMM Farms  | `https://pancakeswap.finance/farms?chain=sol`           |
-| Solana Liquidity   | `https://pancakeswap.finance/liquidity?chain=sol`       |
+| Position Type     | UI Harvest Link                                             |
+| ----------------- | ----------------------------------------------------------- |
+| V3 Farms          | `https://pancakeswap.finance/liquidity/positions?chain=bsc` |
+| Infinity Farms    | `https://pancakeswap.finance/liquidity/positions?chain=bsc` |
+| Syrup Pools       | `https://pancakeswap.finance/pools?chain=bsc`               |
+| CAKE Staking      | `https://pancakeswap.finance/cake-staking`                  |
+| Solana CLMM Farms | `https://pancakeswap.finance/farms?chain=sol`               |
+| Solana Liquidity  | `https://pancakeswap.finance/liquidity?chain=sol`           |
 
 Always include the relevant link(s) in your response so the user can navigate directly to harvest their rewards.
 

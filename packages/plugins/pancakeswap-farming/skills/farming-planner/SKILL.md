@@ -125,11 +125,11 @@ Use these to construct deep links. Always use the wrapped native token address i
 
 ### Solana (no numeric chain ID)
 
-| Token | Address (Mint)                               | Decimals |
-| ----- | -------------------------------------------- | -------- |
-| SOL   | `native`                                     | 9        |
-| USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | 6     |
-| USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | 6      |
+| Token | Address (Mint)                                 | Decimals |
+| ----- | ---------------------------------------------- | -------- |
+| SOL   | `native`                                       | 9        |
+| USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | 6        |
+| USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | 6        |
 
 ### Arbitrum (Chain ID 42161)
 

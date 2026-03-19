@@ -368,7 +368,7 @@ All Solana farms:
   https://pancakeswap.finance/liquidity/positions?network=8000001001
 
 Solana liquidity positions:
-  https://pancakeswap.finance/liquidity?chain=sol
+  https://pancakeswap.finance/liquidity/positions?network=8000001001
 ```
 
 ### V2 Note (if user asks about V2)
@@ -502,7 +502,7 @@ All Solana farms:
   https://pancakeswap.finance/liquidity/positions?network=8000001001
 
 Solana liquidity positions:
-  https://pancakeswap.finance/liquidity?chain=sol
+  https://pancakeswap.finance/liquidity/positions?network=8000001001
 ```
 
 ---

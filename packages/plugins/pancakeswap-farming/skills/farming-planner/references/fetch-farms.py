@@ -8,7 +8,7 @@ except ImportError:
 CHAIN_FILTER = os.environ.get('CHAIN_FILTER', '')
 PROTOCOL_FILTER = os.environ.get('PROTOCOL_FILTER', '')
 MIN_TVL = float(os.environ.get('MIN_TVL', '10000'))
-CHAIN_ID_TO_KEY = {56: 'bsc', 1: 'eth', 42161: 'arb', 8453: 'base', 324: 'zksync', 204: 'opbnb', 59144: 'linea'}
+CHAIN_ID_TO_KEY = {56: 'bsc', 1: 'eth', 42161: 'arb', 8453: 'base', 324: 'zksync', 204: 'opbnb', 59144: 'linea', 8000001001: 'sol'}
 NATIVE_TO_WRAPPED = {
     56:    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     1:     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -145,7 +145,11 @@ def build_link(pool):
     t0 = token_addr(pool['token0'], chain_id)
     t1 = token_addr(pool['token1'], chain_id)
     fee = pool.get('feeTier', 2500)
-    if not _valid_addr(t0) or not _valid_addr(t1):
+    SOL_ADDR_RE = re.compile(r'^[1-9A-HJ-NP-Za-km-z]{32,44}$')
+    is_sol = chain_key == 'sol'
+    if not is_sol and (not _valid_addr(t0) or not _valid_addr(t1)):
+        return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
+    if is_sol and (not SOL_ADDR_RE.match(t0) or not SOL_ADDR_RE.match(t1)):
         return f'https://pancakeswap.finance/liquidity/pools?chain={chain_key}'
     if proto == 'v2':
         return f'https://pancakeswap.finance/v2/add/{t0}/{t1}?chain={chain_key}&persistChain=1'

@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.5.1'
+  version: '1.5.2'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -198,9 +198,6 @@ https://pancakeswap.finance/liquidity/add/{chainKey}/infinity/{poolId}?chain={ch
 
 # Solana CLMM — add liquidity
 https://pancakeswap.finance/add/{token0}/{token1}/{feeTier}?chain=sol&persistChain=1
-
-# Solana farms page
-https://pancakeswap.finance/liquidity/pools?network=8000001001
 ```
 
 For V3, use the wrapped token address (WBNB `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC).

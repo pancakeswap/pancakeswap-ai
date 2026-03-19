@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.11'
+  version: '1.10.15'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -478,6 +478,40 @@ Multiple pool IDs can be passed as comma-separated values.
 
 ---
 
+## Step 4d: Fetch Infinity Protocol Fees
+
+> **Run this step** for any `infinityCl`, `infinityBin`, or `infinityStable` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
+
+For each Infinity pool, run:
+
+```bash
+CHAIN_ID="56"  # numeric chain ID (56 = BSC, 8453 = Base)
+RPC="https://bsc-dataseed1.binance.org"  # BSC; use https://mainnet.base.org for Base
+POOL_ID="0x26a8e4591b7a0efcd45a577ad0d54aa64a99efaf2546ad4d5b0454c99eb70eab"
+
+[[ "$CHAIN_ID" =~ ^(56|8453)$ ]] || { echo "Unsupported chain for Infinity"; exit 1; }
+[[ "$POOL_ID" =~ ^0x[0-9a-fA-F]{64}$ ]] || { echo "Invalid pool ID"; exit 1; }
+
+CHAIN_ID="$CHAIN_ID" RPC="$RPC" POOL_ID="$POOL_ID" \
+  node packages/plugins/pancakeswap-driver/skills/common/protocol-fee.mjs
+```
+
+Output: `{ "protocolFeePercent": "0.03%", "poolType": "cl" }`
+
+**RPC by chain:**
+
+| Chain ID | Chain | Public RPC                          |
+| -------- | ----- | ----------------------------------- |
+| 56       | BSC   | `https://bsc-dataseed1.binance.org` |
+| 8453     | Base  | `https://mainnet.base.org`          |
+
+**Handling results:**
+
+- Store `protocolFeePercent` keyed by pool `id` for use in Step 5 and the output.
+- If the script fails or produces no output (e.g. pool ID not found in either manager), treat `protocolFeePercent` as `0%` — do not abort the plan. The Protocol Fee and Effective Fee rows are still shown (with `0%` and the fee tier value respectively).
+
+---
+
 ## Step 5: Pool Assessment (Liquidity, Volume & APR)
 
 The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the pool discovery response — no separate API call needed. Use these values directly.
@@ -521,6 +555,20 @@ Rules:
 - Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
 - Always show the `status` value next to each extra APR.
 - Sum base APR + CAKE Farm APR (if any) + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards at all.
+
+**Protocol Fee (Infinity pools only):** For `infinityCl`, `infinityBin` pools, include protocol fee rows in the pool metrics table:
+
+| Field         | Value  |
+| ------------- | ------ |
+| Fee Tier      | 0.25%  |
+| Protocol Fee  | +0.03% |
+| Effective Fee | 0.28%  |
+
+Rules:
+
+- Always show `Protocol Fee` and `Effective Fee` rows for Infinity pools (`infinityCl`, `infinityBin`). Never omit them.
+- If the script failed or returned no output, use `0%` as `protocolFeePercent`.
+- `Effective Fee = feeTierPct + protocolFeePercent` (sum the numeric values).
 
 **Optional supplemental data (DefiLlama):** If the user asks for a detailed farming APY breakdown including CAKE reward APY, fetch from DefiLlama:
 
@@ -623,6 +671,11 @@ Is the pair correlated but not strictly stable (e.g., BNB/ETH)?
 - Single fixed fee tier: **0.25%**
 - Simpler but lower capital efficiency than V3
 - Good for: Passive LPs who don't want to rebalance positions
+
+### Infinity
+
+- Has an additional protocol fee on top of the swap fee tier (e.g., 0.25% + 0.03% protocol fee)
+- **Protocol fee must always be included**
 
 ### StableSwap (BSC, Ethereum and Arbitrum Only)
 
@@ -899,6 +952,10 @@ Recommended Range: 2.0–3.0 CAKE/BNB (±25% from current 2.5)
 Pool Metrics:
   Total Liquidity:  $45.2M
   24h Volume:       $12.5M
+  Fee Tier:         0.25%
+  [Infinity pools only:]
+  Protocol Fee:     +0.03%  (0% if none set)
+  Effective Fee:    0.28%   ← total cost to swappers; your LP earnings are from the fee tier portion
   Base APR:         6.2%
   CAKE Farm APR:    +8.3% (V3 MasterChef)
   Merkl Rewards:    +5.2% (LIVE)

@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '2.2.3'
+  version: '2.3.7'
 ---
 
 # PancakeSwap Collect Fees
@@ -46,7 +46,7 @@ This skill **does not execute transactions** — it reads on-chain state and gen
 - **5-step workflow**: Gather intent → Discover positions → Resolve tokens + prices → Display fee summary → Generate deep links
 - **V3**: On-chain position discovery via TypeScript/node using `viem` + NonfungiblePositionManager (tokenId-based, ERC-721)
 - **Infinity (v4)**: Singleton PoolManager model — no NFT; positions discovered via Explorer API, CL fees computed via TypeScript/node using `@pancakeswap/infinity-sdk`; CAKE rewards auto-distributed every 8 hours
-- **Solana**: Farm positions discovered and harvested via `@pancakeswap/solana-core-sdk` — outputs unsigned transaction instructions
+- **Solana**: CLMM positions and farm stake positions discovered via `@pancakeswap/solana-core-sdk` — outputs structured JSON with positions and pending rewards; directs user to PancakeSwap UI for collection
 - **V2 scope**: V2 fees are embedded in LP token value — no separate collection step (redirects to Remove Liquidity)
 - **Multi-chain**: 7 EVM networks for V3; BSC and Base for Infinity; Solana mainnet
 
@@ -74,7 +74,7 @@ The routing decision is made after Step 1 based on the user's pool type preferen
 | ----------------- | ---------------------------------------------- | ------------------------------------------------ | ------------------------------ | ----------------------------------------------------------------------- |
 | **V3**            | On-chain: NonfungiblePositionManager NFT       | BSC, ETH, ARB, Base, zkSync, Linea, opBNB, Monad | ERC-721 NFT (tokenId)          | TypeScript/node via `viem` (readContract on NonfungiblePositionManager) |
 | **Infinity (v4)** | **Explorer API only** (no NFT, no `balanceOf`) | BSC, Base only                                   | Singleton PoolManager (no NFT) | TypeScript/node via `@pancakeswap/infinity-sdk` (CL fee math)           |
-| **Solana**        | `@pancakeswap/solana-core-sdk` Farm discovery  | Solana mainnet                                   | Farm program accounts          | `Farm.harvestAllRewards()` — outputs unsigned transaction instructions  |
+| **Solana**        | `@pancakeswap/solana-core-sdk` CLMM + Farm API | Solana mainnet                                   | CLMM positions + Farm accounts | `Raydium.load()` + `getOwnerPositionInfo()` + `fetchMultipleFarmInfoAndUpdate()` — outputs `clmmPositions` + `farmPositions` JSON |
 | **V2**            | Out of scope                                   | BSC only                                         | ERC-20 LP token                | Out of scope — fees embedded in LP value                                |
 
 ---
@@ -227,18 +227,25 @@ SOL_WALLET='YourBase58PubkeyHere'
 Install Solana SDK in the temp directory:
 
 ```bash
-npm install --silent @pancakeswap/solana-core-sdk @solana/web3.js
+npm install --silent @pancakeswap/solana-core-sdk @solana/web3.js @solana/spl-token@0.4.0
 ```
 
-Read `references/harvest-solana.mjs` for the complete script. Copy it into the temp directory, then execute:
+Read `references/fetch-solana.cjs` for the complete script. Copy it into the temp directory, then execute:
 
 ```bash
-SOL_WALLET="$SOL_WALLET" node harvest-solana.mjs
+SOL_WALLET="$SOL_WALLET" node fetch-solana.cjs
 ```
 
-Parse the JSON output. The `instructionsBase64` field contains the **unsigned** serialized transaction instructions. Present these to the user along with the PancakeSwap Solana farm deep link for signing in the UI.
+**Timeout:** Use a **5-minute timeout (300000 ms)** when running this script. Users with many positions require sequential RPC calls that can take several minutes to complete.
 
-**Important:** These instructions are unsigned — they must be signed by the user's Solana wallet. Never request or handle private keys.
+Parse the JSON output:
+
+- `clmmPositions[]` — CLMM concentrated liquidity positions: `positionId`, `poolId`, `tickLower`, `tickUpper`, `liquidity`
+- `farmPositions[]` — Farm stake positions: `poolId`, `deposited`, `pendingRewards[]`
+
+**Note:** Exact CLMM pending fees require pool fee-growth state and are shown accurately in the PancakeSwap UI. The script fetches position data only — direct the user to the PancakeSwap UI to review and collect fees.
+
+**Important:** This script is read-only. It does not generate transaction instructions or require signing. Never request or handle private keys.
 
 ---
 
@@ -340,15 +347,28 @@ If no Infinity positions are found for either type, clearly state this.
 ### Solana Section
 
 ```
-Solana Farm Positions
+Solana Positions
 
 Wallet: <base58-pubkey>
 
-Unsigned harvest instructions generated via @pancakeswap/solana-core-sdk Farm.harvestAllRewards().
-Sign these instructions with your Solana wallet to claim pending rewards.
+─── CLMM Positions ─────────────────────
+| Position | Pool | Lower Tick | Upper Tick | Liquidity |
+|----------|------|------------|------------|-----------|
+| abc...   | xyz  | -100       | 100        | 1000000   |
 
-→ PancakeSwap Solana farms:
+Note: Exact pending fees are shown in the PancakeSwap UI.
+
+─── Farm Positions ──────────────────────
+| Pool | Deposited LP | Pending Rewards |
+|------|-------------|-----------------|
+| xyz  | 5000000     | 123 RAY, 45 USDC|
+
+─── Deep Links ──────────────────────────
+All Solana farms:
   https://pancakeswap.finance/farms?chain=sol
+
+Solana liquidity positions:
+  https://pancakeswap.finance/liquidity?chain=sol
 ```
 
 ### V2 Note (if user asks about V2)
@@ -460,17 +480,29 @@ Fee Collection Summary
 
 Chain:        Solana
 Wallet:       <base58-pubkey>
-Pool Types:   Solana Farms
+Pool Types:   Solana CLMM + Farms
 
-─── Solana Farm Positions ──────────────────────────────────
+─── CLMM Positions ─────────────────────────────────────────
 
-Unsigned harvest instructions generated via @pancakeswap/solana-core-sdk.
-Sign with your Solana wallet to claim pending farm rewards.
+| Position | Pool | Lower Tick | Upper Tick | Liquidity |
+|----------|------|------------|------------|-----------|
+| abc...   | xyz  | -100       | 100        | 1000000   |
+
+Note: Exact pending fees are shown in the PancakeSwap UI.
+
+─── Farm Positions ──────────────────────────────────────────
+
+| Pool | Deposited LP | Pending Rewards |
+|------|-------------|-----------------|
+| xyz  | 5000000     | 123 RAY, 45 USDC|
 
 ─── Deep Links ─────────────────────────────────────────────
 
-PancakeSwap Solana farms:
+All Solana farms:
   https://pancakeswap.finance/farms?chain=sol
+
+Solana liquidity positions:
+  https://pancakeswap.finance/liquidity?chain=sol
 ```
 
 ---
@@ -480,6 +512,6 @@ PancakeSwap Solana farms:
 - **NonfungiblePositionManager ABI**: `positions(uint256)` returns `(nonce, operator, token0, token1, fee, tickLower, tickUpper, liquidity, feeGrowthInside0LastX128, feeGrowthInside1LastX128, tokensOwed0, tokensOwed1)`
 - **viem docs**: <https://viem.sh/docs/contract/readContract>
 - **@pancakeswap/infinity-sdk**: fee computation + `encodeClaimCalldata()`
-- **@pancakeswap/solana-core-sdk**: `Farm.harvestAllRewards()`
+- **@pancakeswap/solana-core-sdk**: `Raydium.load()`, `raydium.clmm.getOwnerPositionInfo()`, `fetchMultipleFarmInfoAndUpdate()`
 - **Infinity Docs**: <https://developer.pancakeswap.finance/contracts/infinity/overview>
 - **PancakeSwap Liquidity UI**: <https://pancakeswap.finance/liquidity/pools>

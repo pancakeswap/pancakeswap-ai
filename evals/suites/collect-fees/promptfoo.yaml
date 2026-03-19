@@ -122,27 +122,29 @@ tests:
     assert:
       - type: llm-rubric
         value: |
-          The response should correctly handle a Solana farm fee check:
+          The response should correctly handle a Solana position/fee check:
           - Recognises the wallet as a Solana base58 public key (not an EVM 0x address)
-          - Uses @pancakeswap/solana-core-sdk Farm.harvestAllRewards() to generate unsigned
-            transaction instructions
-          - Outputs the instructions as base64 or structured JSON for the user to sign
-          - Does NOT request a private key or attempt to sign the transaction
+          - Uses Raydium.load() (NOT new Farm()) to initialise the SDK
+          - Calls getOwnerPositionInfo() to discover CLMM positions
+          - Outputs clmmPositions and/or farmPositions as structured JSON (not instructionsBase64)
+          - Does NOT generate unsigned transaction instructions or ask the user to sign anything
+          - Does NOT request a private key
           - Directs user to pancakeswap.finance/farms?chain=sol
         threshold: 0.85
         provider: anthropic:claude-sonnet-4-5-20250929
       - type: contains-any
         value:
           - 'solana-core-sdk'
-          - 'Farm.harvestAllRewards'
-          - 'harvestAllRewards'
+          - 'Raydium.load'
+          - 'getOwnerPositionInfo'
+          - 'clmmPositions'
+          - 'farmPositions'
           - 'solana'
           - 'Solana'
-      - type: contains-any
+      - type: not-contains-any
         value:
-          - 'unsigned'
-          - 'sign'
-          - 'base64'
-          - 'instructions'
+          - 'instructionsBase64'
+          - 'harvestAllRewards'
+          - 'new Farm('
       - type: contains
         value: 'pancakeswap.finance/farms'

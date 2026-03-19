@@ -1,6 +1,6 @@
 {
   "name": "pancakeswap-driver",
-  "version": "1.19.8",
+  "version": "1.20.6",
   "description": "AI-powered assistance for discovering tokens and planning PancakeSwap swaps with deep links to the PancakeSwap interface",
   "author": {
     "name": "PancakeSwap",

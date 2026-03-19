@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '2.3.1'
+  version: '2.3.7'
 ---
 
 # PancakeSwap Collect Fees
@@ -227,7 +227,7 @@ SOL_WALLET='YourBase58PubkeyHere'
 Install Solana SDK in the temp directory:
 
 ```bash
-npm install --silent @pancakeswap/solana-core-sdk @solana/web3.js
+npm install --silent @pancakeswap/solana-core-sdk @solana/web3.js @solana/spl-token@0.4.0
 ```
 
 Read `references/fetch-solana.cjs` for the complete script. Copy it into the temp directory, then execute:
@@ -235,6 +235,8 @@ Read `references/fetch-solana.cjs` for the complete script. Copy it into the tem
 ```bash
 SOL_WALLET="$SOL_WALLET" node fetch-solana.cjs
 ```
+
+**Timeout:** Use a **5-minute timeout (300000 ms)** when running this script. Users with many positions require sequential RPC calls that can take several minutes to complete.
 
 Parse the JSON output:
 

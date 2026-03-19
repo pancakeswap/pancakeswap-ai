@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.8'
+  version: '1.10.9'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -308,6 +308,12 @@ curl -s "https://api.dexscreener.com/latest/dex/tokens/${MINT}" | \
 
 Use the PancakeSwap Explorer API as the primary pool discovery source — it provides first-party TVL, volume, APR, and protocol data in a single call.
 
+Before calling the Explorer API, determine the appropriate sort order from the user's stated goal:
+
+- User wants best APR / highest yield → `ORDER_BY="apr24h"`
+- User wants most active / high-volume pool → `ORDER_BY="volumeUSD24h"`
+- Default (deepest liquidity, safest pool) → `ORDER_BY="tvlUSD"`
+
 ### When both tokens are known → use the pair endpoint
 
 ```bash
@@ -319,7 +325,7 @@ CHAIN="bsc"
 [[ "$TOKEN0" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token0 address"; exit 1; }
 [[ "$TOKEN1" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token1 address"; exit 1; }
 
-curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=tvlUSD" | \
+curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=${ORDER_BY}" | \
   jq '.rows[] | {
     id, protocol,
     feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
@@ -349,7 +355,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   --data-urlencode "protocols=infinityCl" \
   --data-urlencode "protocols=infinityBin" \
   --data-urlencode "protocols=infinityStable" \
-  --data-urlencode "orderBy=tvlUSD" \
+  --data-urlencode "orderBy=${ORDER_BY}" \
   --data-urlencode "tokens=${CHAIN_ID}:0x55d398326f99059fF775485246999027B3197955" | \
   jq '.rows[] | {
     id, protocol,

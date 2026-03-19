@@ -173,10 +173,10 @@ This repo is designed to work with **any** LLM coding agent (Claude Code, Cursor
 
 ## PancakeSwap Resources
 
-- Developer Docs: https://developer.pancakeswap.finance/
-- PancakeSwap App: https://pancakeswap.finance/
-- BSCScan: https://bscscan.com/
-- GitHub: https://github.com/pancakeswap/
+- Developer Docs: <https://developer.pancakeswap.finance/>
+- PancakeSwap App: <https://pancakeswap.finance/>
+- BSCScan: <https://bscscan.com/>
+- GitHub: <https://github.com/pancakeswap/>
 - Smart Router SDK: `@pancakeswap/smart-router`
 - Universal Router SDK: `@pancakeswap/universal-router-sdk`
 

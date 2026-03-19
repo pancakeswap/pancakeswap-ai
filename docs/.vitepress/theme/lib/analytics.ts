@@ -16,6 +16,7 @@ function canTrack() {
 }
 
 export function trackPageView(path: string) {
+  if (typeof window === 'undefined') return
   for (const delay of pageViewRetryDelays) {
     window.setTimeout(() => {
       if (sentPageViews.has(path) || !canTrack()) {

@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.9'
+  version: '1.10.11'
 ---
 
 # PancakeSwap Liquidity Planner
@@ -294,7 +294,7 @@ curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/$
   jq '.rows[] | {
     id, protocol,
     feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 100 | tostring | . + "%") end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 10000 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
@@ -325,7 +325,7 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   jq '.rows[] | {
     id, protocol,
     feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 100 | tostring | . + "%") end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 10000 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),

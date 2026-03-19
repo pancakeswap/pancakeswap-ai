@@ -48,7 +48,9 @@
   },
   "dependencies": {
     "@pancakeswap/infinity-sdk": "^1.0.8",
+    "@pancakeswap/solana-core-sdk": "^0.2.1",
     "@pancakeswap/v3-sdk": "^3.10.0",
+    "@solana/spl-token": "^0.4.0",
     "viem": "^2.46.3"
   }
 }

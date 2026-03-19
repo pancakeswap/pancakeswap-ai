@@ -161,7 +161,7 @@ https://pancakeswap.finance/liquidity/add/{chainKey}/infinity/{poolId}?chain={ch
 https://pancakeswap.finance/add/{token0}/{token1}/{feeTier}?chain=sol&persistChain=1
 
 # Solana farms page
-https://pancakeswap.finance/farms?chain=sol
+https://pancakeswap.finance/liquidity/pools?network=8000001001
 ```
 
 For V3, use the wrapped token address (WBNB `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC).
@@ -684,7 +684,7 @@ Output includes `tokensOwed0`, `tokensOwed1` (LP fees) and `farmReward` (farming
 **UI harvest link:**
 
 ```
-https://pancakeswap.finance/farms?chain=sol
+https://pancakeswap.finance/liquidity/positions?network=8000001001
 ```
 
 ### UI Harvest (recommended for mainnet)
@@ -692,7 +692,7 @@ https://pancakeswap.finance/farms?chain=sol
 Direct the user to the relevant farm page — the UI has "Harvest" buttons:
 
 ```
-https://pancakeswap.finance/liquidity/pools?chain=bsc
+https://pancakeswap.finance/liquidity/positions?chain=bsc
 ```
 
 ---

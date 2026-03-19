@@ -365,7 +365,7 @@ Note: Exact pending fees are shown in the PancakeSwap UI.
 
 ─── Deep Links ──────────────────────────
 All Solana farms:
-  https://pancakeswap.finance/farms?chain=sol
+  https://pancakeswap.finance/liquidity/positions?network=8000001001
 
 Solana liquidity positions:
   https://pancakeswap.finance/liquidity?chain=sol
@@ -408,7 +408,7 @@ https://pancakeswap.finance/liquidity/positions?network={chainId}
 ### Solana — Farms UI
 
 ```
-https://pancakeswap.finance/farms?chain=sol
+https://pancakeswap.finance/liquidity/positions?network=8000001001
 ```
 
 ### Attempt to Open in Browser
@@ -499,7 +499,7 @@ Note: Exact pending fees are shown in the PancakeSwap UI.
 ─── Deep Links ─────────────────────────────────────────────
 
 All Solana farms:
-  https://pancakeswap.finance/farms?chain=sol
+  https://pancakeswap.finance/liquidity/positions?network=8000001001
 
 Solana liquidity positions:
   https://pancakeswap.finance/liquidity?chain=sol

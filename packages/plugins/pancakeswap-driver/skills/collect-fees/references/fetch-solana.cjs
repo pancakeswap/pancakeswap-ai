@@ -232,8 +232,6 @@ async function main() {
       //   return null;
       // }
 
-      console.log("boo", pos.poolId.toBase58(), poolInfo.id, poolInfos.find(p => p.id === pos.poolId.toBase58()).id)
-
       return {
         poolId: pos.poolId.toBase58(),
         token0: poolInfo.mintA.address,
@@ -248,8 +246,6 @@ async function main() {
       };
     })
     .filter(Boolean); // Only positions with non-zero amounts
-
-  // console.log("Num pos", positions.length);
 
   console.log(JSON.stringify(positions, null, 2));
 }

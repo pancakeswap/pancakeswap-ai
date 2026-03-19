@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.7'
+  version: '1.10.8'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -499,7 +499,9 @@ APR extraction rules:
 
 - **Fee APR** → `day.feeApr` (use this instead of Explorer API `apr24h` for Solana pools)
 - **CAKE Farm APR** → `day.rewardApr[0]` (first entry in the reward array)
+- **Total APR** → `day.apr`
 - If `rewardApr` is empty or missing, show `—` for CAKE Farm APR (no active farm)
+- **All three values (`feeApr`, `cakeFarmApr`, `totalApr`) are already in percentage units** (e.g., `21.66` means 21.66%). Do not multiply by 100 — unlike `apr24h` from the non-Solana Explorer API which is a decimal fraction.
 
 Multiple pool IDs can be passed as comma-separated values.
 

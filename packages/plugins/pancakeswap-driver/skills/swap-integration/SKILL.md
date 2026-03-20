@@ -6,7 +6,7 @@ model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.1.0'
+  version: '1.2.2'
 ---
 
 # Swap Integration
@@ -15,36 +15,39 @@ Integrate PancakeSwap swaps into frontends, backends, and smart contracts.
 
 ## Quick Decision Guide
 
-| Building...                          | Use This Method                                |
-| ------------------------------------ | ---------------------------------------------- |
-| Quick quote or prototype             | PancakeSwap Routing API (Method 1)             |
-| Frontend with React/Next.js          | Smart Router SDK + Universal Router (Method 2) |
-| Backend script or trading bot        | Smart Router SDK + Universal Router (Method 2) |
-| Simple V2 swap, smart contract       | Direct V2 Router contract calls (Method 3)     |
-| Need exact Universal Router encoding | Universal Router SDK directly (Method 2)       |
+| Building...                                  | Use This Method                                |
+| -------------------------------------------- | ---------------------------------------------- |
+| Quick quote or prototype                     | PancakeSwap Routing API (Method 1)             |
+| Frontend with React/Next.js                  | Smart Router SDK + Universal Router (Method 2) |
+| Backend script or trading bot                | Smart Router SDK + Universal Router (Method 2) |
+| Simple V2 swap, smart contract               | Direct V2 Router contract calls (Method 3)     |
+| Need exact Universal Router encoding         | Universal Router SDK directly (Method 2)       |
+| Swap through Infinity (v4) CL or Bin pools   | Routing API (Method 1) or Smart Router SDK with Infinity pool types (Method 2) |
 
 ### Protocol Types
 
-| Protocol   | Description                                    | Fee Tiers (bps)         | Chains        |
-| ---------- | ---------------------------------------------- | ----------------------- | ------------- |
-| V2         | Classic AMM (xy=k), constant product formula   | 25 (0.25%)              | BSC only      |
-| V3         | Concentrated liquidity (Uniswap V3-compatible) | 1, 5, 25, 100 (0.01–1%) | All chains    |
-| StableSwap | Low-slippage for correlated/pegged assets      | 1, 4 (0.01–0.04%)       | BSC only      |
-| Mixed      | Split route across V2 + V3 + StableSwap        | N/A (composite)         | BSC primarily |
+| Protocol      | Description                                                                                      | Fee Tiers (bps)         | Chains              |
+| ------------- | ------------------------------------------------------------------------------------------------ | ----------------------- | ------------------- |
+| V2            | Classic AMM (xy=k), constant product formula                                                     | 25 (0.25%)              | BSC only            |
+| V3            | Concentrated liquidity (Uniswap V3-compatible)                                                   | 1, 5, 25, 100 (0.01–1%) | All chains          |
+| StableSwap    | Low-slippage for correlated/pegged assets                                                        | 1, 4 (0.01–0.04%)       | BSC only            |
+| Infinity CL   | Concentrated liquidity in the v4 singleton PoolManager; supports hooks for custom logic          | Same tiers as V3        | BSC, Base           |
+| Infinity Bin  | Fixed-price-bin liquidity (similar to Trader Joe v2); tight ranges, predictable bin-level prices | Configurable            | BSC, Base           |
+| Mixed         | Split route across any combination of the above protocols                                        | N/A (composite)         | BSC primarily       |
 
 ## Supported Chains
 
-| Chain                   | Chain ID | V2  | V3  | StableSwap | RPC                                                                      |
-| ----------------------- | -------- | --- | --- | ---------- | ------------------------------------------------------------------------ |
-| BNB Smart Chain         | 56       | ✅  | ✅  | ✅         | `https://bsc-dataseed1.binance.org`                                      |
-| BNB Smart Chain Testnet | 97       | ✅  | ❌  | ❌         | `https://bsc-testnet-rpc.publicnode.com or https://bsc-testnet.drpc.org` |
-| Ethereum                | 1        | ❌  | ✅  | ❌         | `https://cloudflare-eth.com`                                             |
-| Arbitrum One            | 42161    | ❌  | ✅  | ❌         | `https://arb1.arbitrum.io/rpc`                                           |
-| Base                    | 8453     | ❌  | ✅  | ❌         | `https://mainnet.base.org`                                               |
-| Polygon                 | 137      | ❌  | ✅  | ❌         | `https://polygon-rpc.com`                                                |
-| zkSync Era              | 324      | ❌  | ✅  | ❌         | `https://mainnet.era.zksync.io`                                          |
-| Linea                   | 59144    | ❌  | ✅  | ❌         | `https://rpc.linea.build`                                                |
-| opBNB                   | 204      | ❌  | ✅  | ❌         | `https://opbnb-mainnet-rpc.bnbchain.org`                                 |
+| Chain                   | Chain ID | V2  | V3  | StableSwap | Infinity CL | Infinity Bin | RPC                                                                      |
+| ----------------------- | -------- | --- | --- | ---------- | ----------- | ------------ | ------------------------------------------------------------------------ |
+| BNB Smart Chain         | 56       | ✅  | ✅  | ✅         | ✅          | ✅           | `https://bsc-dataseed1.binance.org`                                      |
+| BNB Smart Chain Testnet | 97       | ✅  | ❌  | ❌         | ❌          | ❌           | `https://bsc-testnet-rpc.publicnode.com or https://bsc-testnet.drpc.org` |
+| Ethereum                | 1        | ❌  | ✅  | ❌         | ❌          | ❌           | `https://cloudflare-eth.com`                                             |
+| Arbitrum One            | 42161    | ❌  | ✅  | ❌         | ❌          | ❌           | `https://arb1.arbitrum.io/rpc`                                           |
+| Base                    | 8453     | ❌  | ✅  | ❌         | ✅          | ✅           | `https://mainnet.base.org`                                               |
+| Polygon                 | 137      | ❌  | ✅  | ❌         | ❌          | ❌           | `https://polygon-rpc.com`                                                |
+| zkSync Era              | 324      | ❌  | ✅  | ❌         | ❌          | ❌           | `https://mainnet.era.zksync.io`                                          |
+| Linea                   | 59144    | ❌  | ✅  | ❌         | ❌          | ❌           | `https://rpc.linea.build`                                                |
+| opBNB                   | 204      | ❌  | ✅  | ❌         | ❌          | ❌           | `https://opbnb-mainnet-rpc.bnbchain.org`                                 |
 
 > **For testing**: Use **BSC Testnet (chain ID 97)**. Get free testnet BNB from <https://testnet.bnbchain.org/faucet-smart>.
 > The Smart Router SDK does not index testnet pools — use **Method 3 (Direct V2 Router)** on testnet.
@@ -124,6 +127,8 @@ tokenInAddress=BNB\
 | `type`            | string | `"exactIn"` or `"exactOut"`                         |
 | `maxHops`         | number | Max hops per route (default: 3)                     |
 | `maxSplits`       | number | Max route splits (default: 4)                       |
+
+> **Infinity (v4) support**: The Routing API automatically considers Infinity CL and Infinity Bin pools on BSC and Base alongside V2/V3/StableSwap. No extra parameters are needed — the router selects the best route across all pool types.
 
 ### TypeScript Fetch Example
 
@@ -221,7 +226,7 @@ const walletClient = createWalletClient({
 
 ```typescript
 import { ChainId, Token } from '@pancakeswap/sdk'
-import { Native } from '@pancakeswap/swap-sdk-core'
+import { Native } from '@pancakeswap/swap-sdk-evm'
 
 const chainId = ChainId.BSC // 56
 
@@ -283,6 +288,8 @@ const pools = [...v2Pools, ...v3Pools, ...stablePools]
 
 > **Performance tip**: If you're building a UI, consider caching pools for 30–60 seconds and only re-fetching when the user changes tokens or chain.
 
+> **Infinity (v4) pool access**: The Smart Router SDK's Infinity pool integration is still evolving. For reliable Infinity CL and Infinity Bin pool access today, use **Method 1 (Routing API)** — it automatically considers all pool types including Infinity on BSC and Base with no extra setup required.
+
 ### Step 4: Find Best Trade
 
 ```typescript
@@ -312,7 +319,7 @@ console.log('Route:', trade.routes.map((r) => r.type).join(' + '))
 
 ```typescript
 import { erc20Abi } from 'viem'
-import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS } from '@pancakeswap/universal-router-sdk'
+import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
 
 const PERMIT2_ADDRESS = '0x000000000022D473030F116dDEE9F6B43aC78BA3' as const
 
@@ -344,7 +351,7 @@ async function ensureTokenApproved(
   // Step 2: Approve the Universal Router via Permit2 (per-swap, via signature OR transaction)
   // The Universal Router SDK handles this via inputTokenPermit in options.
   // For simplicity, approve the Universal Router directly instead:
-  const routerAddress = UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`
+  const routerAddress = getUniversalRouterAddress(chainId) as `0x${string}`
   const routerAllowance = await publicClient.readContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -368,14 +375,14 @@ async function ensureTokenApproved(
 ### Step 6: Encode and Send the Transaction
 
 ```typescript
-import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS } from '@pancakeswap/universal-router-sdk'
+import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
 import { Percent } from '@pancakeswap/sdk'
 
 const slippage = new Percent(50, 10000) // 0.5%
 const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20) // 20 min
 
 // Encode the swap calldata
-const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
+const { calldata, value } = PancakeSwapUniversalRouter.swapERC20CallParameters(trade, {
   slippageTolerance: slippage,
   recipient: account.address,
   deadlineOrPreviousBlockhash: deadline,
@@ -383,7 +390,7 @@ const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
 
 // Send the transaction
 const hash = await walletClient.sendTransaction({
-  to: UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`,
+  to: getUniversalRouterAddress(chainId) as `0x${string}`,
   data: calldata as `0x${string}`,
   value: BigInt(value), // Non-zero only when input is native BNB/ETH
   gas: 400000n, // Overestimate — unspent gas is refunded
@@ -422,7 +429,7 @@ const trade = await SmartRouter.getBestTrade(
 console.log('Max BNB to spend:', trade.inputAmount.toSignificant(6))
 
 // Encode with maximumAmountIn applied automatically via slippageTolerance
-const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
+const { calldata, value } = PancakeSwapUniversalRouter.swapERC20CallParameters(trade, {
   slippageTolerance: new Percent(50, 10000),
   recipient: account.address,
   deadlineOrPreviousBlockhash: deadline,
@@ -647,7 +654,7 @@ Always use `publicClient.estimateGas()` in production; hard-coded values can und
 // Simulate the transaction to get the revert reason
 try {
   await publicClient.call({
-    to: UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`,
+    to: getUniversalRouterAddress(chainId) as `0x${string}`,
     data: calldata as `0x${string}`,
     value: BigInt(value),
     account: account.address,
@@ -703,7 +710,7 @@ function useSwap() {
       )
 
       // 3. Encode
-      const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
+      const { calldata, value } = PancakeSwapUniversalRouter.swapERC20CallParameters(trade, {
         slippageTolerance: new Percent(50, 10000),
         recipient: walletClient.account.address,
         deadlineOrPreviousBlockhash: BigInt(Math.floor(Date.now() / 1000) + 1200),
@@ -711,7 +718,7 @@ function useSwap() {
 
       // 4. Send
       return walletClient.sendTransaction({
-        to: UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`,
+        to: getUniversalRouterAddress(chainId) as `0x${string}`,
         data: calldata as `0x${string}`,
         value: BigInt(value),
       })
@@ -729,9 +736,9 @@ import { createPublicClient, createWalletClient, http } from 'viem'
 import { bsc } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 import { ChainId, TradeType, Percent } from '@pancakeswap/sdk'
-import { Native, Token, CurrencyAmount } from '@pancakeswap/swap-sdk-core'
+import { Native, Token, CurrencyAmount } from '@pancakeswap/swap-sdk-evm'
 import { SmartRouter, PoolType } from '@pancakeswap/smart-router'
-import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS } from '@pancakeswap/universal-router-sdk'
+import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
 
 const chainId = ChainId.BSC
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
@@ -785,7 +792,7 @@ async function swapBNBforCAKE(bnbAmountWei: bigint) {
   )
 
   // 3. Encode calldata
-  const { calldata, value } = SwapRouter.swapERC20CallParameters(trade, {
+  const { calldata, value } = PancakeSwapUniversalRouter.swapERC20CallParameters(trade, {
     slippageTolerance: new Percent(50, 10000), // 0.5%
     recipient: account.address,
     deadlineOrPreviousBlockhash: BigInt(Math.floor(Date.now() / 1000) + 1200),
@@ -793,7 +800,7 @@ async function swapBNBforCAKE(bnbAmountWei: bigint) {
 
   // 4. Send (no token approval needed — input is native BNB)
   const hash = await walletClient.sendTransaction({
-    to: UNIVERSAL_ROUTER_ADDRESS(chainId) as `0x${string}`,
+    to: getUniversalRouterAddress(chainId) as `0x${string}`,
     data: calldata as `0x${string}`,
     value: BigInt(value),
     gas: 400000n,

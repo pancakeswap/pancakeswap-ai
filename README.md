@@ -77,7 +77,7 @@ npm run test:evals:farming-planner       # farming planning evals
 npx promptfoo view                    # browse results in browser
 ```
 
-> **Testnet tip:** Get free BSC testnet BNB at https://testnet.bnbchain.org/faucet-smart
+> **Testnet tip:** Get free BSC testnet BNB at <https://testnet.bnbchain.org/faucet-smart>
 
 ## Development
 
@@ -111,11 +111,11 @@ PRs should maintain **≥ 85% pass rate** on all eval suites.
 
 ## Resources
 
-- Developer docs: https://developer.pancakeswap.finance/
-- PancakeSwap app: https://pancakeswap.finance/
+- Developer docs: <https://developer.pancakeswap.finance/>
+- PancakeSwap app: <https://pancakeswap.finance/>
 - Smart Router SDK: `@pancakeswap/smart-router`
 - Universal Router SDK: `@pancakeswap/universal-router-sdk`
-- BSCScan: https://bscscan.com/
+- BSCScan: <https://bscscan.com/>
 ## Contributing
 
 See [CLAUDE.md](CLAUDE.md) for development setup, skill authoring guidelines, and contribution steps.

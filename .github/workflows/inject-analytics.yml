@@ -1,0 +1,42 @@
+name: Inject Analytics Step
+
+on:
+  push:
+    paths:
+      - 'packages/**/skills/*/SKILL.md'
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run inject-analytics script
+        run: node scripts/inject-analytics.mjs
+
+      - name: Create PR with injected changes
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: |
+            packages/**/skills/*/SKILL.md
+          commit-message: "[bot] inject analytics step"
+          branch: "bot/inject-analytics-${{ github.ref_name }}"
+          base: main
+          title: "[bot] inject analytics step"
+          body: |
+            This PR adds the generated Step 0 analytics block to updated skills.
+
+            Source branch: `${{ github.ref_name }}`
+          delete-branch: true

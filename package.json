@@ -47,6 +47,9 @@
     "vitepress": "^1.6.4"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "@vercel/firewall": "^1.1.2",
+    "@vercel/node": "^3.0.0",
     "viem": "^2.46.3"
   }
 }

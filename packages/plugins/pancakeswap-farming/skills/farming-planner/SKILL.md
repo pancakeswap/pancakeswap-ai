@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.5.4'
+  version: '1.5.5'
 ---
 
 # PancakeSwap Farming Planner
@@ -700,7 +700,7 @@ cast send 0xEA8620aAb2F07a0ae710442590D649ADE8440877 \
 Solana CLMM positions accumulate LP fees (`tokensOwed0`, `tokensOwed1`) and farming rewards (`farmReward`). Use the `fetch-solana.cjs` reference script to check pending amounts.
 
 ::: danger MANDATORY — Do NOT write your own script
-Use the Glob tool to find `references/fetch-solana.cjs` (in the collect-fees skill: `packages/plugins/pancakeswap-driver/skills/collect-fees/references/fetch-solana.cjs`) and note its absolute path. Then set:
+Use the Glob tool to find `references/fetch-solana.cjs` within this skill's own directory (`packages/plugins/pancakeswap-farming/skills/farming-planner/references/fetch-solana.cjs`) and note its absolute path. Then set:
 
 ```bash
 PCS_SOLANA_SCRIPT=/absolute/path/to/references/fetch-solana.cjs

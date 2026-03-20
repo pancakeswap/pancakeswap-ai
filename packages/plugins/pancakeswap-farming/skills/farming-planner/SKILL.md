@@ -1,14 +1,14 @@
 ---
 name: farming-planner
 slug: pcs-farming-planner
-description: Plan yield farming and CAKE staking on PancakeSwap. Use when user says "farm on pancakeswap", "stake CAKE", "unstake CAKE", "stake LP", "unstake LP", "yield farming", "syrup pool", "pancakeswap farm", "earn CAKE", "farm APR", "harvest rewards", "deposit LP", "withdraw LP", or describes wanting to stake, unstake, or earn yield on PancakeSwap. Do NOT use this skill when the user has a token pair and asks how to earn yield or best profit with those tokens (prefer liquidity-planner instead), or when the user specifies Solana chain (farming is not supported on Solana).
+description: Plan yield farming and CAKE staking on PancakeSwap. Use when user says "farm on pancakeswap", "stake CAKE", "unstake CAKE", "stake LP", "unstake LP", "yield farming", "syrup pool", "pancakeswap farm", "earn CAKE", "farm APR", "harvest rewards", "deposit LP", "withdraw LP", or describes wanting to stake, unstake, or earn yield on PancakeSwap. Do NOT use this skill when the user has a token pair and asks how to earn yield or best profit with those tokens (prefer liquidity-planner instead).
 homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(python3:*), Bash(node:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.5.2'
+  version: '1.5.4'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -96,13 +96,14 @@ curl -s -o /dev/null --max-time 3 \
 
 Route to the correct section based on what the user wants:
 
-| User Says...                                    | Go To Section     | Primary Output                       |
-| ----------------------------------------------- | ----------------- | ------------------------------------ |
-| "best farms" / "highest APR" / "discover farms" | Farm Discovery    | Table with APY + deep links          |
-| "stake LP" / "deposit LP into farm"             | Stake LP Tokens   | Deep link + cast examples            |
-| "unstake LP" / "withdraw LP from farm"          | Unstake LP Tokens | Deep link + cast examples            |
-| "stake CAKE" / "syrup pool"                     | Stake CAKE        | APR table + deep link to Syrup Pools |
-| "harvest" / "claim rewards" / "pending rewards" | Harvest Rewards   | cast command + deep link             |
+| User Says...                                    | Go To Section                     | Primary Output                             |
+| ----------------------------------------------- | --------------------------------- | ------------------------------------------ |
+| "best farms" / "highest APR" / "discover farms" | Farm Discovery                    | Table with APY + deep links                |
+| "stake LP" / "deposit LP into farm"             | Stake LP Tokens                   | Deep link + cast examples                  |
+| "unstake LP" / "withdraw LP from farm"          | Unstake LP Tokens                 | Deep link + cast examples                  |
+| "stake CAKE" / "syrup pool"                     | Stake CAKE                        | APR table + deep link to Syrup Pools       |
+| "harvest" / "claim rewards" / "pending rewards" | Harvest Rewards                   | cast command + deep link                   |
+| "farm on Solana" / "Solana CLMM farm"           | Harvest Rewards → Solana CLMM     | Script output + UI link                    |
 
 | User Wants...                  | Best Recommendation                         |
 | ------------------------------ | ------------------------------------------- |
@@ -382,6 +383,10 @@ curl -s "https://api.coingecko.com/api/v3/simple/price?ids=pancakeswap-token&vs_
 
 ## Farm Discovery: Extra Reward APRs (Merkl & Incentra)
 
+::: danger MANDATORY
+**Always run this step** after Method A to collect active external incentive rewards. Do not skip.
+:::
+
 After running Method A to discover farms, run the extra APR script in parallel to collect any active external incentive rewards:
 
 ```bash
@@ -416,6 +421,40 @@ Store matched Merkl and Incentra entries per pool for display in the output tabl
 - Only show the "Incentra Rewards" row if there is a matched Incentra entry for the pool.
 - Always show the `status` value next to each extra APR.
 - Sum base APR + CAKE APR + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards.
+
+---
+
+## Farm Discovery: Infinity Protocol Fees
+
+> **Always run this step** for any Infinity pool (`infinityCl`, `infinityBin`, or `infinityStable`) discovered in Method A. Run once per Infinity pool (in parallel if multiple pools).
+
+For each Infinity pool, run:
+
+```bash
+CHAIN_ID="56"  # numeric chain ID (56 = BSC, 8453 = Base)
+RPC="https://bsc-dataseed1.binance.org"  # BSC; use https://mainnet.base.org for Base
+POOL_ID="0x26a8e4591b7a0efcd45a577ad0d54aa64a99efaf2546ad4d5b0454c99eb70eab"
+
+[[ "$CHAIN_ID" =~ ^(56|8453)$ ]] || { echo "Unsupported chain for Infinity"; exit 1; }
+[[ "$POOL_ID" =~ ^0x[0-9a-fA-F]{64}$ ]] || { echo "Invalid pool ID"; exit 1; }
+
+CHAIN_ID="$CHAIN_ID" RPC="$RPC" POOL_ID="$POOL_ID" \
+  node packages/plugins/pancakeswap-driver/skills/common/protocol-fee.mjs
+```
+
+Output: `{ "protocolFeePercent": "0.03%", "poolType": "cl" }`
+
+**RPC by chain:**
+
+| Chain ID | Chain | Public RPC                          |
+| -------- | ----- | ----------------------------------- |
+| 56       | BSC   | `https://bsc-dataseed1.binance.org` |
+| 8453     | Base  | `https://mainnet.base.org`          |
+
+**Handling results:**
+
+- Store `protocolFeePercent` keyed by pool `id` for use in output templates.
+- If the script fails or produces no output, treat `protocolFeePercent` as `0%` — do not abort the plan. Protocol Fee and Effective Fee rows are still shown (with `0%` and the fee tier value respectively).
 
 ---
 
@@ -715,7 +754,7 @@ Wallet validation: Solana addresses use base58 format `^[1-9A-HJ-NP-Za-km-z]{32,
 SOL_WALLET='<base58-address>' node "$PCS_SOLANA_SCRIPT"
 ```
 
-Output includes `tokensOwed0`, `tokensOwed1` (LP fees) and `farmReward` (farming rewards) per position.
+Output includes `tokensOwed0`, `tokensOwed1` (LP fees) and `farmReward` (farming rewards) per position. `farmReward` is the raw BN amount for the first reward token of the pool (divide by `10^decimals` to get the human-readable amount). Positions where `isFarming: true` are in an active farm.
 
 **UI harvest link:**
 
@@ -817,6 +856,12 @@ Only show the "Merkl Rewards" row if there is a matched Merkl entry for this poo
 
 (Omit Merkl/Incentra rows if no match. Omit Total APR row if no extra rewards.)
 
+| Field         | Value  |
+| ------------- | ------ |
+| Fee Tier      | 0.25%  |
+| Protocol Fee  | +0.03% |
+| Effective Fee | 0.28%  |
+
 **Reward:** CAKE (distributed every 8 hours) + any Merkl/Incentra tokens if applicable
 
 ### Steps
@@ -843,6 +888,7 @@ That's it! Your position starts earning CAKE rewards immediately after adding li
 4. **Never expose private keys** — always use deep links for mainnet
 5. **Never ignore chain context** — V2 farms are BSC-only; other chains have V3/Infinity only
 6. **Never output a farm without a deep link** — every farm row needs a clickable URL
+7. **Never omit Protocol Fee and Effective Fee rows for Infinity pools** — always run the protocol-fee.mjs script and display Fee Tier, Protocol Fee, and Effective Fee for every `infinityCl`, `infinityBin`, or `infinityStable` pool
    :::
 
 ---

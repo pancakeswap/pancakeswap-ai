@@ -15,25 +15,25 @@ Integrate PancakeSwap swaps into frontends, backends, and smart contracts.
 
 ## Quick Decision Guide
 
-| Building...                                  | Use This Method                                |
-| -------------------------------------------- | ---------------------------------------------- |
-| Quick quote or prototype                     | PancakeSwap Routing API (Method 1)             |
-| Frontend with React/Next.js                  | Smart Router SDK + Universal Router (Method 2) |
-| Backend script or trading bot                | Smart Router SDK + Universal Router (Method 2) |
-| Simple V2 swap, smart contract               | Direct V2 Router contract calls (Method 3)     |
-| Need exact Universal Router encoding         | Universal Router SDK directly (Method 2)       |
-| Swap through Infinity (v4) CL or Bin pools   | Routing API (Method 1) or Smart Router SDK with Infinity pool types (Method 2) |
+| Building...                                | Use This Method                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------------------ |
+| Quick quote or prototype                   | PancakeSwap Routing API (Method 1)                                             |
+| Frontend with React/Next.js                | Smart Router SDK + Universal Router (Method 2)                                 |
+| Backend script or trading bot              | Smart Router SDK + Universal Router (Method 2)                                 |
+| Simple V2 swap, smart contract             | Direct V2 Router contract calls (Method 3)                                     |
+| Need exact Universal Router encoding       | Universal Router SDK directly (Method 2)                                       |
+| Swap through Infinity (v4) CL or Bin pools | Routing API (Method 1) or Smart Router SDK with Infinity pool types (Method 2) |
 
 ### Protocol Types
 
-| Protocol      | Description                                                                                      | Fee Tiers (bps)         | Chains              |
-| ------------- | ------------------------------------------------------------------------------------------------ | ----------------------- | ------------------- |
-| V2            | Classic AMM (xy=k), constant product formula                                                     | 25 (0.25%)              | BSC only            |
-| V3            | Concentrated liquidity (Uniswap V3-compatible)                                                   | 1, 5, 25, 100 (0.01–1%) | All chains          |
-| StableSwap    | Low-slippage for correlated/pegged assets                                                        | 1, 4 (0.01–0.04%)       | BSC only            |
-| Infinity CL   | Concentrated liquidity in the v4 singleton PoolManager; supports hooks for custom logic          | Same tiers as V3        | BSC, Base           |
-| Infinity Bin  | Fixed-price-bin liquidity (similar to Trader Joe v2); tight ranges, predictable bin-level prices | Configurable            | BSC, Base           |
-| Mixed         | Split route across any combination of the above protocols                                        | N/A (composite)         | BSC primarily       |
+| Protocol     | Description                                                                                      | Fee Tiers (bps)         | Chains        |
+| ------------ | ------------------------------------------------------------------------------------------------ | ----------------------- | ------------- |
+| V2           | Classic AMM (xy=k), constant product formula                                                     | 25 (0.25%)              | BSC only      |
+| V3           | Concentrated liquidity (Uniswap V3-compatible)                                                   | 1, 5, 25, 100 (0.01–1%) | All chains    |
+| StableSwap   | Low-slippage for correlated/pegged assets                                                        | 1, 4 (0.01–0.04%)       | BSC only      |
+| Infinity CL  | Concentrated liquidity in the v4 singleton PoolManager; supports hooks for custom logic          | Same tiers as V3        | BSC, Base     |
+| Infinity Bin | Fixed-price-bin liquidity (similar to Trader Joe v2); tight ranges, predictable bin-level prices | Configurable            | BSC, Base     |
+| Mixed        | Split route across any combination of the above protocols                                        | N/A (composite)         | BSC primarily |
 
 ## Supported Chains
 
@@ -319,7 +319,10 @@ console.log('Route:', trade.routes.map((r) => r.type).join(' + '))
 
 ```typescript
 import { erc20Abi } from 'viem'
-import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
+import {
+  PancakeSwapUniversalRouter,
+  getUniversalRouterAddress,
+} from '@pancakeswap/universal-router-sdk'
 
 const PERMIT2_ADDRESS = '0x000000000022D473030F116dDEE9F6B43aC78BA3' as const
 
@@ -375,7 +378,10 @@ async function ensureTokenApproved(
 ### Step 6: Encode and Send the Transaction
 
 ```typescript
-import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
+import {
+  PancakeSwapUniversalRouter,
+  getUniversalRouterAddress,
+} from '@pancakeswap/universal-router-sdk'
 import { Percent } from '@pancakeswap/sdk'
 
 const slippage = new Percent(50, 10000) // 0.5%
@@ -738,7 +744,10 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { ChainId, TradeType, Percent } from '@pancakeswap/sdk'
 import { Native, Token, CurrencyAmount } from '@pancakeswap/swap-sdk-evm'
 import { SmartRouter, PoolType } from '@pancakeswap/smart-router'
-import { PancakeSwapUniversalRouter, getUniversalRouterAddress } from '@pancakeswap/universal-router-sdk'
+import {
+  PancakeSwapUniversalRouter,
+  getUniversalRouterAddress,
+} from '@pancakeswap/universal-router-sdk'
 
 const chainId = ChainId.BSC
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)

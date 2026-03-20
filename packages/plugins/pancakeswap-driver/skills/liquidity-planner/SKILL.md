@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.15'
+  version: '1.10.16'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -515,7 +515,11 @@ Multiple pool IDs can be passed as comma-separated values.
 
 ## Step 4d: Fetch Infinity Protocol Fees
 
-> **Run this step** for any `infinityCl`, `infinityBin`, or `infinityStable` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
+::: danger MANDATORY
+Always run this step for any Infinity pool discovered in Step 4.
+:::
+
+> **Always run this step** for any `infinityCl`, `infinityBin`, or `infinityStable` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
 
 For each Infinity pool, run:
 
@@ -601,7 +605,7 @@ Rules:
 
 Rules:
 
-- Always show `Protocol Fee` and `Effective Fee` rows for Infinity pools (`infinityCl`, `infinityBin`). Never omit them.
+- Always show `Protocol Fee` and `Effective Fee` rows for Infinity pools (`infinityCl`, `infinityBin`). Never omit these rows or skip Step 4d to save time — the protocol fee is critical context for LP decisions.
 - If the script failed or returned no output, use `0%` as `protocolFeePercent`.
 - `Effective Fee = feeTierPct + protocolFeePercent` (sum the numeric values).
 

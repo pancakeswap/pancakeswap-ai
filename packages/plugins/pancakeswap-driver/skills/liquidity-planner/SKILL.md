@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.16'
+  version: '1.10.17'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -328,8 +328,8 @@ CHAIN="bsc"
 curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=${ORDER_BY}" | \
   jq '.rows[] | {
     id, protocol,
-    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 10000 | tostring | . + "%") end),
+    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) elif .protocol == "stable" then 100 else .feeTier end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") elif .protocol == "stable" then "0.01%" else (.feeTier / 10000 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
@@ -359,8 +359,8 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
   --data-urlencode "tokens=${CHAIN_ID}:0x55d398326f99059fF775485246999027B3197955" | \
   jq '.rows[] | {
     id, protocol,
-    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") else (.feeTier / 10000 | tostring | . + "%") end),
+    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) elif .protocol == "stable" then 100 else .feeTier end),
+    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") elif .protocol == "stable" then "0.01%" else (.feeTier / 10000 | tostring | . + "%") end),
     tvlUSD,
     volumeUSD24h,
     apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
@@ -402,6 +402,8 @@ curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
 | `500`           | `0.05%`        |
 | `2500`          | `0.25%`        |
 | `10000`         | `1.0%`         |
+
+**Note for `stable` pools:** The `feeTier` API value is always `100` (0.01%) — hard-coded in the jq transforms above.
 
 **Note for `infinityStable` pools:** The `feeTier` value is on a different scale — divide by `100000000` for percent and `1000000` for bps.
 
@@ -519,7 +521,7 @@ Multiple pool IDs can be passed as comma-separated values.
 Always run this step for any Infinity pool discovered in Step 4.
 :::
 
-> **Always run this step** for any `infinityCl`, `infinityBin`, or `infinityStable` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
+> **Always run this step** for any `infinityCl`, `infinityBin` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
 
 For each Infinity pool, run:
 

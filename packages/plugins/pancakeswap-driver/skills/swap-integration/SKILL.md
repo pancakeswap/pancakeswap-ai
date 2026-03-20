@@ -6,7 +6,7 @@ model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.2.2'
+  version: '1.2.3'
 ---
 
 # Swap Integration
@@ -680,22 +680,23 @@ For React frontends, use wagmi hooks alongside the Smart Router SDK:
 ```typescript
 import { useWalletClient, usePublicClient, useChainId } from 'wagmi'
 import { useMutation } from '@tanstack/react-query'
+import { Currency, TradeType, Percent } from '@pancakeswap/sdk'
+import { CurrencyAmount } from '@pancakeswap/swap-sdk-core'
+import { SmartRouter } from '@pancakeswap/smart-router'
+import {
+  PancakeSwapUniversalRouter,
+  getUniversalRouterAddress,
+} from '@pancakeswap/universal-router-sdk'
+
+type SwapVariables = { amountIn: bigint; tokenIn: Currency; tokenOut: Currency }
 
 function useSwap() {
   const chainId = useChainId()
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient()
 
-  return useMutation({
-    mutationFn: async ({
-      amountIn,
-      tokenIn,
-      tokenOut,
-    }: {
-      amountIn: bigint
-      tokenIn: Currency
-      tokenOut: Currency
-    }) => {
+  return useMutation<`0x${string}`, Error, SwapVariables>({
+    mutationFn: async ({ amountIn, tokenIn, tokenOut }) => {
       if (!walletClient || !publicClient) throw new Error('Wallet not connected')
 
       // 1. Fetch pools
@@ -714,6 +715,7 @@ function useSwap() {
           quoteProvider: SmartRouter.createQuoteProvider({ onChainProvider: () => publicClient }),
         },
       )
+      if (!trade) throw new Error('No route found for this token pair')
 
       // 3. Encode
       const { calldata, value } = PancakeSwapUniversalRouter.swapERC20CallParameters(trade, {
@@ -741,8 +743,9 @@ function useSwap() {
 import { createPublicClient, createWalletClient, http } from 'viem'
 import { bsc } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
-import { ChainId, TradeType, Percent } from '@pancakeswap/sdk'
-import { Native, Token, CurrencyAmount } from '@pancakeswap/swap-sdk-evm'
+import { ChainId, Token, TradeType, Percent } from '@pancakeswap/sdk'
+import { Native } from '@pancakeswap/swap-sdk-evm'
+import { CurrencyAmount } from '@pancakeswap/swap-sdk-core'
 import { SmartRouter, PoolType } from '@pancakeswap/smart-router'
 import {
   PancakeSwapUniversalRouter,

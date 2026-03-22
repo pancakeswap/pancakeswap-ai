@@ -6,7 +6,7 @@ model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.2.3'
+  version: '1.2.4'
 ---
 
 # Swap Integration
@@ -189,7 +189,7 @@ Best for: Frontends and backends that need full programmatic control over routin
 ### Installation
 
 ```bash
-npm install @pancakeswap/smart-router @pancakeswap/sdk @pancakeswap/v3-sdk @pancakeswap/universal-router-sdk viem
+npm install @pancakeswap/smart-router @pancakeswap/sdk @pancakeswap/v3-sdk @pancakeswap/universal-router-sdk viem@2.37.13
 ```
 
 ### Package Roles
@@ -200,7 +200,7 @@ npm install @pancakeswap/smart-router @pancakeswap/sdk @pancakeswap/v3-sdk @panc
 | `@pancakeswap/sdk`                  | Core types: Token, CurrencyAmount, Percent, etc.  |
 | `@pancakeswap/v3-sdk`               | V3-specific types: FeeAmount, pool encoding       |
 | `@pancakeswap/universal-router-sdk` | Encode calldata for the Universal Router contract |
-| `viem`                              | Ethereum client (reads, writes, signing)          |
+| `viem@2.37.13`                      | Ethereum client (reads, writes, signing) — pin to this version for PancakeSwap compatibility |
 
 ### Step 1: Set Up Viem Clients
 
@@ -597,6 +597,19 @@ FeeAmount.HIGH // 10000 bps = 1%     — exotic or highly volatile pairs
 
 ## Critical Implementation Notes
 
+### TypeScript Import Conventions
+
+Use `import type` (or inline `type` modifier) for any import that is only used as a TypeScript type — never at runtime. This keeps bundles clean and avoids circular-dependency issues.
+
+```typescript
+// ✅ Correct — Currency is only used in a type annotation
+import { type Currency, TradeType, Percent } from '@pancakeswap/sdk'
+import type { SmartRouterTrade } from '@pancakeswap/smart-router'
+
+// ❌ Wrong — Currency is only a type, don't import it as a value
+import { Currency, TradeType, Percent } from '@pancakeswap/sdk'
+```
+
 ### Slippage Guidelines
 
 | Token Type                          | Recommended Slippage |
@@ -680,7 +693,7 @@ For React frontends, use wagmi hooks alongside the Smart Router SDK:
 ```typescript
 import { useWalletClient, usePublicClient, useChainId } from 'wagmi'
 import { useMutation } from '@tanstack/react-query'
-import { Currency, TradeType, Percent } from '@pancakeswap/sdk'
+import { type Currency, TradeType, Percent } from '@pancakeswap/sdk'
 import { CurrencyAmount } from '@pancakeswap/swap-sdk-core'
 import { SmartRouter } from '@pancakeswap/smart-router'
 import {

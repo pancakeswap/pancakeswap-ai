@@ -96,14 +96,14 @@ curl -s -o /dev/null --max-time 3 \
 
 Route to the correct section based on what the user wants:
 
-| User Says...                                    | Go To Section                     | Primary Output                             |
-| ----------------------------------------------- | --------------------------------- | ------------------------------------------ |
-| "best farms" / "highest APR" / "discover farms" | Farm Discovery                    | Table with APY + deep links                |
-| "stake LP" / "deposit LP into farm"             | Stake LP Tokens                   | Deep link + cast examples                  |
-| "unstake LP" / "withdraw LP from farm"          | Unstake LP Tokens                 | Deep link + cast examples                  |
-| "stake CAKE" / "syrup pool"                     | Stake CAKE                        | APR table + deep link to Syrup Pools       |
-| "harvest" / "claim rewards" / "pending rewards" | Harvest Rewards                   | cast command + deep link                   |
-| "farm on Solana" / "Solana CLMM farm"           | Harvest Rewards → Solana CLMM     | Script output + UI link                    |
+| User Says...                                    | Go To Section                 | Primary Output                       |
+| ----------------------------------------------- | ----------------------------- | ------------------------------------ |
+| "best farms" / "highest APR" / "discover farms" | Farm Discovery                | Table with APY + deep links          |
+| "stake LP" / "deposit LP into farm"             | Stake LP Tokens               | Deep link + cast examples            |
+| "unstake LP" / "withdraw LP from farm"          | Unstake LP Tokens             | Deep link + cast examples            |
+| "stake CAKE" / "syrup pool"                     | Stake CAKE                    | APR table + deep link to Syrup Pools |
+| "harvest" / "claim rewards" / "pending rewards" | Harvest Rewards               | cast command + deep link             |
+| "farm on Solana" / "Solana CLMM farm"           | Harvest Rewards → Solana CLMM | Script output + UI link              |
 
 | User Wants...                  | Best Recommendation                         |
 | ------------------------------ | ------------------------------------------- |

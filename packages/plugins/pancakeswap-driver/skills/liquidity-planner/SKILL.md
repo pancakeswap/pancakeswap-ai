@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.17'
+  version: '1.10.19'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:
@@ -304,116 +304,66 @@ curl -s "https://api.dexscreener.com/latest/dex/tokens/${MINT}" | \
 
 ---
 
-## Step 4: Discover Pools on PancakeSwap (Explorer API)
+## Step 4: Discover Pools and Fetch APR Data
 
-Use the PancakeSwap Explorer API as the primary pool discovery source — it provides first-party TVL, volume, APR, and protocol data in a single call.
+Run a single script that queries the Explorer API, fetches Merkl/Incentra extra reward APRs, fetches CAKE farm APRs (on-chain MasterChef V3 + Infinity REST), and retrieves Infinity protocol fees — all in one call:
 
-Before calling the Explorer API, determine the appropriate sort order from the user's stated goal:
+```bash
+CHAIN="bsc" TOKEN0="0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82" TOKEN1="0x55d398326f99059fF775485246999027B3197955" ORDER_BY="tvlUSD" \
+  node packages/plugins/pancakeswap-driver/skills/common/discover-pools.mjs
+```
+
+**Environment variables:**
+
+| Variable    | Required | Description                                                                                                                                 |
+| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CHAIN`     | yes      | Chain string: `bsc`, `eth`, `arb`, `base`, `zksync`, `linea`, `opbnb`, `monad`, `sol`                                                       |
+| `TOKEN0`    | no       | EVM address, Solana pubkey, or native alias (`bnb`, `eth`, `sol`)                                                                           |
+| `TOKEN1`    | no       | Same as TOKEN0                                                                                                                              |
+| `ORDER_BY`  | no       | `tvlUSD` (default), `apr24h`, `volumeUSD24h`                                                                                                |
+| `PROTOCOLS` | no       | Comma-separated list of protocols to include (default: all). Supported: `v2`, `v3`, `stable`, `infinityCl`, `infinityBin`, `infinityStable` |
+
+Set `ORDER_BY` based on the user's stated goal:
 
 - User wants best APR / highest yield → `ORDER_BY="apr24h"`
 - User wants most active / high-volume pool → `ORDER_BY="volumeUSD24h"`
 - Default (deepest liquidity, safest pool) → `ORDER_BY="tvlUSD"`
 
-### When both tokens are known → use the pair endpoint
+**Output JSON shape:**
 
-```bash
-TOKEN0="0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"  # CAKE
-TOKEN1="0x55d398326f99059fF775485246999027B3197955"  # USDT
-CHAIN="bsc"
-
-# Validate EVM address format
-[[ "$TOKEN0" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token0 address"; exit 1; }
-[[ "$TOKEN1" =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "Invalid token1 address"; exit 1; }
-
-curl -s "https://explorer.pancakeswap.com/api/cached/pools/list/pair/${TOKEN0}/${TOKEN1}?chains=${CHAIN}&protocols=v2&protocols=v3&protocols=stable&protocols=infinityCl&protocols=infinityBin&protocols=infinityStable&orderBy=${ORDER_BY}" | \
-  jq '.rows[] | {
-    id, protocol,
-    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) elif .protocol == "stable" then 100 else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") elif .protocol == "stable" then "0.01%" else (.feeTier / 10000 | tostring | . + "%") end),
-    tvlUSD,
-    volumeUSD24h,
-    apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
-    token0: .token0.symbol,
-    token1: .token1.symbol
-  }'
+```json
+{
+  "chain": "bsc",
+  "chainId": 56,
+  "cakePrice": 2.5,
+  "pools": [
+    {
+      "id": "0x...",
+      "protocol": "v3",
+      "feeTierPct": "0.25%",
+      "tvlUSD": 5000000,
+      "volumeUSD24h": 800000,
+      "lpFeeApr": "18.40%",
+      "token0": "CAKE",
+      "token1": "USDT",
+      "cakePerYear": 125000,
+      "cakeAprPct": "8.30%",
+      "totalAprPct": "26.70%",
+      "merklApr": [],
+      "incentraApr": [],
+      "protocolFeePercent": null
+    }
+  ]
+}
 ```
 
-> **BNB/TOKEN pair on BSC**: Run the pair query twice — substituting `0x0000000000000000000000000000000000000000` and `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` in place of the BNB token position — then merge `.rows[]` arrays and deduplicate by `id`.
+**BNB handling:** Pass `TOKEN0=bnb` (or `TOKEN1=bnb`). The script automatically queries both the zero address and WBNB address and merges results.
 
-### When zero or one token is known → use the list endpoint
+**Solana:** Pass `CHAIN=sol`. The script uses the sol-explorer API (`https://sol-explorer.pancakeswap.com/api/cached/v1/pools/info/ids`) for APR data instead of MasterChef on-chain calls. `apr24hPct` and `cakeAprPct` values are already in percentage units (e.g., `21.66` means 21.66%) — do not multiply by 100.
 
-```bash
-CHAIN="bsc"
-CHAIN_ID="56"   # numeric chain ID for token format
+**Infinity protocol fee:** For `infinityCl` and `infinityBin` pools, the script fetches the protocol fee on-chain and stores it in `protocolFeePercent`. The `feeTierPct` value already incorporates the protocol fee (effective fee = raw fee tier + protocol fee) — use `feeTierPct` directly in Step 5 output. If the script cannot fetch the protocol fee, `protocolFeePercent` is `null` — treat it as `0%` and do not abort the plan.
 
-# tokens param format: "{chainId}:{address}" — one per known token
-curl -s -G "https://explorer.pancakeswap.com/api/cached/pools/list" \
-  --data-urlencode "chains=${CHAIN}" \
-  --data-urlencode "protocols=stable" \
-  --data-urlencode "protocols=v2" \
-  --data-urlencode "protocols=v3" \
-  --data-urlencode "protocols=infinityCl" \
-  --data-urlencode "protocols=infinityBin" \
-  --data-urlencode "protocols=infinityStable" \
-  --data-urlencode "orderBy=${ORDER_BY}" \
-  --data-urlencode "tokens=${CHAIN_ID}:0x55d398326f99059fF775485246999027B3197955" | \
-  jq '.rows[] | {
-    id, protocol,
-    feeTierBps: (if .protocol == "infinityStable" then (.feeTier / 1000000) elif .protocol == "stable" then 100 else .feeTier end),
-    feeTierPct: (if .protocol == "infinityStable" then (.feeTier / 100000000 | tostring | . + "%") elif .protocol == "stable" then "0.01%" else (.feeTier / 10000 | tostring | . + "%") end),
-    tvlUSD,
-    volumeUSD24h,
-    apr24hPct: ((.apr24h | tonumber) * 100 | . * 100 | round / 100 | tostring | . + "%"),
-    token0: .token0.symbol,
-    token1: .token1.symbol
-  }'
-```
-
-> **BNB filter on BSC**: Pass both addresses as separate `tokens` params:
-> `--data-urlencode "tokens=56:0x0000000000000000000000000000000000000000"` and
-> `--data-urlencode "tokens=56:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"`.
-> Make two requests (one per address) and merge results.
-
-### Explorer API chain and token format
-
-| Chain      | `chains` value | Numeric Chain ID |
-| ---------- | -------------- | ---------------- |
-| BSC        | `bsc`          | `56`             |
-| Ethereum   | `eth`          | `1`              |
-| Arbitrum   | `arb`          | `42161`          |
-| Base       | `base`         | `8453`           |
-| zkSync Era | `zksync`       | `324`            |
-| Linea      | `linea`        | `59144`          |
-| opBNB      | `opbnb`        | `204`            |
-| Monad      | `monad`        | `143`            |
-| Solana     | `sol`          | `8000001001`     |
-
-**Token format**: `{chainId}:{tokenAddress}` (e.g., `56:0xABC...` for BSC).
-
-**For ETH and other native tokens**: omit from the tokens filter and identify pools by symbol in results.
-
-**For BNB on BSC/opBNB**: make **two** queries — once using the zero address (`0x0000000000000000000000000000000000000000`, native BNB) and once using the WBNB address (`0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` on BSC). Merge and deduplicate results by pool `id` before presenting to the user.
-
-**`feeTier` mapping** (returned in basis points):
-
-| `feeTier` value | Human-readable |
-| --------------- | -------------- |
-| `100`           | `0.01%`        |
-| `500`           | `0.05%`        |
-| `2500`          | `0.25%`        |
-| `10000`         | `1.0%`         |
-
-**Note for `stable` pools:** The `feeTier` API value is always `100` (0.01%) — hard-coded in the jq transforms above.
-
-**Note for `infinityStable` pools:** The `feeTier` value is on a different scale — divide by `100000000` for percent and `1000000` for bps.
-
-**`protocols` (required for the list endpoint)**: Must include at least one of `stable`, `v2`, `v3`, `infinityCl` (Infinity CL), `infinityBin` (Infinity Bin), `infinityStable` (Infinity StableSwap). Always pass all relevant protocols unless filtering intentionally — omitting `protocols` will return no results.
-
-**Infinity pool `id` field**: For `infinityCl`, `infinityBin`, and `infinityStable` pools, the Explorer API `id` field is the **pool contract address** — this is the `poolId` used in Infinity deep links.
-
-### Fallback to DexScreener
-
-If the Explorer API returns no results (e.g., brand-new pool not yet indexed), fall back to the DexScreener pair search:
+**Fallback to DexScreener:** If the Explorer API returns no results (e.g. brand-new pool not yet indexed), fall back to the DexScreener pair search:
 
 ```bash
 curl -s "https://api.dexscreener.com/latest/dex/search" \
@@ -421,143 +371,11 @@ curl -s "https://api.dexscreener.com/latest/dex/search" \
   jq --arg chain "$CHAIN" '.pairs[] | select(.chainId == $chain and (.dexId | startswith("pancakeswap")))'
 ```
 
-**Key insights:**
-
-- Multiple pools may exist for the same token pair (different fee tiers on V3)
-- Higher fee tier = higher swap slippage but better for LPs when trading volume is concentrated
-- Thin liquidity pools often have wide spreads and poor position quality
-
----
-
-## Step 4b: Fetch Extra Reward APRs (Merkl & Incentra)
-
-**Always run this step** after discovering pools. Fetch extra incentive rewards in parallel with Step 4c:
-
-```bash
-node packages/plugins/pancakeswap-driver/skills/common/pool-apr.mjs
-```
-
-The script outputs JSON with the shape:
-
-```json
-{
-  "merklApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }],
-  "incentraApr": [{ "chainId", "campaignId", "poolId", "poolName", "apr", "status" }]
-}
-```
-
-**Matching rules:**
-
-- Filter by `chainId` matching the user's selected chain.
-- Match `poolId` to Explorer API pool `id` (pool address) using **case-insensitive** comparison:
-
-  ```js
-  poolId.toLowerCase() === explorerPool.id.toLowerCase()
-  ```
-
-- If the script fails or returns no data, skip silently — extra APR is optional supplemental data.
-
-Store matched Merkl and Incentra entries per pool for use in Step 5.
-
----
-
-## Step 4c: Fetch CAKE Farm APR
-
-> **Always run this step** when V3 or Infinity pools appear in results. V2 and StableSwap
-> pools have no CAKE farm rewards — pass only V3 pool addresses (40-char hex) and Infinity
-> pool IDs (64-char hex) as arguments.
-
-After Step 4 returns pool IDs, run for any V3 and Infinity pools found:
-
-```bash
-CHAIN_ID="56"  # numeric chain ID
-[[ "$CHAIN_ID" =~ ^[0-9]+$ ]] || { echo "Invalid chain ID"; exit 1; }
-
-# Pass pool IDs (Explorer API `id` field) for V3 and Infinity pools only
-python3 packages/plugins/pancakeswap-driver/skills/common/farm-apr.py "$CHAIN_ID" \
-  "0xv3pool1" "0xv3pool2" "0x64charinfpool1"
-```
-
-Output: `{ "chainId": N, "cakePrice": N, "cakePerYear": { "poolId": cakePerYear } }`
-
-Compute CAKE APR per pool: `cakeApr = (cakePerYear[poolId] * cakePrice) / tvlUSD * 100`
-
-If the script fails or `cakePrice == 0` or `tvlUSD == 0` or the pool is not in the output, show `—` for CAKE Farm APR rather than omitting the row.
-
-### Step 4c (Solana): Fetch APR via sol-explorer API
-
-When the chain is **Solana**, skip the Python script above and use the sol-explorer API instead. This returns both Fee APR and CAKE Farm APR in a single call.
-
-```bash
-POOL_IDS="DJNtGuBGEQiUCWE8F981M2C3ZghZt2XLD8f2sQdZ6rsZ"  # comma-separated pool IDs from Step 4
-
-# Validate pool IDs are base58 (Solana) — no shell metacharacters
-[[ "$POOL_IDS" =~ ^[1-9A-HJ-NP-Za-km-z,]{32,}$ ]] || { echo "Invalid Solana pool IDs"; exit 1; }
-
-curl -s "https://sol-explorer.pancakeswap.com/api/cached/v1/pools/info/ids?ids=${POOL_IDS}" | \
-  jq '.data[] | {
-    id,
-    feeApr: .day.feeApr,
-    cakeFarmApr: (.day.rewardApr[0] // 0),
-    totalApr: .day.apr
-  }'
-```
-
-APR extraction rules:
-
-- **Fee APR** → `day.feeApr` (use this instead of Explorer API `apr24h` for Solana pools)
-- **CAKE Farm APR** → `day.rewardApr[0]` (first entry in the reward array)
-- **Total APR** → `day.apr`
-- If `rewardApr` is empty or missing, show `—` for CAKE Farm APR (no active farm)
-- **All three values (`feeApr`, `cakeFarmApr`, `totalApr`) are already in percentage units** (e.g., `21.66` means 21.66%). Do not multiply by 100 — unlike `apr24h` from the non-Solana Explorer API which is a decimal fraction.
-
-Multiple pool IDs can be passed as comma-separated values.
-
----
-
-## Step 4d: Fetch Infinity Protocol Fees
-
-::: danger MANDATORY
-Always run this step for any Infinity pool discovered in Step 4.
-:::
-
-> **Always run this step** for any `infinityCl`, `infinityBin` pool discovered in Step 4. Run once per Infinity pool (in parallel if multiple pools).
-
-For each Infinity pool, run:
-
-```bash
-CHAIN_ID="56"  # numeric chain ID (56 = BSC, 8453 = Base)
-RPC="https://bsc-dataseed1.binance.org"  # BSC; use https://mainnet.base.org for Base
-POOL_ID="0x26a8e4591b7a0efcd45a577ad0d54aa64a99efaf2546ad4d5b0454c99eb70eab"
-
-[[ "$CHAIN_ID" =~ ^(56|8453)$ ]] || { echo "Unsupported chain for Infinity"; exit 1; }
-[[ "$POOL_ID" =~ ^0x[0-9a-fA-F]{64}$ ]] || { echo "Invalid pool ID"; exit 1; }
-
-CHAIN_ID="$CHAIN_ID" RPC="$RPC" POOL_ID="$POOL_ID" \
-  node packages/plugins/pancakeswap-driver/skills/common/protocol-fee.mjs
-```
-
-Output: `{ "protocolFeePercent": "0.03%", "poolType": "cl" }`
-
-**RPC by chain:**
-
-| Chain ID | Chain | Public RPC                          |
-| -------- | ----- | ----------------------------------- |
-| 56       | BSC   | `https://bsc-dataseed1.binance.org` |
-| 8453     | Base  | `https://mainnet.base.org`          |
-
-**Handling results:**
-
-- Store `protocolFeePercent` keyed by pool `id` for use in Step 5 and the output.
-- If the script fails or produces no output (e.g. pool ID not found in either manager), treat `protocolFeePercent` as `0%` — do not abort the plan. The Protocol Fee and Effective Fee rows are still shown (with `0%` and the fee tier value respectively).
-
 ---
 
 ## Step 5: Pool Assessment (Liquidity, Volume & APR)
 
-The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the pool discovery response — no separate API call needed. Use these values directly.
-
-**`apr24h` is a string decimal** (e.g., `"0.2166"` = 21.66%). Parse with `tonumber` before multiplying by 100 to display as a percentage.
+The `discover-pools.mjs` script returns pools with `tvlUSD`, `volumeUSD24h`, `apr24hPct`, `cakeAprPct`, `merklApr`, `incentraApr`, and `protocolFeePercent` already computed. Use these values directly — no further API calls needed for pool metrics.
 
 **Liquidity assessment:**
 
@@ -576,9 +394,9 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 | 1%–5% APR   | Excellent/deep    | Low        | Stablecoin pairs, large caps    |
 | < 1% APR    | Massive TVL       | Very Low   | Fee-based yield only (base APR) |
 
-> **Note**: `apr24h` is fee APR only (swap fees, 24h annualized). CAKE farming rewards are added from Step 4c data when available.
+> **Note**: `apr24hPct` is fee APR only (swap fees, 24h annualized). `cakeAprPct` and extra reward APRs are provided by the script when available.
 
-**Extra reward APRs (from Steps 4b and 4c):** If CAKE farm APR, Merkl, or Incentra data was found for a pool, append them to the pool metrics table and sum a Total APR:
+**Extra reward APRs:** If `cakeAprPct`, `merklApr`, or `incentraApr` is non-empty for a pool, append them to the pool metrics table and sum a Total APR:
 
 | Field            | Value           |
 | ---------------- | --------------- |
@@ -590,14 +408,13 @@ The Explorer API returns `tvlUSD`, `volumeUSD24h`, and `apr24h` as part of the p
 
 Rules:
 
-- Always show the "CAKE Farm APR" row for V3 and Infinity pools. Show the computed value if Step 4c returned non-zero data; show `—` if the pool has no active farm.
-  Never omit this row or skip Step 4c to save time — the farm APR is critical context for LP decisions.
-- Only show the "Merkl Rewards" row if there is a matched Merkl entry for this pool.
-- Only show the "Incentra Rewards" row if there is a matched Incentra entry for this pool.
+- Always show the "CAKE Farm APR" row for V3 and Infinity pools. Show `cakeAprPct` from the script output; show `—` if `cakeAprPct` is `"—"` or the pool has no active farm. This field is critical context for LP decisions — never omit it.
+- Only show the "Merkl Rewards" row if `merklApr` is non-empty for this pool.
+- Only show the "Incentra Rewards" row if `incentraApr` is non-empty for this pool.
 - Always show the `status` value next to each extra APR.
 - Sum base APR + CAKE Farm APR (if any) + all matched extra APRs to produce Total APR. Omit the Total APR row if there are no extra rewards at all.
 
-**Protocol Fee (Infinity pools only):** For `infinityCl`, `infinityBin` pools, include protocol fee rows in the pool metrics table:
+**Protocol Fee (Infinity pools only):** For `infinityCl`, `infinityBin` pools, the script already incorporates the protocol fee into `feeTierPct` (effective fee). Include protocol fee rows in the pool metrics table using `protocolFeePercent` from the output:
 
 | Field         | Value  |
 | ------------- | ------ |
@@ -607,9 +424,9 @@ Rules:
 
 Rules:
 
-- Always show `Protocol Fee` and `Effective Fee` rows for Infinity pools (`infinityCl`, `infinityBin`). Never omit these rows or skip Step 4d to save time — the protocol fee is critical context for LP decisions.
-- If the script failed or returned no output, use `0%` as `protocolFeePercent`.
-- `Effective Fee = feeTierPct + protocolFeePercent` (sum the numeric values).
+- Always show `Protocol Fee` and `Effective Fee` rows for Infinity pools (`infinityCl`, `infinityBin`). This is critical context — never omit it.
+- Use `protocolFeePercent` from the script output. If it is `null`, use `0%`.
+- `feeTierPct` already equals the effective fee (fee tier + protocol fee). Show `feeTierPct` as "Effective Fee" directly.
 
 **Optional supplemental data (DefiLlama):** If the user asks for a detailed farming APY breakdown including CAKE reward APY, fetch from DefiLlama:
 

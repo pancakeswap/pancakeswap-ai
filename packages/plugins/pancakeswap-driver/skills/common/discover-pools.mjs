@@ -124,9 +124,20 @@ const PROTOCOLS = PROTOCOLS_INPUT.map((p) => `protocols=${p}`).join('&')
 
 function feeTierPct(pool) {
   if (pool.protocol === 'stable') return '0.01%'
+  if (pool.isDynamicFee) return '0%'
   if (pool.protocol === 'infinityStable') return `${(pool.feeTier / 100_000_000).toPrecision(4)}%`
   return `${pool.feeTier / 10_000}%`
 }
+
+const GET_FEE_ABI = [
+  {
+    name: 'getFee',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: '', type: 'address' }],
+    outputs: [{ name: '', type: 'uint24' }],
+  },
+]
 
 function apr24hPct(pool) {
   const v = parseFloat(pool.apr24h || '0')
@@ -155,6 +166,8 @@ function normalizePool(row) {
     id: row.id,
     protocol: row.protocol,
     feeTierPct: feeTierPct(row),
+    isDynamicFee: row.isDynamicFee || false,
+    hookAddress: row.hookAddress || null,
     tvlUSD: row.tvlUSD,
     volumeUSD24h: row.volumeUSD24h,
     lpFeeApr,
@@ -530,7 +543,7 @@ async function fetchProtocolFees(pools) {
 
   const client = createPublicClient({ chain: viemChain, transport: http(rpcUrl) })
 
-  const calls = infinityPools.flatMap((p) => [
+  const slot0Calls = infinityPools.flatMap((p) => [
     {
       address: INFI_CL_POOL_MANAGER_ADDRESSES[chainId],
       abi: CLPoolManagerAbi,
@@ -545,29 +558,64 @@ async function fetchProtocolFees(pools) {
     },
   ])
 
+  let slot0Results = []
   try {
-    const results = await client.multicall({ contracts: calls })
+    slot0Results = await client.multicall({ contracts: slot0Calls })
+  } catch (_) {
+    // leave protocolFeePercent as null for all pools
+  }
 
-    for (let i = 0; i < infinityPools.length; i++) {
-      const pool = infinityPools[i]
-      const clResult = results[i * 2]
-      const binResult = results[i * 2 + 1]
+  const dynamicPools = []
 
-      let feePercent = 0
-      if (clResult.status === 'success' && clResult.result[0] !== 0n) {
-        feePercent = parseProtocolFee(clResult.result[2])
-      } else if (binResult.status === 'success' && binResult.result[0] !== 0n) {
-        feePercent = parseProtocolFee(binResult.result[1])
-      }
+  for (let i = 0; i < infinityPools.length; i++) {
+    const pool = infinityPools[i]
+    const clResult = slot0Results[i * 2]
+    const binResult = slot0Results[i * 2 + 1]
 
-      pool.protocolFeePercent = `${feePercent}%`
+    let feePercent = 0
+    if (clResult?.status === 'success' && clResult.result[0] !== 0n) {
+      feePercent = parseProtocolFee(clResult.result[2])
+    } else if (binResult?.status === 'success' && binResult.result[0] !== 0n) {
+      feePercent = parseProtocolFee(binResult.result[1])
+    }
 
-      // Incorporate protocol fee into feeTierPct
+    pool.protocolFeePercent = `${feePercent}%`
+
+    if (pool.isDynamicFee && pool.hookAddress) {
+      dynamicPools.push({ pool, feePercent })
+    } else {
+      // Incorporate protocol fee into feeTierPct for fixed-fee pools
       const baseFee = parseFloat(pool.feeTierPct)
       pool.feeTierPct = `${(baseFee + feePercent).toFixed(4).replace(/\.?0+$/, '')}%`
     }
+  }
+
+  await fetchDynamicFees(client, dynamicPools)
+}
+
+async function fetchDynamicFees(client, dynamicPools) {
+  if (dynamicPools.length === 0) return
+
+
+  const calls = dynamicPools.map(({ pool }) => ({
+    address: pool.hookAddress,
+    abi: GET_FEE_ABI,
+    functionName: 'getFee',
+    args: [ZERO_ADDR],
+  }))
+
+  try {
+    const results = await client.multicall({ contracts: calls })
+    for (let i = 0; i < dynamicPools.length; i++) {
+      const { pool, feePercent } = dynamicPools[i]
+      const r = results[i]
+      if (r?.status === 'success') {
+        const dynamicLpFee = Number(r.result) / FEE_BASE
+        pool.feeTierPct = `${(dynamicLpFee + feePercent).toString().replace(/\.?0+$/, '')}%`
+      }
+    }
   } catch (_) {
-    // leave protocolFeePercent as null
+    // leave feeTierPct as placeholder
   }
 }
 

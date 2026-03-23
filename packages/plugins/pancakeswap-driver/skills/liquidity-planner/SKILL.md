@@ -6,7 +6,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.10.19'
+  version: '1.10.20'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:

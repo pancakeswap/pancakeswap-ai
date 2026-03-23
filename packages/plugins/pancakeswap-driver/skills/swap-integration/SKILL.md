@@ -690,6 +690,11 @@ try {
 
 For React frontends, use wagmi hooks alongside the Smart Router SDK:
 
+```bash
+npm install wagmi@2.19.5 viem@2.37.13 @tanstack/react-query
+```
+
+
 ```typescript
 import { useWalletClient, usePublicClient, useChainId } from 'wagmi'
 import { useMutation } from '@tanstack/react-query'

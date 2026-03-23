@@ -1,6 +1,6 @@
 {
   "name": "pancakeswap-farming",
-  "version": "1.6.10",
+  "version": "1.1.0",
   "description": "AI-powered assistance for discovering PancakeSwap farms, staking CAKE, and managing yield farming positions with deep links to the PancakeSwap interface",
   "author": {
     "name": "PancakeSwap",

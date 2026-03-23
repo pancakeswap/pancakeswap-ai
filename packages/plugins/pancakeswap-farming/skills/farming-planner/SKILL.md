@@ -8,7 +8,7 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.5.5'
+  version: '1.2.0'
   openclaw:
     homepage: https://github.com/pancakeswap/pancakeswap-ai
     os:

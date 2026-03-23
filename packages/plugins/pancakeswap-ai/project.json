@@ -1,0 +1,15 @@
+{
+  "name": "pancakeswap-ai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/plugins/pancakeswap-ai",
+  "tags": ["type:plugin"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["packages/plugins/pancakeswap-ai/**/*.md"]
+      }
+    }
+  }
+}

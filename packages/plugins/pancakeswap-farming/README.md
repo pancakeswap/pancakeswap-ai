@@ -11,11 +11,7 @@ Plan yield farming strategies on PancakeSwap by discovering active farms, compar
 ## Installation
 
 ```bash
-# Claude Code
-/plugin install pancakeswap-farming
-
-# Manual
-cp -r skills/farming-planner/SKILL.md .cursor/skills/farming-planner/SKILL.md
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill farming-planner
 ```
 
 ## License

@@ -11,6 +11,11 @@
   },
   "plugins": [
     {
+      "name": "pancakeswap-ai",
+      "source": "./packages/plugins/pancakeswap-ai",
+      "description": "Single-skill entry point for all PancakeSwap AI capabilities — swap, liquidity, farming, and staking"
+    },
+    {
       "name": "pancakeswap-driver",
       "source": "./packages/plugins/pancakeswap-driver",
       "description": "AI-powered assistance for discovering tokens, planning swaps, and planning liquidity positions with deep links"

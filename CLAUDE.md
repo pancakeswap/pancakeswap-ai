@@ -44,7 +44,8 @@ pancakeswap-ai/
 
 **Install:**
 ```bash
-claude plugin add @pancakeswap/pancakeswap-driver
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill swap-planner
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill liquidity-planner
 ```
 
 ### pancakeswap-farming
@@ -56,7 +57,7 @@ claude plugin add @pancakeswap/pancakeswap-driver
 
 **Install:**
 ```bash
-claude plugin add @pancakeswap/pancakeswap-farming
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill farming-planner
 ```
 
 ## Development
@@ -88,6 +89,8 @@ npm install
 2. Bump the `version` in the skill frontmatter AND in `.claude-plugin/plugin.json`
 3. Update the eval suite if behavior changes
 4. Run evals to verify: `npx promptfoo eval --config evals/suites/swap-planner/promptfoo.yaml`
+
+To update the `pcs-skill` router itself, edit `skills/pcs-skill/SKILL.md` then run `node scripts/sync-pcs-skill.cjs` to mirror it into the plugin package.
 
 ### Code Quality
 
@@ -166,10 +169,15 @@ Content of the skill...
 
 This repo is designed to work with **any** LLM coding agent (Claude Code, Cursor, Copilot, etc.):
 
-- `AGENTS.md` is a machine-readable skill index — agents fetch it to discover skills, invocation patterns, and install commands
+- `AGENTS.md` is a machine-readable **namespace registry** — agents fetch it to discover skill groups, trigger conditions, and links to full skill documents. It is intentionally lightweight (~200 tokens) so agents load only the namespaces they need.
+- Each namespace links to a `SKILL.md` file containing the full operational instructions, parameter definitions, and examples. Agents fetch individual skill documents on demand (progressive disclosure).
 - Skills use plain Markdown — no vendor-specific formats
 - Prompts avoid Claude-specific instructions
 - Tool permissions are declared in skill frontmatter (enforced by Claude Code, advisory for others)
+
+### Namespace organization
+
+Skills are grouped into DeFi primitive namespaces: `pcs-trading` (swaps), `pcs-liquidity` (LP positions), `pcs-yield` (farming/staking). When adding new skills, register them in the appropriate namespace or propose a new one in `AGENTS.md` before writing the `SKILL.md`.
 
 ## PancakeSwap Resources
 

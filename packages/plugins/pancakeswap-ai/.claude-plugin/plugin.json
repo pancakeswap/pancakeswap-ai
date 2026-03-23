@@ -1,0 +1,13 @@
+{
+  "name": "pancakeswap-ai",
+  "version": "1.0.0",
+  "description": "Single-skill entry point for all PancakeSwap AI capabilities — swap, liquidity, farming, and staking",
+  "author": {
+    "name": "PancakeSwap",
+    "email": "chef.sanji@pancakeswap.com"
+  },
+  "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
+  "keywords": ["pancakeswap", "swap", "liquidity", "farming", "cake", "staking", "defi", "bsc", "bnb"],
+  "license": "MIT",
+  "skills": ["./skills/pcs-skill"]
+}

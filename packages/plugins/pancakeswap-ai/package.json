@@ -1,0 +1,15 @@
+{
+  "name": "@pancakeswap/pancakeswap-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single-skill entry point for all PancakeSwap AI capabilities",
+  "author": "PancakeSwap <chef.sanji@pancakeswap.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pancakeswap/pancakeswap-ai.git",
+    "directory": "packages/plugins/pancakeswap-ai"
+  },
+  "keywords": ["claude-code", "plugin", "pancakeswap", "defi", "swap", "liquidity", "farming"],
+  "files": [".claude-plugin", "skills", "README.md"]
+}

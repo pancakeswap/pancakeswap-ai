@@ -9,7 +9,8 @@ This plugin provides a `swap-planner` skill that helps users plan token swaps on
 ## Installation
 
 ```bash
-claude plugin add @pancakeswap/pancakeswap-driver
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill swap-planner
+npx skills add https://github.com/pancakeswap/pancakeswap-ai --skill liquidity-planner
 ```
 
 ## Skills

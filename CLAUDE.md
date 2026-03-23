@@ -18,11 +18,12 @@ pancakeswap-ai/
 │   └── suites/               # Per-skill eval suites
 │       ├── swap-planner/       # pancakeswap-driver skill evals
 │       ├── liquidity-planner/  # pancakeswap-driver skill evals
-│       └── farming-planner/    # pancakeswap-farming skill evals
+│       ├── farming-planner/    # pancakeswap-farming skill evals
 ├── packages/
 │   └── plugins/              # Claude Code plugins
-│       ├── pancakeswap-driver/    # Swap planner + liquidity planner skills
-│       └── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
+│       ├── pancakeswap-driver/    # Swap planner + liquidity planner + swap integration skills
+│       ├── pancakeswap-farming/   # Farming planner (CAKE staking, yield farms)
+│       └── pancakeswap-hub/       # Hub swap planner + API integration skills
 ├── scripts/
 │   └── validate-plugin.cjs   # Plugin validation
 ├── CLAUDE.md                 # This file — developer + project instructions
@@ -39,22 +40,44 @@ pancakeswap-ai/
 **Purpose:** Plan swaps and liquidity positions, generate deep links to the PancakeSwap interface.
 
 **Skills:**
+
 - `swap-planner` — Discover tokens, verify contracts, fetch prices, and generate pancakeswap.finance deep links.
 - `liquidity-planner` — Plan LP positions (V2, V3, StableSwap), assess pool liquidity/APY, recommend fee tiers and price ranges, generate liquidity deep links.
+- `collect-fees` — Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions.
+- `swap-integration` — Integrate PancakeSwap swaps into applications using the Smart Router or Universal Router SDK. Use when building a swap frontend, writing swap scripts, or integrating swap functionality into a smart contract.
 
 **Install:**
+
 ```bash
 claude plugin add @pancakeswap/pancakeswap-driver
 ```
 
-### pancakeswap-farming
+### pancakeswap-hub
 
-**Purpose:** Plan yield farming, CAKE staking, and reward harvesting on PancakeSwap.
+**Purpose:** Plan and integrate swaps through PCS Hub, a distribution channel layer for partner wallets and apps.
 
 **Skills:**
-- `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.
+
+- `hub-swap-planner` — Plan swaps through PCS Hub and generate a channel-specific handoff link for partner integrations (e.g. Binance Wallet, Trust Wallet).
+- `hub-api-integration` — Help apps and distribution channels embed PCS Hub quote/swap functionality into their frontend.
 
 **Install:**
+
+```bash
+claude plugin add @pancakeswap/pancakeswap-hub
+```
+
+### pancakeswap-farming
+
+**Purpose:** Plan yield farming and CAKE staking on PancakeSwap.
+
+**Skills:**
+
+- `farming-planner` — Discover active farms, compare APR/APY, plan CAKE staking (Syrup Pools), LP farming strategies, and generate deep links to PancakeSwap farming UI.
+- `harvest-rewards` — Check pending CAKE and partner-token rewards across V2 farms, V3 farms, Infinity farms, and Syrup Pools. Generates harvest deep links.
+
+**Install:**
+
 ```bash
 claude plugin add @pancakeswap/pancakeswap-farming
 ```
@@ -156,7 +179,6 @@ metadata:
   author: pancakeswap
   version: 'X.Y.Z'
 ---
-
 # Skill Title
 
 Content of the skill...

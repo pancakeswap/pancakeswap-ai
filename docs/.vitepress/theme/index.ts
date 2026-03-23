@@ -16,7 +16,7 @@ export default {
       (path) => {
         trackPageView(path)
       },
-      { immediate: true }
+      { immediate: true },
     )
   },
 }

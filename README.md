@@ -23,11 +23,11 @@ The agent will read the skill, pick the right integration method, generate worki
 
 ## Plugins
 
-| Plugin | Skill | What it does |
-|--------|-------|-------------|
-| `pancakeswap-driver` | `swap-planner` | Discover tokens, verify contracts, fetch prices, generate swap deep links |
-| `pancakeswap-driver` | `liquidity-planner` | Plan LP positions (V2, V3, StableSwap), assess pools, generate liquidity deep links |
-| `pancakeswap-farming` | `farming-planner` | Plan yield farming, CAKE staking, and reward harvesting with deep links |
+| Plugin                | Skill               | What it does                                                                        |
+| --------------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| `pancakeswap-driver`  | `swap-planner`      | Discover tokens, verify contracts, fetch prices, generate swap deep links           |
+| `pancakeswap-driver`  | `liquidity-planner` | Plan LP positions (V2, V3, StableSwap), assess pools, generate liquidity deep links |
+| `pancakeswap-farming` | `farming-planner`   | Plan yield farming, CAKE staking, and reward harvesting with deep links             |
 
 ### Agent execution model
 
@@ -43,25 +43,25 @@ User: "Swap 0.1 BNB for USDT"
 
 ## Supported Chains
 
-| Chain | V2 | V3 | Infinity | Infinity Stable | StableSwap |
-|-------|----|----|----------|-----------------|------------|
-| BNB Smart Chain (56) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Ethereum (1) | ✅ | ✅ | — | — | ✅ |
-| Arbitrum One (42161) | ✅ | ✅ | — | — | ✅ |
-| Base (8453) | ✅ | ✅ | ✅ | — | — |
-| zkSync Era (324) | ✅ | ✅ | — | — | — |
-| Linea (59144) | ✅ | ✅ | — | — | — |
-| opBNB (204) | ✅ | ✅ | — | — | — |
-| Monad (143) | ✅ | ✅ | — | — | — |
+| Chain                | V2  | V3  | Infinity | Infinity Stable | StableSwap |
+| -------------------- | --- | --- | -------- | --------------- | ---------- |
+| BNB Smart Chain (56) | ✅  | ✅  | ✅       | ✅              | ✅         |
+| Ethereum (1)         | ✅  | ✅  | —        | —               | ✅         |
+| Arbitrum One (42161) | ✅  | ✅  | —        | —               | ✅         |
+| Base (8453)          | ✅  | ✅  | ✅       | —               | —          |
+| zkSync Era (324)     | ✅  | ✅  | —        | —               | —          |
+| Linea (59144)        | ✅  | ✅  | —        | —               | —          |
+| opBNB (204)          | ✅  | ✅  | —        | —               | —          |
+| Monad (143)          | ✅  | ✅  | —        | —               | —          |
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) | Full project guidelines, plugin structure, development setup |
-| [swap-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/swap-planner/SKILL.md) | Token discovery, price fetching, deep link generation |
+| Document                                                                                            | Description                                                                   |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md)                                                     | Full project guidelines, plugin structure, development setup                  |
+| [swap-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/swap-planner/SKILL.md)           | Token discovery, price fetching, deep link generation                         |
 | [liquidity-planner SKILL.md](packages/plugins/pancakeswap-driver/skills/liquidity-planner/SKILL.md) | LP position planning (V2, V3, StableSwap) with pool assessment and deep links |
-| [farming-planner SKILL.md](packages/plugins/pancakeswap-farming/skills/farming-planner/SKILL.md) | Yield farming, CAKE staking, farm discovery with live APR |
+| [farming-planner SKILL.md](packages/plugins/pancakeswap-farming/skills/farming-planner/SKILL.md)    | Yield farming, CAKE staking, farm discovery with live APR                     |
 
 ## Testing
 
@@ -116,6 +116,7 @@ PRs should maintain **≥ 85% pass rate** on all eval suites.
 - Smart Router SDK: `@pancakeswap/smart-router`
 - Universal Router SDK: `@pancakeswap/universal-router-sdk`
 - BSCScan: <https://bscscan.com/>
+
 ## Contributing
 
 See [CLAUDE.md](CLAUDE.md) for development setup, skill authoring guidelines, and contribution steps.

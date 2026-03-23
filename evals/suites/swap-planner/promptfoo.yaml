@@ -79,3 +79,22 @@ tests:
           - '0xdAC17F958D2ee523a2206206994597C13D831ec7'
           - 'outputCurrency=ETH'
           - 'inputCurrency=0xdAC17'
+
+  # Test 4: Cross-chain bridge swap — 1 ETH on Base → USDC on Arbitrum
+  - vars:
+      case_content: file://cases/cross-chain-bridge.md
+    assert:
+      - type: llm-rubric
+        value: file://rubrics/swap-correctness.txt
+        threshold: 0.8
+        provider: anthropic:claude-sonnet-4-5-20250929
+      - type: contains
+        value: 'pancakeswap.finance/swap'
+      - type: contains
+        value: 'chainOut=arb'
+      - type: contains
+        value: 'chain=base'
+      - type: contains-any
+        value:
+          - 'inputCurrency=ETH'
+          - 'outputCurrency=0xaf88'

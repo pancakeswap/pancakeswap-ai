@@ -85,18 +85,12 @@ function trackGameLoad() {
 }
 
 function getFullscreenElement(): Element | null {
-  return (
-    document.fullscreenElement ??
-    (document as any).webkitFullscreenElement ??
-    null
-  )
+  return document.fullscreenElement ?? (document as any).webkitFullscreenElement ?? null
 }
 
 async function requestNativeFullscreen(el: HTMLElement): Promise<boolean> {
   const rfs =
-    el.requestFullscreen ??
-    (el as any).webkitRequestFullscreen ??
-    (el as any).webkitEnterFullscreen
+    el.requestFullscreen ?? (el as any).webkitRequestFullscreen ?? (el as any).webkitEnterFullscreen
   if (rfs) {
     await rfs.call(el)
     return true
@@ -105,8 +99,7 @@ async function requestNativeFullscreen(el: HTMLElement): Promise<boolean> {
 }
 
 async function exitNativeFullscreen(): Promise<boolean> {
-  const efs =
-    document.exitFullscreen ?? (document as any).webkitExitFullscreen
+  const efs = document.exitFullscreen ?? (document as any).webkitExitFullscreen
   if (efs) {
     await efs.call(document)
     return true

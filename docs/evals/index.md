@@ -17,10 +17,10 @@ evals/
     │   ├── promptfoo.yaml
     │   ├── cases/
     │   └── rubrics/
-    └── farming-planner/
-        ├── promptfoo.yaml
-        ├── cases/
-        └── rubrics/
+    ├── farming-planner/
+    │   ├── promptfoo.yaml
+    │   ├── cases/
+    │   └── rubrics/
 ```
 
 ## How It Works
@@ -91,12 +91,12 @@ All PRs must maintain **≥ 85% pass rate** on every eval suite. This ensures sk
 
 ## Assertion Types
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| `llm-rubric` | LLM grades output against criteria | "Output uses verified addresses and sane defaults" |
-| `contains` | Output must include string | `https://pancakeswap.finance/swap` |
-| `not-contains` | Output must not include string | Hardcoded private keys |
-| `cost` | Keeps inference cost under budget | `< 0.50` |
+| Type           | Purpose                            | Example                                            |
+| -------------- | ---------------------------------- | -------------------------------------------------- |
+| `llm-rubric`   | LLM grades output against criteria | "Output uses verified addresses and sane defaults" |
+| `contains`     | Output must include string         | `https://pancakeswap.finance/swap`                 |
+| `not-contains` | Output must not include string     | Hardcoded private keys                             |
+| `cost`         | Keeps inference cost under budget  | `< 0.50`                                           |
 
 ## Writing New Evals
 
@@ -105,7 +105,9 @@ All PRs must maintain **≥ 85% pass rate** on every eval suite. This ensures sk
 3. Write test cases in `cases/` — each is a Markdown file with a user request
 4. Write rubrics in `rubrics/` — grading criteria the LLM judge uses
 5. Add a script entry in `package.json`:
+
    ```json
    "test:evals:your-skill": "npx promptfoo eval --config evals/suites/your-skill/promptfoo.yaml"
    ```
+
 6. Run and iterate until pass rate ≥ 85%

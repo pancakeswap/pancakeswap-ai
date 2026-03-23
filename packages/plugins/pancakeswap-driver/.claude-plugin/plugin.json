@@ -1,13 +1,29 @@
 {
   "name": "pancakeswap-driver",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "AI-powered assistance for discovering tokens and planning PancakeSwap swaps with deep links to the PancakeSwap interface",
   "author": {
     "name": "PancakeSwap",
     "email": "chef.sanji@pancakeswap.com"
   },
   "homepage": "https://github.com/pancakeswap/pancakeswap-ai",
-  "keywords": ["pancakeswap", "swap", "liquidity", "lp", "defi", "deep-links", "token-discovery", "bsc", "bnb", "cake"],
+  "keywords": [
+    "pancakeswap",
+    "swap",
+    "liquidity",
+    "lp",
+    "defi",
+    "deep-links",
+    "token-discovery",
+    "bsc",
+    "bnb",
+    "cake"
+  ],
   "license": "MIT",
-"skills": ["./skills/swap-planner", "./skills/liquidity-planner"]
+  "skills": [
+    "./skills/swap-planner",
+    "./skills/liquidity-planner",
+    "./skills/collect-fees",
+    "./skills/swap-integration"
+  ]
 }

@@ -12,4 +12,3 @@ const { Layout } = DefaultTheme
     </template>
   </Layout>
 </template>
-

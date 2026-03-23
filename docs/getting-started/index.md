@@ -1,6 +1,6 @@
 # Introduction
 
-PancakeSwap AI is a collection of **AI-consumable skills and plugins** that teach coding agents how to integrate the PancakeSwap ecosystem — swaps, liquidity, and farming — correctly and securely.
+PancakeSwap AI is a collection of **AI-consumable skills and plugins** that teach coding agents how to integrate the PancakeSwap ecosystem — swaps, liquidity, and yield farming — correctly and securely.
 
 ## What Are Skills?
 
@@ -12,16 +12,16 @@ A **skill** is a Markdown file (`SKILL.md`) with YAML frontmatter that an LLM ag
 - **Validation rules** — security checks, slippage bounds, gas budgets
 - **Anti-patterns** — common mistakes with explicit warnings
 
-When a user says *"swap 0.1 BNB for USDT on PancakeSwap"*, the agent loads the relevant skill, follows its instructions, and generates correct, production-ready code.
+When a user says _"swap 0.1 BNB for USDT on PancakeSwap"_, the agent loads the relevant skill, follows its instructions, and generates correct, production-ready code.
 
 ## What Are Plugins?
 
-A **plugin** bundles one or more skills into a distributable package with metadata (`plugin.json`). PancakeSwap AI ships two core plugins:
+A **plugin** bundles one or more skills into a distributable package with metadata (`plugin.json`). PancakeSwap AI ships three core plugins:
 
-| Plugin | Skills | Purpose |
-|--------|--------|---------|
-| `pancakeswap-driver` | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links |
-| `pancakeswap-farming` | `farming-planner` | Plan yield farming, CAKE staking, and reward harvesting |
+| Plugin                | Skills                              | Purpose                                                 |
+| --------------------- | ----------------------------------- | ------------------------------------------------------- |
+| `pancakeswap-driver`  | `swap-planner`, `liquidity-planner` | Plan swaps and LP positions with deep links             |
+| `pancakeswap-farming` | `farming-planner`                   | Plan yield farming, CAKE staking, and reward harvesting |
 
 ## Agent-Agnostic Design
 

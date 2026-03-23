@@ -32,7 +32,7 @@ The agent loads the **liquidity-planner** skill and returns:
 - Suggested price range based on volatility
 - A liquidity deep link to open the position in the UI
 
-## Run Unit Tests
+## 3. Run Unit Tests
 
 ```bash
 npm test

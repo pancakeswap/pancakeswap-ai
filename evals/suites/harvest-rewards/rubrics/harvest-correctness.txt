@@ -1,0 +1,33 @@
+Evaluate whether the response correctly plans a PancakeSwap reward harvest:
+
+1. Rewards Summary Table
+   - Does the response output (or explain how to generate) a table with pending reward amounts?
+   - Does the table include: Farm/Pool name, type, reward token, pending amount, and a deep link?
+   - Does it mention USD value or explain how to fetch current CAKE price?
+
+2. Contract Accuracy
+   - Are contract addresses correct when referenced?
+     - MasterChef v2: 0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652
+     - MasterChef v3: 0x556B9306565093C855AEA9AE92A594704c2Cd59e
+     - Distributor: 0xEA8620aAb2F07a0ae710442590D649ADE8440877
+   - Are the correct function names used: `pendingCake`, `harvest`, `pendingReward`?
+
+3. Deep Link Generation
+   - Does the response include valid pancakeswap.finance URLs for harvesting?
+   - V2/V3/Infinity: pancakeswap.finance/liquidity/pools?chain=bsc
+   - Syrup Pools: pancakeswap.finance/pools?chain=bsc or pancakeswap.finance/pools
+
+4. Security Warnings
+   - Does it warn against using `--private-key` in CLI commands?
+   - Does it recommend `--account myaccount` (Foundry keystore) instead?
+   - Does it recommend the UI as the safer path for mainnet harvests?
+
+5. Infinity Epoch Cadence
+   - For Infinity farms: does it correctly note the 8-hour epoch distribution?
+   - Does it mention that rewards require a Merkle claim via the Distributor contract?
+
+6. Chain Context
+   - Does it correctly note that V2 farms and Syrup Pools are BSC-only?
+   - Does it correctly set chain context (BSC = chain 56, chain key "bsc")?
+
+Score 1.0 if all 6 areas fully addressed, 0.85 if mostly correct with minor gaps, 0.7 if partial.

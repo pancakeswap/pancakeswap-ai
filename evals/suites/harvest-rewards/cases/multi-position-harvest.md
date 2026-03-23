@@ -1,0 +1,1 @@
+I have positions in multiple farm types on BSC — a V2 CAKE/WBNB farm (PID 2), a V3 WBNB/USDT position (token ID 12345), and an Infinity CAKE/BNB farm. My wallet is 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045. I want to harvest all my pending CAKE rewards. Show me the pending amounts and give me the commands to claim everything.

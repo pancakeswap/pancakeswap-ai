@@ -1,12 +1,39 @@
 ---
 name: swap-integration
+slug: pcs-swap-integration
 description: Integrate PancakeSwap swaps into applications. Use when user says "integrate swaps", "pancakeswap", "smart router", "add swap functionality", "build a swap frontend", "create a swap script", "smart contract swap integration", "use Universal Router", or mentions swapping tokens via PancakeSwap.
+homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(npm:*), Bash(npx:*), Bash(yarn:*), Bash(curl:*), WebFetch, Task(subagent_type:swap-integration-expert)
 model: opus
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.2.4'
+  version: '1.0.0'
+  openclaw:
+    homepage: https://github.com/pancakeswap/pancakeswap-ai
+    os:
+      - macos
+      - linux
+    requires:
+      bins:
+        - curl
+        - jq
+      anyBins:
+        - cast
+        - python3
+        - node
+        - open
+        - xdg-open
+    install:
+      - kind: brew
+        formula: curl
+        bins: [curl]
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: brew
+        formula: foundry
+        bins: [cast]
 ---
 
 # Swap Integration

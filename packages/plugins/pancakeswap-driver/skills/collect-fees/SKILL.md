@@ -1,12 +1,39 @@
 ---
 name: collect-fees
+slug: pcs-collect-fees
 description: Check and collect LP fees from PancakeSwap V3 and Infinity (v4) positions. Use when user says "collect my fees", "claim LP fees", "how much fees have I earned", "pending fees", "uncollected fees", "/collect-fees", "harvest LP fees", or asks about fees from a specific token pair position.
+homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(node:*), Bash(npm:*), Bash(xdg-open:*), Bash(open:*), WebFetch, AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
   version: '2.3.7'
+  openclaw:
+    homepage: https://github.com/pancakeswap/pancakeswap-ai
+    os:
+      - macos
+      - linux
+    requires:
+      bins:
+        - curl
+        - jq
+      anyBins:
+        - cast
+        - python3
+        - node
+        - open
+        - xdg-open
+    install:
+      - kind: brew
+        formula: curl
+        bins: [curl]
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: brew
+        formula: foundry
+        bins: [cast]
 ---
 
 # PancakeSwap Collect Fees

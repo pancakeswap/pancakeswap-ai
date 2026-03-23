@@ -1,12 +1,39 @@
 ---
 name: hub-swap-planner
+slug: pcs-hub-swap-planner
 description: Plan swaps through PCS Hub and generate a channel-specific handoff link. Use when user says "swap via PCS Hub", "hub swap", "/hub-swap-planner", "swap via Binance Wallet", "swap via Trust Wallet", "find best PCS Hub route", or describes wanting to swap tokens through a specific partner channel or distribution interface.
+homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), Bash(cast:*), Bash(xdg-open:*), Bash(open:*), WebFetch, WebSearch, Task(subagent_type:Explore), AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.7.0'
+  version: '1.0.0'
+  openclaw:
+    homepage: https://github.com/pancakeswap/pancakeswap-ai
+    os:
+      - macos
+      - linux
+    requires:
+      bins:
+        - curl
+        - jq
+      anyBins:
+        - cast
+        - python3
+        - node
+        - open
+        - xdg-open
+    install:
+      - kind: brew
+        formula: curl
+        bins: [curl]
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: brew
+        formula: foundry
+        bins: [cast]
 ---
 
 # PCS Hub Swap Planner

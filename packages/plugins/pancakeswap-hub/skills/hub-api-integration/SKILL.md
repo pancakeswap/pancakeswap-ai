@@ -1,12 +1,39 @@
 ---
 name: hub-api-integration
+slug: pcs-api-integration
 description: Help apps and distribution channels integrate PCS Hub into their frontend. Use when user says "/hub-api-integration", "integrate PCS Hub", "embed PCS Hub swap", "PCS Hub integration guide", "how do I add PCS Hub to my wallet", "create a PCS Hub integration spec", or describes wanting to embed PCS Hub quote/swap functionality in an external UI.
+homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, AskUserQuestion
 model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.1.0'
+  version: '1.0.0'
+  openclaw:
+    homepage: https://github.com/pancakeswap/pancakeswap-ai
+    os:
+      - macos
+      - linux
+    requires:
+      bins:
+        - curl
+        - jq
+      anyBins:
+        - cast
+        - python3
+        - node
+        - open
+        - xdg-open
+    install:
+      - kind: brew
+        formula: curl
+        bins: [curl]
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: brew
+        formula: foundry
+        bins: [cast]
 ---
 
 # PCS Hub API Integration Guide

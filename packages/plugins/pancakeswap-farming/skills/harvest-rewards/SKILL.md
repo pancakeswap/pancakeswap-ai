@@ -1,10 +1,12 @@
 ---
 name: harvest-rewards
+slug: pcs-harvest-rewards
 description: >
   Harvest pending CAKE and partner-token rewards from PancakeSwap farming positions.
   Use when user says "/harvest-rewards", "harvest all my pending CAKE rewards",
   "how much do I have to claim from my farms", "claim my Syrup Pool rewards",
   "pending farming rewards", "collect CAKE rewards", or asks what they can harvest.
+homepage: https://github.com/pancakeswap/pancakeswap-ai
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(curl:*), Bash(jq:*),
   Bash(python3:*), Bash(node:*), WebFetch, WebSearch,
   Task(subagent_type:Explore), AskUserQuestion
@@ -12,7 +14,32 @@ model: sonnet
 license: MIT
 metadata:
   author: pancakeswap
-  version: '1.4.2'
+  version: '1.0.0'
+  openclaw:
+    homepage: https://github.com/pancakeswap/pancakeswap-ai
+    os:
+      - macos
+      - linux
+    requires:
+      bins:
+        - curl
+        - jq
+      anyBins:
+        - cast
+        - python3
+        - node
+        - open
+        - xdg-open
+    install:
+      - kind: brew
+        formula: curl
+        bins: [curl]
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: brew
+        formula: foundry
+        bins: [cast]
 ---
 
 # PancakeSwap Harvest Rewards

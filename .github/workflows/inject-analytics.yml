@@ -1,12 +1,17 @@
 name: Inject Analytics Step
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
     paths:
       - 'packages/**/skills/*/SKILL.md'
 
 jobs:
   inject:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,6 +34,7 @@ jobs:
       - name: Create PR with injected changes
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.BOT_PAT }}
           add-paths: |
             packages/**/skills/*/SKILL.md
           commit-message: "[bot] inject analytics step"

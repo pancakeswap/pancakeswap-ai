@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { trackEvent } from '../lib/analytics'
 
 const humanCopied = ref(false)
+const installCopied = ref(false)
 const llmCopied = ref(false)
 const embedFrame = ref<HTMLIFrameElement | null>(null)
 const gameLoadTracked = ref(false)
@@ -39,7 +40,9 @@ onMounted(() => {
 
 const isFauxFullscreen = ref(false)
 
-const humanPrompt = `Fetch https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md and install the skills described there so you can help me swap tokens, add liquidity, and farm on PancakeSwap.`
+const humanPrompt = `Run \`npx skills add pancakeswap/pancakeswap-ai\` to install PancakeSwap skills, then help me swap tokens, add liquidity, and farm.`
+
+const installCode = `npx skills add pancakeswap/pancakeswap-ai`
 
 const llmCode = `https://raw.githubusercontent.com/pancakeswap/pancakeswap-ai/main/AGENTS.md`
 
@@ -66,6 +69,10 @@ async function copyToClipboard(text: string, copiedFlag: { value: boolean }) {
 
 function copyHuman() {
   copyToClipboard(humanPrompt, humanCopied)
+}
+
+function copyInstall() {
+  copyToClipboard(installCode, installCopied)
 }
 
 function copyLLM() {
@@ -163,23 +170,27 @@ async function toggleFullscreen() {
             <span class="qs-icon">👤</span>
             <h3>Human Quickstart</h3>
           </div>
-          <p class="qs-desc">
-            Paste this prompt into Claude Code, Cursor, or any AI agent or
-            <a href="/getting-started/installation">install manually</a>:
-          </p>
+          <p class="qs-desc">Paste this prompt into Claude Code, Cursor, or any AI agent:</p>
           <div class="qs-code-block">
             <pre><code>{{ humanPrompt }}</code></pre>
             <button class="qs-copy-btn" @click="copyHuman">
               {{ humanCopied ? '✓ Copied' : 'Copy prompt' }}
             </button>
           </div>
+          <p class="qs-desc">Or paste this command in your terminal:</p>
+          <div class="qs-code-block qs-code-block--bash">
+            <pre><code>{{ installCode }}</code></pre>
+            <button class="qs-copy-btn" @click="copyInstall">
+              {{ installCopied ? '✓ Copied' : 'Copy' }}
+            </button>
+          </div>
         </div>
 
-        <!-- LLM Quickstart -->
+        <!-- Agent Quickstart -->
         <div class="qs-card">
           <div class="qs-card-header">
             <span class="qs-icon">🤖</span>
-            <h3>LLM Quickstart</h3>
+            <h3>Agent Quickstart</h3>
           </div>
           <p class="qs-desc">
             Fetch this URL to discover all available skills, invocation patterns, and examples:
@@ -307,7 +318,6 @@ async function toggleFullscreen() {
 .qs-card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 

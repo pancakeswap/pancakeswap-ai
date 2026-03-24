@@ -49,7 +49,10 @@ pancakeswap-ai/
 **Install:**
 
 ```bash
-claude plugin add @pancakeswap/pancakeswap-driver
+npx skills add pancakeswap/pancakeswap-ai --skill swap-planner
+npx skills add pancakeswap/pancakeswap-ai --skill liquidity-planner
+npx skills add pancakeswap/pancakeswap-ai --skill collect-fees
+npx skills add pancakeswap/pancakeswap-ai --skill swap-integration
 ```
 
 ### pancakeswap-hub
@@ -64,7 +67,8 @@ claude plugin add @pancakeswap/pancakeswap-driver
 **Install:**
 
 ```bash
-claude plugin add @pancakeswap/pancakeswap-hub
+npx skills add pancakeswap/pancakeswap-ai --skill hub-swap-planner
+npx skills add pancakeswap/pancakeswap-ai --skill hub-api-integration
 ```
 
 ### pancakeswap-farming
@@ -79,7 +83,8 @@ claude plugin add @pancakeswap/pancakeswap-hub
 **Install:**
 
 ```bash
-claude plugin add @pancakeswap/pancakeswap-farming
+npx skills add pancakeswap/pancakeswap-ai --skill farming-planner
+npx skills add pancakeswap/pancakeswap-ai --skill harvest-rewards
 ```
 
 ## Development

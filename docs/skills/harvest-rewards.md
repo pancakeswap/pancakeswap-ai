@@ -21,11 +21,11 @@ This skill **does not execute transactions** — it reads on-chain pending rewar
 
 ## Supported Position Types
 
-| Type           | Pending Reward Source                       | Chains                                       |
-| -------------- | ------------------------------------------- | -------------------------------------------- |
-| V3 Farms       | `MasterChef v3.pendingCake(tokenId)`        | BSC, Ethereum, Arbitrum, Base, zkSync, Linea |
-| Infinity Farms | Infinity API + Distributor contract         | BSC, Base                                    |
-| Syrup Pools    | `SmartChefFactory.pendingReward(pid, user)` | BSC                                          |
+| Type           | Chains                                       |
+| -------------- | -------------------------------------------- |
+| V3 Farms       | BSC, Ethereum, Arbitrum, Base, zkSync, Linea |
+| Infinity Farms | BSC, Base                                    |
+| Syrup Pools    | BSC                                          |
 
 ## Usage Examples
 

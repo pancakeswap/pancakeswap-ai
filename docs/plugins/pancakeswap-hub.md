@@ -14,7 +14,7 @@ AI-powered assistance for planning and integrating swaps through PCS Hub.
 
 ## Skills
 
-### [hub-swap-planner](/skills/hub-swap-planner)
+<!-- ### [hub-swap-planner](/skills/hub-swap-planner)
 
 Plan token swaps through PCS Hub — PancakeSwap's aggregator API — and generate a channel-specific handoff link for partner interfaces.
 
@@ -23,7 +23,7 @@ Plan token swaps through PCS Hub — PancakeSwap's aggregator API — and genera
 - Optimal route discovery via the PCS Hub API (aggregates multiple DEXs on BSC)
 - Route summary with split breakdowns and price impact
 - Channel-specific deep links for PancakeSwap, Binance Wallet, Trust Wallet, or headless environments
-- Token address lookup and price fetching via DexScreener
+- Token address lookup and price fetching via DexScreener -->
 
 ### [hub-api-integration](/skills/hub-api-integration)
 

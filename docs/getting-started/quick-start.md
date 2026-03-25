@@ -113,5 +113,5 @@ npx promptfoo view  # browse results in the browser
 - [Farming Planner](/skills/farming-planner) — CAKE staking and farm strategy
 - [Harvest Rewards](/skills/harvest-rewards) — check and claim pending farming rewards
 - [Swap Integration](/skills/swap-integration) — integrate swaps into your app
-- [Hub Swap Planner](/skills/hub-swap-planner) — plan swaps through PCS Hub
+<!-- - [Hub Swap Planner](/skills/hub-swap-planner) — plan swaps through PCS Hub -->
 - [Hub API Integration](/skills/hub-api-integration) — embed PCS Hub in your frontend

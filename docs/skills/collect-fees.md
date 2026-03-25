@@ -20,12 +20,12 @@ This skill **does not execute transactions** — it reads on-chain state, shows 
 
 ## Supported Position Types
 
-| Type          | Discovery Method                                 | Chains                                                  |
-| ------------- | ------------------------------------------------ | ------------------------------------------------------- |
-| V3            | `NonfungiblePositionManager` ERC-721 enumeration | BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, opBNB |
-| Infinity (v4) | Explorer API + `@pancakeswap/infinity-sdk`       | BSC, Base                                               |
-| Solana Farms  | `@pancakeswap/solana-core-sdk`                   | Solana mainnet                                          |
-| V2            | Not supported (fees embedded in LP token value)  | —                                                       |
+| Type          | Chains                                                  |
+| ------------- | ------------------------------------------------------- |
+| V3            | BSC, Ethereum, Arbitrum, Base, zkSync Era, Linea, opBNB |
+| Infinity (v4) | BSC, Base                                               |
+| Solana Farms  | Solana mainnet                                          |
+| V2            | —                                                       |
 
 ## Usage Examples
 

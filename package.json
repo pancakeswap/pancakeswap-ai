@@ -42,7 +42,7 @@
     "markdownlint-cli2": "^0.17.2",
     "nx": "^22.0.2",
     "prettier": "^2.6.2",
-    "promptfoo": "^0.120.22",
+    "promptfoo": "^0.121.9",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.4"
   },

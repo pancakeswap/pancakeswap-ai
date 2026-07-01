@@ -1,3 +1,4 @@
+Run `npx skills add pancakeswap/pancakeswap-ai` to install PancakeSwap skills, then help me swap tokens, add liquidity, and farm.
 # Quick Start
 
 This guide walks you through using PancakeSwap AI skills in under 5 minutes.

@@ -201,8 +201,6 @@ if (activeCLRows.length > 0) {
     const tickUpperResult = tickResults[i * 2 + 1]
     if (tickLowerResult.status !== 'success' || tickUpperResult.status !== 'success') continue
 
-    console.log('tick results', tickLowerResult, tickUpperResult)
-
     const { feeGrowthOutside0X128: fgOutLower0, feeGrowthOutside1X128: fgOutLower1 } =
       tickLowerResult.result
     const { feeGrowthOutside0X128: fgOutUpper0, feeGrowthOutside1X128: fgOutUpper1 } =

@@ -63,6 +63,9 @@ async function mapWithConcurrency(items, limit, fn) {
 }
 
 async function getFarmingPositions() {
+  // Some supported V3 chains do not have a MasterChef deployment.
+  if (!masterchefAddress) return []
+
   const balance = await client.readContract({
     address: masterchefAddress,
     abi: masterChefV3ABI,

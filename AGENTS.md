@@ -72,7 +72,7 @@ Create a V3 LP position for CAKE/BNB with a tight range
 ### collect-fees
 
 **Plugin:** `@pancakeswap/pancakeswap-driver`
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 **What it does:** Checks uncollected LP fees across PancakeSwap V3 and Infinity (v4) positions for a given wallet address, and generates deep links to collect them. Supports Solana CLMM positions via `@pancakeswap/solana-core-sdk`. Does not execute transactions.
 

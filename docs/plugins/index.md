@@ -4,6 +4,7 @@ PancakeSwap AI ships four plugins, each packaging one or more skills for a speci
 
 ## Plugin Architecture
 
+
 ```
 packages/plugins/
 ├── pancakeswap-driver/         # Swap & liquidity planning, fee collection, swap integration
@@ -73,7 +74,7 @@ Each plugin declares its metadata and skill paths in `plugin.json`:
   "keywords": ["pancakeswap", "swap", "liquidity", "defi"],
   "license": "MIT",
   "skills": ["./skills/swap-planner", "./skills/liquidity-planner"]
-}
+} 
 ```
 
 ## Adding a New Plugin

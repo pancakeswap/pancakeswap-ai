@@ -601,4 +601,4 @@ Cache the list locally (e.g., 1-hour TTL) to avoid repeated fetches. For tokens 
 
 Base URL: `https://hub-api.pancakeswap.com/aggregator`
 
-For API access, contact PancakeSwap: <https://t.me/pancakeswap>
+For API access, contact PancakeSwap: <https://t.me/Pancake_Fi>

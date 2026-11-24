@@ -101,7 +101,7 @@ The Hub API requires a `x-secure-token` header. Before calling the API, check fo
 if [ -z "$PCS_HUB_TOKEN" ]; then
   echo "PCS_HUB_TOKEN is not set."
   echo "Set it with: export PCS_HUB_TOKEN=<your-token>"
-  echo "Contact PancakeSwap to obtain a token: https://t.me/pancakeswap"
+  echo "Contact PancakeSwap to obtain a token: https://t.me/Pancake_Fi"
   exit 1
 fi
 ```

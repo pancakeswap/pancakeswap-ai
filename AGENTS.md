@@ -194,7 +194,7 @@ Claim my Syrup Pool partner token rewards
 ### hub-swap-planner
 
 **Plugin:** `@pancakeswap/pancakeswap-hub`
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 **What it does:** Plans swaps through PCS Hub — PancakeSwap's distribution channel layer for partner wallets and apps. Fetches multi-route quotes via the Hub aggregator API and generates a channel-specific handoff link for the partner's UI. Does not execute transactions.
 
@@ -222,7 +222,7 @@ Generate a Trust Wallet PCS Hub swap link
 ### hub-api-integration
 
 **Plugin:** `@pancakeswap/pancakeswap-hub`
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 **What it does:** Helps apps and distribution channels embed PCS Hub quote/swap functionality into their frontend. Generates integration specs, API contract definitions, and frontend flow designs tailored to the channel's UX.
 
